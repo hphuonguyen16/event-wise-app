@@ -56,7 +56,7 @@ export default function Input(theme: Theme) {
           '& .MuiOutlinedInput-notchedOutline': {
             // borderColor: alpha(theme.palette.grey[500], 0.32),
             borderColor: theme.palette.primary.light,
-            borderRadius: '20px'
+            borderRadius: '10px'
           },
           '& .MuiSvgIcon-root': {
             color: theme.palette.primary.light

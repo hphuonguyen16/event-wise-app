@@ -53,8 +53,8 @@ function App() {
             </MenuItem>
           </Link>
         )}
-        <Link href="/dashboard">
-          <MenuItem icon={<HomeRoundedIcon />}>Home</MenuItem>
+        <Link href="/manage/event">
+          <MenuItem icon={<HomeRoundedIcon />}>Events</MenuItem>
         </Link>
         <Link href="/message">
           <MenuItem icon={<ChatBubbleOutlineRoundedIcon />}>Messages</MenuItem>

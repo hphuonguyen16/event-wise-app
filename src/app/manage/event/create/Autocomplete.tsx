@@ -60,6 +60,7 @@ export default function LocationAutocomplete({
           onChange={(event: any) => {
             setSearchLocation(event.target.value);
           }}
+          required
         />
       )}
     />

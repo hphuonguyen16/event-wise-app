@@ -24,6 +24,15 @@ const UrlConfig: any = {
   },
   event: {
     createEvent: `${domain}/api/v1/events`,
+    getEvent: (id: string) => `${domain}/api/v1/events/${id}`,
+    getMyEvents: `${domain}/api/v1/events/my-events`,
+    deleteEvent: (id: string) => `${domain}/api/v1/events/${id}`,
+  },
+  ticketType: {
+    getTicketTypesByEventId: (eventId: string) => `${domain}/api/v1/events/${eventId}/ticket-types`,
+    deleteTicketType: (ticketTypeId: string) => `${domain}/api/v1/ticket-types/${ticketTypeId}`,
+    createTicketType: `${domain}/api/v1/ticket-types`,
+    updateTicketType: (ticketTypeId: string) => `${domain}/api/v1/ticket-types/${ticketTypeId}`,
   },
 };
 

@@ -33,6 +33,7 @@ import useSnackbar from '@/context/snackbarContext'
 import CustomSnackbar from "@/components/common/Snackbar";
 
 async function handleFileUpload(files: File[]) {
+  //@ts-ignore
   const uploadPromises = files.map((file: File) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -108,6 +109,7 @@ const axiosPrivate = useAxiosPrivate();
 
   const handleImageChange = (e: any) => {
     const files = e.target.files;
+    console.log(files);
     if (files && files.length > 0 && eventForm.images.length <= 5) {
       const newImages = [...eventForm.images];
       var pushLength = files.length;
@@ -140,8 +142,31 @@ const axiosPrivate = useAxiosPrivate();
   };
 
   const addEventApi = async () => {
+    if (eventForm.title === "" || eventForm.summary === "" || eventForm.date === null || eventForm.location === null) {
+      setSnack({
+        open: true,
+        message: "Please fill in all the required fields!",
+        type: "error",
+      });
+      return;
+    }
+    const urlImages = await handleFileUpload(eventForm.images);
+    const aboutAfterUpload = await Promise.all(
+      eventForm.about.map(async (item) => {
+        if (item.type === "image") {
+          //@ts-ignore
+          const url = await handleFileUpload([item.description]);
+          return {
+            description: url[0],
+            type: "image",
+          };
+        } else {
+          return item;
+        }
+      })
+    );
     const response = await axiosPrivate.post(urlConfig.event.createEvent, {
-      images: eventForm.images,
+      images: urlImages,
       title: eventForm.title,
       summary: eventForm.summary,
       location: eventForm.location,
@@ -152,20 +177,20 @@ const axiosPrivate = useAxiosPrivate();
       //@ts-ignore
       endTime: eventForm.endTime.format("HH:mm"),
       detailLocation: eventForm.detailLocation,
-      about: eventForm.about,
+      about: aboutAfterUpload,
     });
     if (response.data.status === "success") {
-      // setSnack({
-      //   open: true,
-      //   message: "Post created successfully!",
-      //   type: "success",
-      // });
+      setSnack({
+        open: true,
+        message: "Event created successfully!",
+        type: "success",
+      });
     } else {
-      // setSnack({
-      //   open: true,
-      //   message: "Something went wrong! Please try again!",
-      //   type: "error",
-      // });
+      setSnack({
+        open: true,
+        message: "Something went wrong! Please try again!",
+        type: "error",
+      });
     }
   };
 
@@ -178,7 +203,10 @@ const axiosPrivate = useAxiosPrivate();
   console.log("startTime is null or undefined");
 }
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", paddingBottom: '20px' }}>
+    <Box
+      sx={{ display: "flex", justifyContent: "center", paddingBottom: "20px" }}
+    >
+      <CustomSnackbar />
       <Box sx={{ width: "60%" }}>
         <Box>
           <Typography variant="h3">Build your event page</Typography>
@@ -264,13 +292,13 @@ const axiosPrivate = useAxiosPrivate();
                 id="icon-button-file"
                 multiple
                 className="hidden"
+                onChange={handleImageChange}
               />
               <label htmlFor="icon-button-file">
                 <Button
                   variant="outlined"
                   component="span"
                   startIcon={<CollectionsIcon />}
-                  onClick={handleImageChange}
                 >
                   Add Image
                 </Button>
@@ -315,6 +343,7 @@ const axiosPrivate = useAxiosPrivate();
                   id="outlined-multiline-flexible"
                   placeholder="Details about the event"
                   multiline
+                  required
                   maxRows={20}
                   sx={{ width: "90%" }}
                   inputProps={{
@@ -338,7 +367,7 @@ const axiosPrivate = useAxiosPrivate();
             <CardContent>
               <Box>
                 <Typography variant="h5" sx={{ marginBottom: "25px" }}>
-                  Date and time
+                  Date and time 
                 </Typography>
                 <Box
                   sx={{
@@ -352,10 +381,6 @@ const axiosPrivate = useAxiosPrivate();
                       <DatePicker
                         value={eventForm.date || null}
                         onChange={(newValue) => {
-                          //@ts-ignore
-                          const dateValue = newValue.toDate(); // Convert Dayjs to Date object
-                          const formattedDate = dateValue.toDateString().split("T")[0];
-                          console.log(formattedDate);
                           //@ts-ignore
                           setEventForm({ ...eventForm, date: newValue });
                         }}
@@ -401,9 +426,13 @@ const axiosPrivate = useAxiosPrivate();
                   label="Location detail"
                   variant="outlined"
                   sx={{ width: "90%" }}
-                  required
                   value={eventForm.detailLocation}
-                  onChange={(e) => { setEventForm({ ...eventForm, detailLocation: e.target.value }) }}
+                  onChange={(e) => {
+                    setEventForm({
+                      ...eventForm,
+                      detailLocation: e.target.value,
+                    });
+                  }}
                 />
               </Box>
             </CardContent>
@@ -429,7 +458,9 @@ const axiosPrivate = useAxiosPrivate();
                         newDescription[index].description = description;
                         setEventForm({ ...eventForm, about: newDescription });
                       }}
-                      handleDeleteAbout={() => {handleDeleteAbout(index)}}
+                      handleDeleteAbout={() => {
+                        handleDeleteAbout(index);
+                      }}
                     />
                   );
                 })}
@@ -465,7 +496,13 @@ const axiosPrivate = useAxiosPrivate();
           </Card>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "end" }}>
-          <Button variant="contained" sx={{ marginTop: "20px" }} onClick={() => {addEventApi()}}>
+          <Button
+            variant="contained"
+            sx={{ marginTop: "20px" }}
+            onClick={() => {
+              addEventApi();
+            }}
+          >
             Create Event
           </Button>
         </Box>
