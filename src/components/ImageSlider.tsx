@@ -23,7 +23,7 @@ function ImageSlider({ images, handleDeleteImages }: ImageSliderProps) {
           key={i}
         >
           <img
-            src={URL.createObjectURL(image)}
+            src={typeof image === "string" ? image : URL.createObjectURL(image)}
             alt="event"
             style={{
               width: "100%",

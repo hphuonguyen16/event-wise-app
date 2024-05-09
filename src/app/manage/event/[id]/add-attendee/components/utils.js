@@ -64,7 +64,7 @@ export function applyFilter({ inputData, comparator, filterName, filterStatus })
 
   if (filterName) {
     inputData = inputData.filter(
-      (event) => event.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (event) => event.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
   if (filterStatus) {
@@ -85,9 +85,3 @@ export function applyFilter({ inputData, comparator, filterName, filterStatus })
 
   return inputData;
 }
-
-//validate date in dayjs 2 date
-
-
-
-//compare date in dayjs

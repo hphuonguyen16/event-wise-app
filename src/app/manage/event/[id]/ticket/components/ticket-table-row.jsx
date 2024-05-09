@@ -27,6 +27,8 @@ import urlConfig from "@/config/urlConfig";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import useSnackbar from "@/context/snackbarContext";
 import CustomSnackbar from "@/components/common/Snackbar";
+import { formatDate } from "@/utils/DateConvert";
+import dayjs from "dayjs";
 // ----------------------------------------------------------------------
 
 export default function EventTableRow({
@@ -47,13 +49,12 @@ export default function EventTableRow({
     price: ticket.price,
     quantity: ticket.quantity,
     event: eventId,
-    startDate: convertStringToDateJS(ticket.startDate),
-    endDate: convertStringToDateJS(ticket.endDate),
-    startTime: convertStringTimeToDateJS(ticket.startTime),
-    endTime: convertStringTimeToDateJS(ticket.endTime),
+    startDate: dayjs(ticket.startDate),
+    endDate: dayjs(ticket.endDate),
     minQuantity: ticket.minQuantity,
     maxQuantity: ticket.maxQuantity,
-    salesChannel: 10, // Default value
+    salesChannel: ticket.salesChannel, // Default value
+    ticketType: ticket.ticketType // Default value
   });
 
   const handleOpenMenu = (event) => {
@@ -75,12 +76,9 @@ export default function EventTableRow({
   };
 
   function getTicketStatus(ticket) {
+    const parsedstartDate = moment(ticket.startDate)
+    const parsedendDate = moment(ticket.endDate)
     const currentDate = new Date();
-    const startDateObj = moment(ticket.startDate, "ddd MMM DD YYYY").toDate();
-    const parsedstartDate = new Date(startDateObj);
-
-    const endDateObj = moment(ticket.endDate, "ddd MMM DD YYYY").toDate();
-    const parsedendDate = new Date(endDateObj);
 
     if (currentDate < parsedstartDate) {
       return TicketStatus.UPCOMING;
@@ -92,24 +90,49 @@ export default function EventTableRow({
   }
 
   const handleSave = async () => {
-    if (
-      dataForm.name === "" ||
-      dataForm.price === null ||
-      dataForm.quantity === null ||
-      dataForm.startDate === "" ||
-      dataForm.endDate === "" ||
-      dataForm.startTime === "" ||
-      dataForm.endTime === "" ||
-      dataForm.minQuantity === null ||
-      dataForm.maxQuantity === null
-    ) {
-      setSnack({
-        open: true,
-        message: "Please fill in all the required fields!",
-        type: "error",
-      });
-      return;
-    }
+   if (
+     dataForm.name === "" ||
+     dataForm.price === null ||
+     dataForm.quantity === null ||
+     dataForm.startDate === "" ||
+     dataForm.endDate === "" ||
+     dataForm.minQuantity === null ||
+     dataForm.maxQuantity === null
+   ) {
+     setSnack({
+       open: true,
+       message: "Please fill in all the required fields!",
+       type: "error",
+     });
+     return;
+   }
+
+   //validate start date and end date use isBefore
+   //compare with now
+   if (dataForm.startDate.isBefore(dayjs(new Date()))) {
+     setSnack({
+       open: true,
+       message: "Start date must be greater than today!",
+       type: "error",
+     });
+     return;
+   }
+   if (dataForm.endDate.isBefore(dayjs(new Date()))) {
+     setSnack({
+       open: true,
+       message: "End date must be greater than today!",
+       type: "error",
+     });
+     return;
+   }
+   if (dataForm.startDate.isAfter(dataForm.endDate)) {
+     setSnack({
+       open: true,
+       message: "End date must be greater than start date!",
+       type: "error",
+     });
+     return;
+   }
 
     try {
       const response = await axiosPrivate.put(
@@ -119,16 +142,15 @@ export default function EventTableRow({
           price: dataForm.price,
           quantity: dataForm.quantity,
           //@ts-ignore
-          startDate: dataForm.startDate.toDate().toDateString().split("T")[0],
+          startDate: dataForm.startDate,
           //@ts-ignore
-          endDate: dataForm.endDate.toDate().toDateString().split("T")[0],
+          endDate: dataForm.endDate,
           //@ts-ignore
-          startTime: dataForm.startTime.format("HH:mm"),
-          //@ts-ignore
-          endTime: dataForm.endTime.format("HH:mm"),
           minQuantity: dataForm.minQuantity,
           maxQuantity: dataForm.maxQuantity,
           event: dataForm.event,
+          salesChannel: dataForm.salesChannel,
+          ticketType: dataForm.ticketType
         }
       );
 
@@ -176,9 +198,9 @@ export default function EventTableRow({
 
         <TableCell>
           {" "}
-          {"On sale on " + ticket.startDate + " at " + ticket.startTime}
+          {"On sale on " + formatDate(ticket.startDate)}
           <Typography variant="subtitle2" noWrap>
-            {"Ends on " + ticket.endDate + " at " + ticket.endDate}
+            {"Ends on " + formatDate(ticket.endDate)}
           </Typography>
         </TableCell>
         <TableCell>{ticket.price}</TableCell>

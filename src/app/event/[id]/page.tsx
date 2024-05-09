@@ -7,6 +7,7 @@ import AccessTimeFilledRoundedIcon from "@mui/icons-material/AccessTimeFilledRou
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import UrlConfig from "@/config/urlConfig";
 import he from "he";
+import { formatTime, formatOnlyDate } from "@/utils/DateConvert";
 
 const EventDetail = ({ params }: { params: { id: string } }) => {
   const axiosPrivate = useAxiosPrivate();
@@ -62,11 +63,11 @@ const EventDetail = ({ params }: { params: { id: string } }) => {
               />
               <Box>
                 <Typography sx={{ fontWeight: "bold", marginTop: "15px" }}>
-                  {eventDetail.date}
+                  {formatOnlyDate(eventDetail.date)}
                 </Typography>
                 {eventDetail.startDate && eventDetail.endDate ? (
                   <Typography>
-                    {eventDetail.startDate} to {eventDetail.endDate}
+                    {formatTime(eventDetail.startDate)} to {formatTime(eventDetail.endDate)}
                   </Typography>
                 ) : (
                   <Typography>All day</Typography>

@@ -25,6 +25,8 @@ import UrlConfig from "@/config/urlConfig";
 import useSnackbar from "@/context/snackbarContext";
 import CustomSnackbar from "@/components/common/Snackbar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { formatOnlyDate, formatTime } from "@/utils/DateConvert";
 
 // ----------------------------------------------------------------------
 
@@ -45,6 +47,7 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const axiosPrivate = useAxiosPrivate();
+  const router = useRouter();
   const { setSnack } = useSnackbar();
 
   const handleSort = (event, id) => {
@@ -127,6 +130,10 @@ export default function UserPage() {
       });
   };
 
+  function handleClickRow(id) {
+    router.push(`/manage/event/${id}`);
+  }
+
   const notFound = !dataFiltered.length && !!filterName;
 
   useEffect(() => {
@@ -140,9 +147,9 @@ export default function UserPage() {
           location: event.location.formatted,
           detailLocation: event.detailLocation,
           date:
-            event.date +
-            (event.startTime ? ` at ${event.startTime}` : "") +
-            (event.endTime ? ` - ${event.endTime}` : ""),
+            formatOnlyDate(event.date) +
+            (event.startTime ? ` at ${formatTime(event.startTime)}` : "") +
+            (event.endTime ? ` - ${formatTime(event.endTime)}` : ""),
           status: event.status,
           image: event.images ? event.images[0] : "",
         };
@@ -216,6 +223,7 @@ export default function UserPage() {
                     image={row.image}
                     selected={selected.indexOf(row.id) !== -1}
                     handleClick={(event) => handleClick(event, row.id)}
+                    handleClickRow = {() => handleClickRow(row.id)}
                     handleDeleteEvent={(event) => handleDeleteEvent(row.id)}
                   />
                 ))}

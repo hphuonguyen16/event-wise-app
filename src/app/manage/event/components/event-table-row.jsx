@@ -27,6 +27,7 @@ export default function EventTableRow({
   image,
   status,
   handleClick,
+  handleClickRow,
   handleDeleteEvent
 }) {
   const [open, setOpen] = useState(null);
@@ -60,7 +61,13 @@ export default function EventTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell component="th" scope="row" padding="none">
+        <TableCell
+          component="th"
+          scope="row"
+          padding="none"
+          onClick={handleClickRow}
+          sx={{ cursor: "pointer" }}
+        >
           <Stack direction="row" alignItems="center" spacing={2}>
             <img
               src={image}

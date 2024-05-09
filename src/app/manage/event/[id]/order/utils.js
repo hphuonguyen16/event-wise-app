@@ -1,4 +1,5 @@
 import moment from "moment";
+import dayjs from "dayjs";
 export const visuallyHidden = {
   border: 0,
   margin: -1,
@@ -51,7 +52,13 @@ function CheckStatus(eventDate) {
   }
 }
 
-export function applyFilter({ inputData, comparator, filterName, filterStatus }) {
+export function applyFilter({
+  inputData,
+  comparator,
+  filterName,
+  filterStatus,
+  filterData,
+}) {
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -61,33 +68,39 @@ export function applyFilter({ inputData, comparator, filterName, filterStatus })
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-
-  if (filterName) {
+  if (filterData.name) {
     inputData = inputData.filter(
-      (event) => event.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (event) =>
+        event.user.firstName
+          .toLowerCase()
+          .includes(filterData.name.toLowerCase()) ||
+        event.user.lastName
+          .toLowerCase()
+          .includes(filterData.name.toLowerCase()) ||
+        event.user.email
+          .toLowerCase()
+          .includes(filterData.name.toLowerCase()) ||
+        event._id.toLowerCase().includes(filterData.name.toLowerCase())
     );
   }
-  if (filterStatus) {
+  if (filterData.status) {
+    if (filterData.status === "all") {
+      inputData = inputData;
+    } else {
+      inputData = inputData.filter(
+        (event) => event.status === filterData.status
+      );
+    }
+  }
+
+  if (filterData.startDate && filterData.endDate) {
     inputData = inputData.filter((event) => {
-      if (filterStatus === "all") {
-        return true;
-      } 
-      else if (filterStatus === "onsale") {
-        return CheckStatus(event.date) === "On Sale";
-      } else if (filterStatus === "upcoming") {
-        return CheckStatus(event.date) === "Upcoming";
-      } else if (filterStatus === "completed") {
-        return CheckStatus(event.date) === "Completed";
-      }
-      return true;
+      const eventDate = dayjs(new Date(event.registrationDate));
+      return (
+        eventDate >= filterData.startDate && eventDate <= filterData.endDate
+      );
     });
   }
 
   return inputData;
 }
-
-//validate date in dayjs 2 date
-
-
-
-//compare date in dayjs

@@ -1,3 +1,5 @@
+import { publicDecrypt } from "crypto";
+
 const domain = 'http://localhost:8000';
 
 const UrlConfig: any = {
@@ -27,12 +29,21 @@ const UrlConfig: any = {
     getEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     getMyEvents: `${domain}/api/v1/events/my-events`,
     deleteEvent: (id: string) => `${domain}/api/v1/events/${id}`,
+    updateEvent: (id: string) => `${domain}/api/v1/events/${id}`,
+    publishEvent: `${domain}/api/v1/events/publish`,
   },
   ticketType: {
     getTicketTypesByEventId: (eventId: string) => `${domain}/api/v1/events/${eventId}/ticket-types`,
     deleteTicketType: (ticketTypeId: string) => `${domain}/api/v1/ticket-types/${ticketTypeId}`,
     createTicketType: `${domain}/api/v1/ticket-types`,
     updateTicketType: (ticketTypeId: string) => `${domain}/api/v1/ticket-types/${ticketTypeId}`,
+  },
+  order: {
+    getOrdersByEventId: (eventId: string) => `${domain}/api/v1/events/${eventId}/registrations`,
+    createOrder: `${domain}/api/v1/registrations`,
+  },
+  category: {
+    getAllCategories: `${domain}/api/v1/categories`,
   },
 };
 

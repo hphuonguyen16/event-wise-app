@@ -22,6 +22,8 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import urlConfig from "@/config/urlConfig";
 import useSnackbar from "@/context/snackbarContext";
 import EventCreate from "@/components/Events/EventCreate";
+import { convertStringTimeToDateJS } from "@/utils/DateConvert";
+import he from "he";
 import { useRouter } from "next/navigation";
 
 async function handleFileUpload(files: File[]) {
@@ -56,12 +58,12 @@ async function handleFileUpload(files: File[]) {
   return uploadedUrls;
 }
 
-export default function Page() {
+export default function Page({ params }: { params: { id: string } }) {
   const [eventForm, setEventForm] = useState({
     images: [],
     title: "",
     summary: "",
-    date: dayjs(new Date()).add(1, "day"),
+    date: null,
     startTime: null,
     endTime: null,
     location: null,
@@ -73,8 +75,8 @@ export default function Page() {
       },
     ],
   });
-  const router = useRouter();
   const { setSnack } = useSnackbar();
+  const router = useRouter();
 
   const axiosPrivate = useAxiosPrivate();
   const handleSave = async () => {
@@ -91,13 +93,12 @@ export default function Page() {
       });
       return;
     }
-    //check date greater or equal to today
-
-    //@ts-ignore
-    if (eventForm.date.get("date") < dayjs().get("date")) { 
+      //check date greater than today
+      //@ts-ignore
+    if (eventForm.date.isBefore(dayjs())) {
       setSnack({
         open: true,
-        message: "Please select a date that is greater or today!",
+        message: "Please select a date that is greater than today!",
         type: "error",
       });
       return;
@@ -105,7 +106,7 @@ export default function Page() {
 
     //check start time less than end time
     //@ts-ignore
-    if (eventForm.startTime > eventForm.endTime) {
+    if (eventForm.startTime.isAfter(eventForm.endTime)) {
       setSnack({
         open: true,
         message: "Please select a start time that is less than end time!",
@@ -129,7 +130,7 @@ export default function Page() {
         }
       })
     );
-    const response = await axiosPrivate.post(urlConfig.event.createEvent, {
+    const response = await axiosPrivate.put(urlConfig.event.updateEvent(params.id), {
       images: urlImages,
       title: eventForm.title,
       summary: eventForm.summary,
@@ -144,10 +145,9 @@ export default function Page() {
       about: aboutAfterUpload,
     });
     if (response.data.status === "success") {
-      router.push(`/manage/event/${response.data.data.data._id}/ticket`);
       setSnack({
         open: true,
-        message: "Event created successfully!",
+        message: "Event updated successfully!",
         type: "success",
       });
     } else {
@@ -159,13 +159,49 @@ export default function Page() {
     }
   };
 
+  const fetchDetailEvent = async () => {
+    const response = await axiosPrivate.get(
+      urlConfig.event.getEvent(params.id)
+    );
+    if (response.data.status === "success") {
+      const event = response.data.data.data;
+      setEventForm({
+        images: event.images,
+        title: event.title,
+        summary: event.summary,
+        //@ts-ignore
+        date: dayjs(event.date),
+        //@ts-ignore
+        startTime: dayjs(event.startTime),
+        //@ts-ignore
+        endTime: dayjs(event.endTime),
+        location: event.location,
+        detailLocation: event.detailLocation,
+        about: event.about,
+      });
+    }
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      await fetchDetailEvent();
+    }
+    fetchData();
+  }, []);
+
+  console.log(eventForm);
+
   return (
-    <Box>
-      <EventCreate
-        eventForm={eventForm}
-        setEventForm={setEventForm}
-        handleSave={handleSave}
-      />
-    </Box>
+    <>
+      {eventForm.title && (
+        <Box>
+          <EventCreate
+            eventForm={eventForm}
+            setEventForm={setEventForm}
+            handleSave={handleSave}
+          />
+        </Box>
+      )}
+    </>
   );
 }

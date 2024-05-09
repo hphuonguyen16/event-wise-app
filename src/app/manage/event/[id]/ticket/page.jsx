@@ -28,6 +28,8 @@ import Link from "next/link";
 import Modal from "@mui/material/Modal";
 import CreateTicket from "./components/create-ticket";
 import useResponsive from "@/hooks/useResponsive";
+import dayjs from "dayjs";
+import moment from "moment";
 
 // ----------------------------------------------------------------------
 export default function UserPage({ params }) {
@@ -57,13 +59,12 @@ export default function UserPage({ params }) {
     price: "",
     quantity: "",
     event: eventId,
-    startDate: null,
-    endDate: null,
-    startTime: null,
-    endTime: null,
-    minQuantity: "",
-    maxQuantity: "",
-    salesChannel: 10, // Default value
+    startDate: dayjs(new Date()),
+    endDate: dayjs(new Date()).add(1, "day"),
+    minQuantity: 1,
+    maxQuantity: 10,
+    salesChannel: "both", // Default value
+    ticketType: "free",
   });
 
   const handleSort = (event, id) => {
@@ -155,8 +156,6 @@ export default function UserPage({ params }) {
       dataFormAdd.quantity === null ||
       dataFormAdd.startDate === "" ||
       dataFormAdd.endDate === "" ||
-      dataFormAdd.startTime === "" ||
-      dataFormAdd.endTime === "" ||
       dataFormAdd.minQuantity === null ||
       dataFormAdd.maxQuantity === null
     ) {
@@ -168,55 +167,97 @@ export default function UserPage({ params }) {
       return;
     }
 
-    try {
-      const response = await axiosPrivate.post(
-        UrlConfig.ticketType.createTicketType,
-        {
-          name: dataFormAdd.name,
-          price: dataFormAdd.price,
-          quantity: dataFormAdd.quantity,
-          //@ts-ignore
-          startDate: dataFormAdd.startDate
-            .toDate()
-            .toDateString()
-            .split("T")[0],
-          //@ts-ignore
-          endDate: dataFormAdd.endDate.toDate().toDateString().split("T")[0],
-          //@ts-ignore
-          startTime: dataFormAdd.startTime.format("HH:mm"),
-          //@ts-ignore
-          endTime: dataFormAdd.endTime.format("HH:mm"),
-          minQuantity: dataFormAdd.minQuantity,
-          maxQuantity: dataFormAdd.maxQuantity,
-          event: dataFormAdd.event,
-        }
-      );
+    //validate start date and end date use isBefore
+    //compare with now
+    if (dataFormAdd.startDate.get("date") < dayjs(new Date()).get("date")) {
+      setSnack({
+        open: true,
+        message: "Start date must be greater or today!",
+        type: "error",
+      });
+      return;
+    }
+    if (dataFormAdd.endDate.isBefore(dayjs(new Date()))) {
+      setSnack({
+        open: true,
+        message: "End date must be greater than today!",
+        type: "error",
+      });
+      return;
+    }
+    if (dataFormAdd.startDate.isAfter(dataFormAdd.endDate)) {
+      setSnack({
+        open: true,
+        message: "End date must be greater than start date!",
+        type: "error",
+      });
+      return;
+    }
 
-      if (response.data.status === "success") {
+    const response = await axiosPrivate.post(
+      UrlConfig.ticketType.createTicketType,
+      {
+        name: dataFormAdd.name,
+        price: dataFormAdd.price,
+        quantity: dataFormAdd.quantity,
+        startDate: dataFormAdd.startDate,
+        endDate: dataFormAdd.endDate,
+        minQuantity: dataFormAdd.minQuantity,
+        maxQuantity: dataFormAdd.maxQuantity,
+        event: dataFormAdd.event,
+        salesChannel: dataFormAdd.salesChannel,
+        ticketType: dataFormAdd.ticketType,
+      }
+    );
+
+    if (response.data.status === "success") {
+      setSnack({
+        open: true,
+        message: "Ticket add successfully!",
+        type: "success",
+      });
+      setopenAdd(false);
+      reloadWhenUpdated();
+      //after success, render the updated data
+    } else {
+      setSnack({
+        open: true,
+        message: "Something went wrong! Please try again!",
+        type: "error",
+      });
+    }
+  };
+
+  async function handleSaveTicketing(status) {
+    try {
+      if (events.length === 0) {
         setSnack({
           open: true,
-          message: "Ticket add successfully!",
+          message: "Please create at least one ticket!",
+          type: "error",
+        });
+        return;
+      }
+      const res = await axiosPrivate.put(UrlConfig.event.updateEvent(eventId), {
+        status: status,
+      });
+      if (res.data.status === "success") {
+        setSnack({
+          open: true,
+          message: "Ticketing saved successfully!",
           type: "success",
         });
-        setopenAdd(false);
-        reloadWhenUpdated();
-        //after success, render the updated data
       } else {
         setSnack({
           open: true,
-          message: "Something went wrong! Please try again!",
+          message: "Failed to save ticketing! Please try again!",
           type: "error",
         });
       }
     } catch (error) {
       console.log(error);
-      setSnack({
-        open: true,
-        message: "An error occurred while saving. Please try again later.",
-        type: "error",
-      });
     }
-  };
+  }
 
   useEffect(() => {
     axiosPrivate
@@ -233,17 +274,46 @@ export default function UserPage({ params }) {
             endTime: event.endTime,
             startDate: event.startDate,
             endDate: event.endDate,
+            ticketType: event.ticketType,
           };
         });
         setEvents(events);
       });
+
+    return () => {
+      setdataFormAdd({
+        name: "",
+        price: "",
+        quantity: "",
+        event: eventId,
+        startDate: dayjs(new Date()),
+        endDate: dayjs(new Date()).add(1, "day"),
+        minQuantity: 1,
+        maxQuantity: 10,
+        ticketType: "free",
+        salesChannel: "both", // Default value
+      });
+    };
   }, [isUpdated]);
+
+  useEffect(() => {
+    const saveTicketing = async () => {
+      if (events.length === 0) {
+        const res = await axiosPrivate.put(
+          UrlConfig.event.updateEvent(eventId),
+          {
+            status: "building",
+          }
+        );
+      }
+    };
+
+    saveTicketing();
+  }, [events]);
 
   const reloadWhenUpdated = () => {
     setIsUpdated(!isUpdated);
   };
-
-  console.log(events);
 
   return (
     <Box sx={{ px: 5 }}>
@@ -265,7 +335,6 @@ export default function UserPage({ params }) {
           New Ticket
         </Button>
       </Stack>
-
       <Card>
         <TicketTableToolbar
           numSelected={selected.length}
@@ -327,6 +396,26 @@ export default function UserPage({ params }) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
+      <Box sx={{ display: "flex", justifyContent: "end" }}>
+        <Button
+          variant="contained"
+          sx={{
+            marginTop: "20px",
+            background:
+              events.length === 0
+                ? //@ts-ignore
+                  (theme) => `${theme.palette.disabled}!important`
+                : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
+            color: "white !important",
+          }}
+          onClick={() => {
+            handleSaveTicketing("ticketing");
+          }}
+          disabled={events.length === 0}
+        >
+          Save Ticketing
+        </Button>
+      </Box>
       <Modal open={openAdd} onClose={() => setopenAdd(false)}>
         <Box
           sx={{

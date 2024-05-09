@@ -1,22 +1,23 @@
-import React from 'react'
-import { useState } from 'react'
-import { Box, IconButton, TextField } from '@mui/material'
+import React from "react";
+import { useState } from "react";
+import { Box, IconButton, TextField } from "@mui/material";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import he from "he";
 
 interface EventDescriptionProps {
-  type: string
-  description: any
-  OnChangeDescription: (description: any) => void
-  handleDeleteAbout : () => void
+  type: string;
+  description: any;
+  OnChangeDescription: (description: any) => void;
+  handleDeleteAbout: () => void;
 }
 
 const EventDescription = ({
   type,
   description,
   OnChangeDescription,
-  handleDeleteAbout
+  handleDeleteAbout,
 }: EventDescriptionProps) => {
   return (
     <Box
@@ -26,13 +27,17 @@ const EventDescription = ({
         {type === "text" ? (
           <ReactQuill
             theme="snow"
-            value={description}
+            value={description ? he.decode(description) : description}
             onChange={(value) => OnChangeDescription(value)}
             className="editor-input"
           />
         ) : (
           <img
-            src={URL.createObjectURL(description)}
+            src={
+              typeof description === "string"
+                ? description
+                : URL.createObjectURL(description)
+            }
             alt="event"
             style={{
               width: "100%",
@@ -53,4 +58,4 @@ const EventDescription = ({
   );
 };
 
-export default EventDescription
+export default EventDescription;

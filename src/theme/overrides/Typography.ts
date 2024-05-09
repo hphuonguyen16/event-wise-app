@@ -4,7 +4,7 @@ import { CustomTheme } from '@mui/material/styles'
 
 export default function Typography(theme: CustomTheme) {
   theme.typography.h4 = {
-    fontSize: '20px',
+    fontSize: '24px',
     fontWeight: 'bold',
   }
   theme.typography.h6 = {
