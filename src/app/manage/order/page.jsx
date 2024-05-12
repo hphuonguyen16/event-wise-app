@@ -30,10 +30,12 @@ import Card from "@mui/material/Card";
 import CustomSnackbar from "@/components/common/Snackbar";
 import useSnackbar from "@/context/snackbarContext";
 
+
 function Row(props) {
   const { row, handleDeleteOrder } = props;
   const [open, setOpen] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState(null);
+  const axiosPrivate = useAxiosPrivate();
 
   const handleOpenMenu = (event) => {
     setOpenMenu(event.currentTarget);
@@ -139,22 +141,11 @@ function Row(props) {
   );
 }
 
-export default function CollapsibleTable({ params }) {
+export default function CollapsibleTable() {
   const [orderData, setOrderData] = React.useState([]);
   const axiosPrivate = useAxiosPrivate();
 
-  async function fetchOrderData() {
-    const response = await axiosPrivate.get(
-      UrlConfig.order.getOrdersByEventId(params.id)
-    );
-    if (response.data.status === "success") {
-      const orders = response.data.data;
-      setOrderData(orders);
-    }
-  }
-
   console.log("orderData", orderData);
-  const eventId = params.id;
 
   const [order, setOrder] = useState("asc");
   const [selected, setSelected] = useState([]);
@@ -174,8 +165,16 @@ export default function CollapsibleTable({ params }) {
     orderType: "",
     status: "",
   });
+
   const { setSnack } = useSnackbar();
 
+  async function fetchOrderData() {
+    const response = await axiosPrivate.get(UrlConfig.order.getAllOrders);
+    if (response.data.status === "success") {
+      const orders = response.data.data;
+      setOrderData(orders);
+    }
+  }
 
   function handleDeleteOrder(_id) {
     axiosPrivate
@@ -198,7 +197,6 @@ export default function CollapsibleTable({ params }) {
         });
       });
   }
-
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -264,7 +262,6 @@ export default function CollapsibleTable({ params }) {
   return (
     <Card>
       <CustomSnackbar />
-
       <TableContainer component={Paper}>
         <TicketTableToolbar
           numSelected={selected.length}

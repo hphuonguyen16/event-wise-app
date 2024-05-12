@@ -40,26 +40,14 @@ export default function EventTableRow({
   eventId,
   dataFormAdd,
   setdataFormAdd,
-  reloadWhenUpdated,
+  isUpdated
 }) {
   const [open, setOpen] = useState(null);
   const axiosPrivate = useAxiosPrivate();
   const { setSnack } = useSnackbar();
   const [openEdit, setOpenEdit] = useState(null);
   const isMobile = useResponsive("down", "sm");
-  const [dataForm, setDataForm] = useState({
-    name: ticket.name,
-    price: ticket.price,
-    quantity: ticket.quantity,
-    event: eventId,
-    startDate: dayjs(ticket.startDate),
-    endDate: dayjs(ticket.endDate),
-    minQuantity: ticket.minQuantity,
-    maxQuantity: ticket.maxQuantity,
-    salesChannel: ticket.salesChannel, // Default value
-    ticketType: ticket.ticketType, // Default value
-  });
-
+  const [quantity, setQuantity] = useState("");
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -78,9 +66,26 @@ export default function EventTableRow({
     COMPLETED: "Completed",
   };
 
+  function handleChangeQuantity(e) {
+    //find index of ticket in orders
+    setQuantity(e.target.value);
+    setdataFormAdd({
+      ...dataFormAdd,
+      orders: dataFormAdd.orders.map((order) => {
+        if (order.ticketType === ticket.id) {
+          return {
+            ticketType: ticket.id,
+            quantity: e.target.value,
+          };
+        }
+        return order;
+      }),
+    });
+  }
+
   function getTicketStatus(ticket) {
-    const parsedstartDate = moment(ticket.startDate);
-    const parsedendDate = moment(ticket.endDate);
+    const parsedstartDate = moment(ticket?.startDate);
+    const parsedendDate = moment(ticket?.endDate);
     const currentDate = new Date();
 
     if (currentDate < parsedstartDate) {
@@ -92,6 +97,11 @@ export default function EventTableRow({
     }
   }
 
+  useEffect(() => {
+    //set value for quantity "" after place order
+    setQuantity("");
+  }, [isUpdated]);
+
   return (
     <>
       <CustomSnackbar />
@@ -101,38 +111,39 @@ export default function EventTableRow({
           component="th"
           scope="row"
           padding="none"
-          sx={{ width: "25%", paddingLeft: "10px" }}
+          sx={{ width: "20%", paddingLeft: "10px" }}
         >
           <Typography variant="subtitle" noWrap>
             {ticket.name}
           </Typography>
         </TableCell>
-        <TableCell sx={{ width: "15%" }}>0/{ticket.quantity}</TableCell>
-        <TableCell sx={{ width: "15%" }}>{ticket.price}</TableCell>
+        <TableCell sx={{ width: "10%" }}>
+          {ticket.sold}/{ticket.quantity}
+        </TableCell>
+        <TableCell sx={{ width: "10%" }}>{ticket.price}</TableCell>
+        <TableCell sx={{ width: "15%" }}>
+          <Chip
+            variant="outlined"
+            color={
+              (getTicketStatus(ticket) === TicketStatus.ON_SALE && "error") ||
+              (getTicketStatus(ticket) === TicketStatus.COMPLETED && "info") ||
+              (getTicketStatus(ticket) === TicketStatus.UPCOMING &&
+                "success") ||
+              "defaultColor"
+            }
+            label={getTicketStatus(ticket)}
+          />
+        </TableCell>
+
         <TableCell sx={{ width: "20%" }}>
           <TextField
             id="outlined-basic"
             variant="outlined"
             fullWidth
-            value={
-              dataFormAdd.orders.find((order) => order.ticketType === ticket.id)
-                ?.quantity
-            }
+            value={quantity}
             type="number"
-            onChange={(e) => {
-              setdataFormAdd({
-                ...dataFormAdd,
-                orders: dataFormAdd.orders.map((order) => {
-                  if (order.ticketType === ticket.id) {
-                    return {
-                      ticketType: ticket.id,
-                      quantity: e.target.value,
-                    };
-                  }
-                  return order;
-                }),
-              });
-            }}
+            disabled={ticket.sold === ticket.quantity}
+            onChange={handleChangeQuantity}
           />
         </TableCell>
         <TableCell sx={{ width: "20%" }}>

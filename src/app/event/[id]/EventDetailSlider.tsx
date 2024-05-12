@@ -26,6 +26,7 @@ function EventDetailSlider({ images }: EventDetailSliderProps) {
               width: "100%",
               height: "450px",
               borderRadius: "10px",
+              objectFit: "cover",
             }}
           />
         </Box>

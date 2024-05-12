@@ -10,7 +10,7 @@ export default function SearchTextbox() {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && searchText !== '') {
       const q = encodeURIComponent(searchText)
-      const url = `/search?q=${q}`
+      const url = `/home/search?q=${q}`
       router.push(url)
     }
   }

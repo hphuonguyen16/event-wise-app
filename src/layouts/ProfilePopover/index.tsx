@@ -94,6 +94,7 @@ const ProfilePopover = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [profileImage, setProfileImage] = useState<any>(null);
+  console.log("user", user);
 
   const containerRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -222,7 +223,7 @@ const ProfilePopover = () => {
                     padding: "5px",
                   }}
                 >
-                  <Avatar src={''} alt="photoURL" />
+                  <Avatar src={""} alt="photoURL" />
                   <Box sx={{ ml: 1.5 }}>
                     <Typography
                       variant="h5"
@@ -233,14 +234,11 @@ const ProfilePopover = () => {
                       }}
                     >
                       {/* {user?.profile.firstname + " " + user?.profile.lastname} */}
-                      Uyen Hoang
-                    </Typography>
-
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ color: "text.secondary" }}
-                    >
-                      @{user?.profile.slug}
+                      {user?.profile.name
+                        ? user?.name
+                        : user?.profile.firstname +
+                          " " +
+                          user?.profile.lastname}
                     </Typography>
                   </Box>
                 </Box>
@@ -257,13 +255,14 @@ const ProfilePopover = () => {
                     <ListItemText>Manage Profile</ListItemText>
                   </StyledMenuItem>
                 </Link>
-                <StyledMenuItem onClick={handleSlideToChild("language")}>
-                  <ListItemIcon sx={{ alignItems: "center" }}>
-                    <GTranslate fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Language</ListItemText>
-                  <ArrowForwardIos sx={{ fontSize: "13px" }} />
-                </StyledMenuItem>
+                <Link href="/my-tickets">
+                  <StyledMenuItem onClick={() => handleClose()}>
+                    <ListItemIcon sx={{ alignItems: "center" }}>
+                      <AccountCircle fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Manage Tickets</ListItemText>
+                  </StyledMenuItem>
+                </Link>
                 <Link href="/settings">
                   <StyledMenuItem onClick={handleClose}>
                     <ListItemIcon sx={{ alignItems: "center" }}>

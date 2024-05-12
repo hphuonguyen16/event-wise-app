@@ -29,7 +29,7 @@ import Modal from "@mui/material/Modal";
 import CreateTicket from "./components/create-ticket";
 import useResponsive from "@/hooks/useResponsive";
 import dayjs from "dayjs";
-import moment from "moment";
+import moment, { min } from "moment";
 
 // ----------------------------------------------------------------------
 export default function UserPage({ params }) {
@@ -177,7 +177,7 @@ export default function UserPage({ params }) {
       });
       return;
     }
-    if (dataFormAdd.endDate.isBefore(dayjs(new Date()))) {
+    if (dataFormAdd.endDate.get("date") < dayjs(new Date()).get("date")) {
       setSnack({
         open: true,
         message: "End date must be greater than today!",
@@ -275,6 +275,8 @@ export default function UserPage({ params }) {
             startDate: event.startDate,
             endDate: event.endDate,
             ticketType: event.ticketType,
+            minQuantity: event.minQuantity,
+            maxQuantity: event.maxQuantity
           };
         });
         setEvents(events);

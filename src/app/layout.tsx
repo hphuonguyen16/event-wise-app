@@ -11,6 +11,7 @@ import Script from "next/script";
 import { AuthProvider } from "@/context/AuthContext";
 import { SnackbarContextProvider } from "@/context/snackbarContext";
 import { usePathname } from "next/navigation";
+import UserLayout from "@/layouts/UserLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,23 +21,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const noLayoutPaths = ["/login", "/register"];
+  const userLayoutPaths = ["/organization/info", "/home", "/event/"];
+  console.log(pathname);
   return (
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <ThemeProvider>
-            <SnackbarContextProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <ProSidebarProvider>
-                  {pathname === "/login" || pathname === "/register" ? (
-                    children
-                  ) : (
+          <SnackbarContextProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <ProSidebarProvider>
+                {noLayoutPaths.includes(pathname) ? (
+                  <ThemeProvider>{children}</ThemeProvider>
+                ) : userLayoutPaths.includes(pathname) ||
+                  pathname.includes("/event/") ? (
+                  <ThemeProvider>
+                    <UserLayout>{children}</UserLayout>
+                  </ThemeProvider>
+                ) : (
+                  <ThemeProvider>
                     <Layout>{children}</Layout>
-                  )}
-                </ProSidebarProvider>
-              </LocalizationProvider>
-            </SnackbarContextProvider>
-          </ThemeProvider>
+                  </ThemeProvider>
+                )}
+              </ProSidebarProvider>
+            </LocalizationProvider>
+          </SnackbarContextProvider>
         </AuthProvider>
       </body>
     </html>

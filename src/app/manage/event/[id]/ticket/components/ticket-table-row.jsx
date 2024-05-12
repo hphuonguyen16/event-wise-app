@@ -37,7 +37,7 @@ export default function EventTableRow({
   handleClick,
   handleDeleteEvent,
   eventId,
-  reloadWhenUpdated
+  reloadWhenUpdated,
 }) {
   const [open, setOpen] = useState(null);
   const axiosPrivate = useAxiosPrivate();
@@ -54,7 +54,7 @@ export default function EventTableRow({
     minQuantity: ticket.minQuantity,
     maxQuantity: ticket.maxQuantity,
     salesChannel: ticket.salesChannel, // Default value
-    ticketType: ticket.ticketType // Default value
+    ticketType: ticket.ticketType, // Default value
   });
 
   const handleOpenMenu = (event) => {
@@ -76,8 +76,8 @@ export default function EventTableRow({
   };
 
   function getTicketStatus(ticket) {
-    const parsedstartDate = moment(ticket.startDate)
-    const parsedendDate = moment(ticket.endDate)
+    const parsedstartDate = moment(ticket.startDate);
+    const parsedendDate = moment(ticket.endDate);
     const currentDate = new Date();
 
     if (currentDate < parsedstartDate) {
@@ -90,49 +90,49 @@ export default function EventTableRow({
   }
 
   const handleSave = async () => {
-   if (
-     dataForm.name === "" ||
-     dataForm.price === null ||
-     dataForm.quantity === null ||
-     dataForm.startDate === "" ||
-     dataForm.endDate === "" ||
-     dataForm.minQuantity === null ||
-     dataForm.maxQuantity === null
-   ) {
-     setSnack({
-       open: true,
-       message: "Please fill in all the required fields!",
-       type: "error",
-     });
-     return;
-   }
+    if (
+      dataForm.name === "" ||
+      dataForm.price === null ||
+      dataForm.quantity === null ||
+      dataForm.startDate === "" ||
+      dataForm.endDate === "" ||
+      dataForm.minQuantity === null ||
+      dataForm.maxQuantity === null
+    ) {
+      setSnack({
+        open: true,
+        message: "Please fill in all the required fields!",
+        type: "error",
+      });
+      return;
+    }
 
-   //validate start date and end date use isBefore
-   //compare with now
-   if (dataForm.startDate.isBefore(dayjs(new Date()))) {
-     setSnack({
-       open: true,
-       message: "Start date must be greater than today!",
-       type: "error",
-     });
-     return;
-   }
-   if (dataForm.endDate.isBefore(dayjs(new Date()))) {
-     setSnack({
-       open: true,
-       message: "End date must be greater than today!",
-       type: "error",
-     });
-     return;
-   }
-   if (dataForm.startDate.isAfter(dataForm.endDate)) {
-     setSnack({
-       open: true,
-       message: "End date must be greater than start date!",
-       type: "error",
-     });
-     return;
-   }
+    //validate start date and end date use isBefore
+    //compare with now
+    // if (dataForm.startDate.get("date") < dayjs(new Date()).get("date")) {
+    //   setSnack({
+    //     open: true,
+    //     message: "Start date must be greater than today!",
+    //     type: "error",
+    //   });
+    //   return;
+    // }
+    if (dataForm.endDate.get("date") < dayjs(new Date()).get("date")){
+      setSnack({
+        open: true,
+        message: "End date cannot be past!",
+        type: "error",
+      });
+      return;
+    }
+    if (dataForm.startDate.isAfter(dataForm.endDate)) {
+      setSnack({
+        open: true,
+        message: "End date must be greater than start date!",
+        type: "error",
+      });
+      return;
+    }
 
     try {
       const response = await axiosPrivate.put(
@@ -150,7 +150,7 @@ export default function EventTableRow({
           maxQuantity: dataForm.maxQuantity,
           event: dataForm.event,
           salesChannel: dataForm.salesChannel,
-          ticketType: dataForm.ticketType
+          ticketType: dataForm.ticketType,
         }
       );
 
@@ -163,7 +163,6 @@ export default function EventTableRow({
         setOpenEdit(false);
         reloadWhenUpdated();
         //after success, render the updated data
-
       } else {
         setSnack({
           open: true,

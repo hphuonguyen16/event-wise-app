@@ -184,9 +184,14 @@ const Layout = ({ children }) => {
                           </MenuItem>
                         </Link>
                       </StyledLinkBox>
-                      <MenuItem sx={{ marginBottom: "15px" }}>
-                        Add Attendees{" "}
-                      </MenuItem>
+                      <StyledLinkBox isActive={pathname.includes("/add-attendee")}>
+                        <Link href={`/manage/event/${id}/add-attendee`}>
+                          <MenuItem sx={{ marginBottom: "15px" }}>
+                            Add Attendees{" "}
+                          </MenuItem>
+                        </Link>
+                      </StyledLinkBox>
+
                       <MenuItem sx={{ marginBottom: "15px" }}>
                         Email to Attendees
                       </MenuItem>

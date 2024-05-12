@@ -5,13 +5,12 @@ import { Poppins } from "next/font/google";
 //
 import React, { PropsWithChildren, ReactNode } from "react";
 import useResponsive from "@/hooks/useResponsive";
-import CustomSidebar from "./Sidebar1";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { Avatar, Button, IconButton, Stack } from "@mui/material";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
-import SearchTextbox from "./SearchTextbox/SearchTextbox";
-import ProfilePopover from "./ProfilePopover";
+import SearchTextbox from "../SearchTextbox/SearchTextbox";
+import ProfilePopover from "../ProfilePopover";
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +43,6 @@ const Main = styled("div")(({ theme }) => ({
   minHeight: "100%",
   width: "100%",
   // overflow: 'auto',
-  marginLeft: "20px",
   paddingBottom: "20px",
   [theme.breakpoints.down("sm")]: {
     // Media query for screens with a width of 600px or less (mobile)
@@ -82,9 +80,6 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <StyledRoot>
-      <aside style={{ backgroundColor: "#fcfff5" }}>
-        <CustomSidebar />
-      </aside>
       <Main className={poppins.variable}>
         <HeaderBar>
           <SearchTextbox />

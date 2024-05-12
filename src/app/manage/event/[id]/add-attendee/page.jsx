@@ -135,9 +135,16 @@ const AddAttendee = ({ params }) => {
 
   const handleSave = async () => {
     try {
+      const orders = dataFormAdd.orders.filter(
+        (order) =>
+          order.quantity !== null &&
+          order.quantity != 0 &&
+          order.quantity !== ""
+      );
+      console.log("orders", orders);
       const response = await axiosPrivate.post(UrlConfig.order.createOrder, {
         event: eventId,
-        orders: dataFormAdd.orders,
+        orders: orders,
         orderType: dataFormAdd.orderType,
         status: dataFormAdd.status,
         contactInfo: dataFormAdd.contactInfo,
@@ -163,6 +170,7 @@ const AddAttendee = ({ params }) => {
             email: "",
           },
         }));
+        setIsUpdated(!isUpdated);
         return;
         //after success, render the updated data
       } else {
@@ -176,12 +184,14 @@ const AddAttendee = ({ params }) => {
       setSnack({
         open: true,
         message:
-          error.response.data.message ||
+          error.response?.data?.message ||
           "Something went wrong! Please try again!",
         type: "error",
       });
     }
   };
+
+  console.log("dataFormAdd", dataFormAdd);
 
   function validateForm() {
     if (
@@ -192,9 +202,12 @@ const AddAttendee = ({ params }) => {
       setIsValidate(false);
     } else if (dataFormAdd.orders.length > 0) {
       const isFilledTicket = dataFormAdd.orders.find(
-        (order) => order.quantity !== null
+        (order) =>
+          order.quantity !== null ||
+          order.quantity !== 0 ||
+          order.quantity !== ""
       );
-      if (!isFilledTicket) {
+      if (isFilledTicket) {
         setIsValidate(true);
       }
     } else {
@@ -209,20 +222,31 @@ const AddAttendee = ({ params }) => {
     axiosPrivate
       .get(UrlConfig?.ticketType.getTicketTypesByEventId(eventId))
       .then((res) => {
-        const events = res.data.data.map((event) => {
-          return {
-            id: event._id,
-            name: event.name,
-            price: event.price,
-            quantity: event.quantity,
-            status: event.status,
-            startTime: event.startTime,
-            endTime: event.endTime,
-            startDate: event.startDate,
-            endDate: event.endDate,
-            ticketType: event.ticketType,
-          };
-        });
+        const currentDate = new Date();
+
+        const events = res.data.data
+          .filter((event) => {
+            const startDate = new Date(event.startDate);
+            const endDate = new Date(event.endDate);
+
+            // Check if the current date is within the start and end dates of the event
+            return currentDate >= startDate && currentDate <= endDate;
+          })
+          .map((event) => {
+            return {
+              id: event._id,
+              name: event.name,
+              price: event.price,
+              quantity: event.quantity,
+              status: event.status,
+              startTime: event.startTime,
+              endTime: event.endTime,
+              startDate: event.startDate,
+              endDate: event.endDate,
+              ticketType: event.ticketType,
+              sold: event.sold,
+            };
+          });
         const orders = events.map((event) => {
           return {
             ticketType: event.id,
@@ -320,6 +344,7 @@ const AddAttendee = ({ params }) => {
                 { id: "name", label: "Name" },
                 { id: "sold", label: "Sold" },
                 { id: "price", label: "Price" },
+                { id: "status", label: "Status" },
                 { id: "quantity", label: "Quantity" },
                 { id: "total", label: "Total" },
               ]}
@@ -337,7 +362,7 @@ const AddAttendee = ({ params }) => {
                     handleClick={(event) => handleClick(event, row.id)}
                     handleDeleteEvent={(event) => handleDeleteEvent(row.id)}
                     eventId={eventId}
-                    reloadWhenUpdated={reloadWhenUpdated}
+                    isUpdated={isUpdated}
                   />
                 ))}
 
@@ -391,7 +416,7 @@ const AddAttendee = ({ params }) => {
           onClick={() => {
             handleSave();
           }}
-          disabled={events.length === 0}
+          disabled={!isValidate}
         >
           Place Order
         </Button>

@@ -10,7 +10,7 @@ const UrlConfig: any = {
     forgotPassword: "/api/v1/users/forgotPassword",
   },
   me: {
-    getMe: `/api/v1/users/me`,
+    getMe: `${domain}/api/v1/users/me`,
     checkId: (id: string) => `/api/v1/users/checkId/${id}`,
     getMyNumberOfFollows: `/api/v1/follows/getMyNumberOfFollows`,
     getMyFollowerList: `/api/v1/follows/getMyFollowerList`,
@@ -19,31 +19,46 @@ const UrlConfig: any = {
     unfollow: `/api/v1/follows/unfollow/:id`,
     followingOtherUser: `/api/v1/follows/followingOtherUser`,
     suggestFollow: `/api/v1/follows/suggestFollow`,
-    updateProfile: `/api/v1/users/updateMe`,
+    updateProfile: `${domain}/api/v1/users/updateMe`,
     createReport: `/api/v1/reports/createReport`,
     isFollowingOtherUser: (id: string) => `/api/v1/follows/isFollowing/${id}`,
     unFollowOtherUser: (id: string) => `/api/v1/follows/unfollow/${id}`,
+    getProfileById: (id: string) =>
+      `${domain}/api/v1/users/getProfileByID/${id}`,
   },
   event: {
     createEvent: `${domain}/api/v1/events`,
+    getAllEvents: `${domain}/api/v1/events`,
     getEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     getMyEvents: `${domain}/api/v1/events/my-events`,
     deleteEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     updateEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     publishEvent: `${domain}/api/v1/events/publish`,
+
   },
   ticketType: {
-    getTicketTypesByEventId: (eventId: string) => `${domain}/api/v1/events/${eventId}/ticket-types`,
-    deleteTicketType: (ticketTypeId: string) => `${domain}/api/v1/ticket-types/${ticketTypeId}`,
+    getTicketTypesByEventId: (eventId: string) =>
+      `${domain}/api/v1/events/${eventId}/ticket-types`,
+    deleteTicketType: (ticketTypeId: string) =>
+      `${domain}/api/v1/ticket-types/${ticketTypeId}`,
     createTicketType: `${domain}/api/v1/ticket-types`,
-    updateTicketType: (ticketTypeId: string) => `${domain}/api/v1/ticket-types/${ticketTypeId}`,
+    updateTicketType: (ticketTypeId: string) =>
+      `${domain}/api/v1/ticket-types/${ticketTypeId}`,
   },
   order: {
-    getOrdersByEventId: (eventId: string) => `${domain}/api/v1/events/${eventId}/registrations`,
+    getOrdersByEventId: (eventId: string) =>
+      `${domain}/api/v1/events/${eventId}/registrations`,
     createOrder: `${domain}/api/v1/registrations`,
+    getAllOrders: `${domain}/api/v1/registrations`,
+    deleteOrder: (orderId: string) =>
+      `${domain}/api/v1/registrations/${orderId}`,
   },
   category: {
     getAllCategories: `${domain}/api/v1/categories`,
+    getPopularCategories: `${domain}/api/v1/categories/popular`,
+  },
+  search: {
+    searchEvents: `${domain}/api/v1/events/search`,
   },
 };
 

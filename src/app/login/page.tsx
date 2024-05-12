@@ -116,6 +116,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     setIsLoggingIn(true);
+    console.log(urlConfig.user.login);
     const res = await fetch(urlConfig.user.login, {
       method: "POST",
       headers: {
@@ -125,7 +126,7 @@ export default function LoginPage() {
         email: username,
         password: password,
       }),
-      credentials: "include", // Add this option
+      // // credentials: "include", // Add this option
     });
     const resJson = await res.json();
     if (resJson.status === "success") {
