@@ -247,6 +247,14 @@ const ProfilePopover = () => {
               <Divider sx={{ m: "0 !important" }} />
 
               <Stack sx={{ p: "8px" }}>
+                <Link href="/manage/event">
+                  <StyledMenuItem onClick={() => handleClose()}>
+                    <ListItemIcon sx={{ alignItems: "center" }}>
+                      <AccountCircle fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Manage Events</ListItemText>
+                  </StyledMenuItem>
+                </Link>
                 <Link href="/profile">
                   <StyledMenuItem onClick={() => handleClose()}>
                     <ListItemIcon sx={{ alignItems: "center" }}>

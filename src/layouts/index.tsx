@@ -3,15 +3,17 @@
 import { styled } from "@mui/material/styles";
 import { Poppins } from "next/font/google";
 //
-import React, { PropsWithChildren, ReactNode } from "react";
+import React, { PropsWithChildren, ReactNode, useState } from "react";
 import useResponsive from "@/hooks/useResponsive";
 import CustomSidebar from "./Sidebar1";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import { Avatar, Button, IconButton, Stack } from "@mui/material";
+import { Avatar, Button, Fab, IconButton, Stack, Tooltip } from "@mui/material";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import SearchTextbox from "./SearchTextbox/SearchTextbox";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import ProfilePopover from "./ProfilePopover";
+import Recharge from "./Recharge/Recharge";
 
 // ----------------------------------------------------------------------
 
@@ -79,6 +81,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const isMobile = useResponsive("down", "sm");
+  const [openRecharge, setOpenRecharge] = useState(false)
 
   return (
     <StyledRoot>
@@ -86,9 +89,18 @@ const Layout = ({ children }: LayoutProps) => {
         <CustomSidebar />
       </aside>
       <Main className={poppins.variable}>
+        {openRecharge && <Recharge openRecharge={openRecharge} setOpenRecharge={setOpenRecharge} />}
+
         <HeaderBar>
           <SearchTextbox />
-          <ProfilePopover></ProfilePopover>
+          <Stack direction='row'>
+            <Tooltip title='Nap tien' arrow>
+              <Fab size='small' aria-label='recharge' onClick={() => setOpenRecharge(true)}>
+                <AttachMoneyIcon />
+              </Fab>
+            </Tooltip>
+            <ProfilePopover></ProfilePopover>
+          </Stack>
         </HeaderBar>
         {children}
       </Main>

@@ -61,6 +61,30 @@ const CustomSidebar = () => {
             />
           </div>
         </Link>
+        <Link href="/manage/transaction">
+          <div
+            className={`flex items-center justify-center w-12 h-12 mt-2 rounded ${
+              isActive("/manage/transaction") ? "bg-white" : "hover:bg-white"
+            }`}
+            href="#"
+          >
+            <SettingsOutlinedIcon
+              sx={{ fontSize: "30px", stroke: "#ffffff", strokeWidth: 1 }}
+            />
+          </div>
+        </Link>
+        <Link href="/withdraw">
+          <div
+            className={`flex items-center justify-center w-12 h-12 mt-2 rounded ${
+              isActive("/withdraw") ? "bg-white" : "hover:bg-white"
+            }`}
+            href="#"
+          >
+            <SettingsOutlinedIcon
+              sx={{ fontSize: "30px", stroke: "#ffffff", strokeWidth: 1 }}
+            />
+          </div>
+        </Link>
         <Link href="/organization">
           <div
             className={`flex items-center justify-center w-12 h-12 mt-2 rounded ${

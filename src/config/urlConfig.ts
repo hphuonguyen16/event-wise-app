@@ -1,6 +1,6 @@
 import { publicDecrypt } from "crypto";
 
-const domain = 'http://localhost:8000';
+const domain = "http://localhost:8000";
 
 const UrlConfig: any = {
   user: {
@@ -34,7 +34,6 @@ const UrlConfig: any = {
     deleteEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     updateEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     publishEvent: `${domain}/api/v1/events/publish`,
-
   },
   ticketType: {
     getTicketTypesByEventId: (eventId: string) =>
@@ -59,6 +58,9 @@ const UrlConfig: any = {
   },
   search: {
     searchEvents: `${domain}/api/v1/events/search`,
+  },
+  transaction: {
+    deposit: `${domain}/api/v1/transactions/deposit`,
   },
 };
 

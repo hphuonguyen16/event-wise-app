@@ -138,7 +138,7 @@ export default function EventCreate({
       sx={{ display: "flex", justifyContent: "center", paddingBottom: "20px" }}
     >
       <CustomSnackbar />
-      <Box sx={{ width: "70%" }}>
+      <Box sx={{ width: "60%" }}>
         <Box>
           <Typography variant="h3">Build your event page</Typography>
           <Typography variant="h4" sx={{ marginTop: "20px" }}>

@@ -9,25 +9,92 @@ import UrlConfig from "@/config/urlConfig";
 import he from "he";
 import { formatTime, formatOnlyDate } from "@/utils/DateConvert";
 import { Grid } from "@mui/material";
-import TicketCard from "@/components/Tickets/TicketCard";
+import TicketCard from "@/components/Tickets/TicketCardList";
 import Modal from "@mui/material/Modal";
 import useResponsive from "@/hooks/useResponsive";
+import CustomSnackbar from "@/components/common/Snackbar";
+import useSnackbar from "@/context/snackbarContext";
 
-const EventDetail = ({ params }: { params: { id: string } }) => {
+const EventDetail = ({ params }) => {
   const axiosPrivate = useAxiosPrivate();
+  const { setSnack } = useSnackbar();
   const [openTicket, setOpenTicket] = React.useState(false);
+  const [tickets, setTickets] = React.useState([]);
+  const [isUpdated, setIsUpdated] = React.useState(false);
   const images = [
     "https://www.hollywoodreporter.com/wp-content/uploads/2023/10/TSErasTour2-H-2023.jpg?w=1296",
   ];
-  const [eventDetail, setEventDetail] = React.useState({} as any);
+  const [eventDetail, setEventDetail] = React.useState({});
   const isMobile = useResponsive("down", "sm");
+
+  const handleSave = async (event, dataFormAdd) => {
+    event.preventDefault();
+    try {
+      const orders = dataFormAdd.filter(
+        (order) =>
+          order.quantity !== null &&
+          order.quantity != 0 &&
+          order.quantity !== ""
+      );
+      console.log("orders", orders);
+      const response = await axiosPrivate.post(UrlConfig.order.createOrder, {
+        event: params.id,
+        orders: orders.map((order) => ({
+          ticketType: order.id,
+          quantity: order.quantity,
+        })),
+        orderType: "online",
+        status: "completed",
+      });
+
+      if (response.data.status === "success") {
+        setSnack({
+          open: true,
+          message: "Order created successfully!",
+          type: "success",
+        });
+        setIsUpdated(!isUpdated);
+        setOpenTicket(false);
+      } else {
+        setSnack({
+          open: true,
+          message: "Something went wrong! Please try again!",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message:
+          error.response?.data?.message ||
+          "Something went wrong! Please try again!",
+        type: "error",
+      });
+    }
+  };
+
   React.useEffect(() => {
     axiosPrivate.get(UrlConfig.event.getEvent(params.id)).then((res) => {
       setEventDetail(res.data.data.data);
     });
+    // axiosPrivate
+    //   .get(UrlConfig?.ticketType.getTicketTypesByEventId(params.id))
+    //   .then((res) => {
+    //     setTickets(res.data.data);
+    //   });
   }, []);
+
+  React.useEffect(() => {
+    axiosPrivate
+      .get(UrlConfig?.ticketType.getTicketTypesByEventId(params.id))
+      .then((res) => {
+        setTickets(res.data.data);
+      });
+  }, [isUpdated]);
+  console.log(tickets);
   return (
     <Box sx={{ width: "70%", margin: "auto", paddingBottom: "30px" }}>
+      <CustomSnackbar />
       <EventDetailSlider images={eventDetail.images} />
       <Grid container spacing={2}>
         {/* Left column */}
@@ -85,7 +152,7 @@ const EventDetail = ({ params }: { params: { id: string } }) => {
             </Box>
             <Box sx={{ marginTop: "40px" }}>
               <Typography variant="h4">About this event</Typography>
-              {eventDetail.about?.map((item: any, i: number) =>
+              {eventDetail.about?.map((item, i) =>
                 item.type === "text" ? (
                   <Box key={i} sx={{ marginTop: "30px" }}>
                     <div
@@ -151,9 +218,10 @@ const EventDetail = ({ params }: { params: { id: string } }) => {
             boxShadow: 24,
             borderRadius: 2,
             padding: isMobile ? 3 : "20px",
+            overflow: "auto",
           }}
         >
-          <TicketCard />
+          <TicketCard tickets={tickets} handleSave={handleSave} />
         </Box>
       </Modal>
     </Box>
