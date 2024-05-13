@@ -12,11 +12,17 @@ import {
   Box,
 } from "@mui/material";
 import BankCard from "./BankCard";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import UrlConfig from "@/config/urlConfig";
+import useSnackbar from "@/context/snackbarContext";
+import CustomSnackbar from "@/components/common/Snackbar";
 
 const WithdrawRequest = () => {
   const isMobile = false;
+  const axiosPrivate = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmit, setIsSubmit] = useState(false);
+  const { setSnack } = useSnackbar();
   const [data, setData] = useState({
     amount: 0,
     bank_account: {
@@ -25,22 +31,55 @@ const WithdrawRequest = () => {
       bank_name: "",
     },
   });
-  const fetchData = async () => {
-    // fetch data
-  };
+  async function fetchBankAccountData() {
+    const res = await axiosPrivate.get(UrlConfig.bankAccount.getMyBankAccount);
+    setData({
+      ...data,
+      bank_account: {
+        number: res.data.data.number,
+        owner_name: res.data.data.owner_name,
+        bank_name: res.data.data.bank_name,
+      },
+    });
+    setIsLoading(false);
+  }
   const handleWithdraw = async () => {
-    if (data.amount === 0) {
+    try {
+      const res = await axiosPrivate.post(
+        UrlConfig.withdrawal.createWithdrawalRequest,
+        {
+          amount: data.amount,
+          bank_account: data.bank_account,
+        }
+      );
+      if (res.data.status === "success") {
+        setSnack({
+          open: true,
+          message: "Your withdraw request has been submitted successfully",
+          type: "success",
+        });
+      } else {
+        setSnack({
+          open: true,
+          message: "Your withdraw request has been failed",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message: error.response.data.message || "Something went wrong",
+        type: "error",
+      });
     }
-    if (data.amount > 0) {
-    }
-    setIsSubmit(true);
     // update data
   };
   useEffect(() => {
-    fetchData();
+    fetchBankAccountData();
   }, []);
   return (
     <Grid container spacing={5}>
+      <CustomSnackbar />
       <Grid item xs={12} md={6}>
         <Typography variant="h4" sx={{ my: 2 }}>
           Yêu cầu rút tiền

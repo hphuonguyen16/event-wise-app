@@ -1,5 +1,10 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { TextField, Autocomplete, Typography, Button } from "@mui/material";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import CustomSnackbar from "@/components/common/Snackbar";
+import useSnackbar from "@/context/snackbarContext";
+import UrlConfig from "@/config/urlConfig";
 const bankName = [
   {
     label: "Vietcombank",
@@ -117,6 +122,8 @@ const bankName = [
 
 const WithdrawMethod = () => {
   const isMobile = false;
+  const axiosPrivate = useAxiosPrivate();
+  const { setSnack } = useSnackbar();
   const [isLoading, setIsLoading] = useState(true);
   const widthAuto = isMobile ? "100%" : "600px";
   const [isSubmit, setIsSubmit] = useState(false);
@@ -125,27 +132,72 @@ const WithdrawMethod = () => {
     owner_name: "",
     bank_name: "",
   });
-  const fetchData = async () => {
-    // fetch data
-  };
+  async function fetchBankAccountData() {
+    const res = await axiosPrivate.get(UrlConfig.bankAccount.getMyBankAccount);
+    console.log("bankk", res.data.data);
+    setData(res.data.data);
+    setIsLoading(false);
+  }
+  console.log(data);
   const updateData = async () => {
-    if (data.number === "" || data.owner_name === "" || data.bank_name === "") {
+    console.log("11111")
+    try {
+      if (
+        data.number === "" ||
+        data.owner_name === "" ||
+        data.bank_name === ""
+      ) {
+        setSnack({
+          open: true,
+          message: "Please fill all fields",
+          type: "error",
+        });
+        return;
+      }
+        const res = await axiosPrivate.post(
+          UrlConfig.bankAccount.createBankAccount,
+          {
+            number: data.number,
+            owner_name: data.owner_name,
+            bank_name: data.bank_name,
+          }
+        );
+        if (res.data.status === "success") {
+          setSnack({
+            open: true,
+            message: "Your bank account has been updated successfully",
+            type: "success",
+          });
+        } else {
+          setSnack({
+            ...snack,
+            open: true,
+            message: "Something went wrong",
+            type: "error",
+          });
+        }
+        return;
+      }
+    catch (error) {
       setSnack({
         ...snack,
         open: true,
-        message: t("pleaseFillOutAllFields"),
+        message: error.response?.data.message || "Something went wrong",
         type: "error",
       });
-      return;
     }
-    setIsSubmit(true);
+
     // update data
   };
   useEffect(() => {
+    const fetchData = async () => {
+      await fetchBankAccountData();
+    };
     fetchData();
   }, []);
   return (
     <div>
+      <CustomSnackbar />
       <Typography variant="h4" sx={{ my: 2 }}>
         Thông tin tài khoản rút tiền
       </Typography>
@@ -153,7 +205,7 @@ const WithdrawMethod = () => {
         disablePortal
         id="combo-box-demo"
         options={bankName}
-        defaultValue={data.bank_name}
+        value={data.bank_name}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -168,7 +220,7 @@ const WithdrawMethod = () => {
           id="outlined-basic"
           label="Chủ tài khoản"
           variant="outlined"
-          defaultValue={data.owner_name}
+          value={data.owner_name}
           sx={{ width: widthAuto, marginTop: 2 }}
           helperText="Vui lòng viết hoa"
           onChange={(e) => setData({ ...data, owner_name: e.target.value })}
@@ -180,7 +232,7 @@ const WithdrawMethod = () => {
           type="number"
           label="Số tài khoản"
           variant="outlined"
-          defaultValue={data.number}
+          value={data.number}
           sx={{ width: widthAuto, marginTop: 2 }}
           onChange={(e) => setData({ ...data, number: e.target.value })}
         />

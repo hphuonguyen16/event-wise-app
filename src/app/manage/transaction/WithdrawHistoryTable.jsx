@@ -21,7 +21,7 @@ import VisibilityTwoToneIcon from "@mui/icons-material/VisibilityTwoTone";
 import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
 import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
 
-const WithdrawHistoryTable = ({ request, fetchData }) => {
+const WithdrawHistoryTable = ({ request }) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [item, setItem] = useState({});
@@ -42,9 +42,11 @@ const WithdrawHistoryTable = ({ request, fetchData }) => {
               <TableRow>
                 <TableCell>From</TableCell>
                 <TableCell>To</TableCell>
-                <TableCell align="right">So luong</TableCell>
-                <TableCell align="right">trang thai</TableCell>
-                <TableCell align="right">hanh dong</TableCell>
+                <TableCell>Transaction date</TableCell>
+                <TableCell align="right">Amount</TableCell>
+                <TableCell align="right">Type</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -53,7 +55,7 @@ const WithdrawHistoryTable = ({ request, fetchData }) => {
                   <TableRow hover key={cryptoOrder.id}>
                     <TableCell>
                       <Stack direction="row" spacing={2} alignItems="center">
-                        <Avatar src={cryptoOrder.user.photo_url} />
+                        <Avatar src={cryptoOrder.user.avatar} />
                         <Typography
                           variant="body1"
                           fontWeight="bold"
@@ -61,8 +63,23 @@ const WithdrawHistoryTable = ({ request, fetchData }) => {
                           gutterBottom
                           noWrap
                         >
-                          {cryptoOrder.user.first_name}{" "}
-                          {cryptoOrder.user.last_name}
+                          {request.user?.profile.name}{" "}
+                        </Typography>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Avatar src={cryptoOrder.user?.profile.avatar} />
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {request.organizer
+                            ? request.organizer?.profile.name
+                            : "Me"}
                         </Typography>
                       </Stack>
                     </TableCell>
@@ -73,42 +90,34 @@ const WithdrawHistoryTable = ({ request, fetchData }) => {
                         color="text.secondary"
                         noWrap
                       >
-                        {moment(cryptoOrder.transaction.updatedAt).format(
-                          "DD/MM/YYYY"
-                        )}
+                        {moment(cryptoOrder.date).format("DD/MM/YYYY")}
                       </Typography>
                       <Typography
                         variant="subtitle1"
                         color="text.secondary"
                         noWrap
                       >
-                        {moment(cryptoOrder.transaction.updatedAt).format(
-                          "h:mm:ss A"
-                        )}
+                        {moment(cryptoOrder.date).format("h:mm:ss A")}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="body2" color="text.secondary" noWrap>
-                        {cryptoOrder.transaction.amount.toLocaleString("vi", {
+                        {cryptoOrder.amount.toLocaleString("vi", {
                           style: "currency",
                           currency: "VND",
                         })}
                       </Typography>
                     </TableCell>
+                    <TableCell align="right">{cryptoOrder.transaction_type}</TableCell>
+                    <TableCell align="right">{cryptoOrder.status}</TableCell>
                     <TableCell align="right">
-                      {getStatusLabel(
-                        cryptoOrder.transaction.transaction_status
-                      )}
-                    </TableCell>
-                    <TableCell align="right">
-                      {cryptoOrder.transaction.transaction_status ===
-                        "PROCESSING" && (
+                      {cryptoOrder.status === "proccessing" && (
                         <>
                           <Tooltip title={t("deny")} arrow>
                             <IconButton
                               sx={{
                                 "&:hover": {
-                                  background: theme.palette.error.lighter,
+                                  background: theme.palette.error.light,
                                 },
                                 color: theme.palette.error.main,
                               }}
@@ -140,11 +149,11 @@ const WithdrawHistoryTable = ({ request, fetchData }) => {
                           </Tooltip>
                         </>
                       )}
-                      <Tooltip title={t("detailInfo")} arrow>
+                      <Tooltip title={"detail"} arrow>
                         <IconButton
                           sx={{
                             "&:hover": {
-                              background: theme.palette.primary.lighter,
+                              background: theme.palette.primary.light,
                             },
                             color: theme.palette.primary.main,
                           }}

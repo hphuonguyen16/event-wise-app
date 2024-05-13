@@ -1,4 +1,5 @@
 import { publicDecrypt } from "crypto";
+import { create } from "domain";
 
 const domain = "http://localhost:8000";
 
@@ -51,6 +52,7 @@ const UrlConfig: any = {
     getAllOrders: `${domain}/api/v1/registrations`,
     deleteOrder: (orderId: string) =>
       `${domain}/api/v1/registrations/${orderId}`,
+    myOrders: `${domain}/api/v1/registrations/my-registrations`,
   },
   category: {
     getAllCategories: `${domain}/api/v1/categories`,
@@ -61,6 +63,15 @@ const UrlConfig: any = {
   },
   transaction: {
     deposit: `${domain}/api/v1/transactions/deposit`,
+    getAllTransactions: `${domain}/api/v1/transactions/all`,
+  },
+  bankAccount: {
+    createBankAccount: `${domain}/api/v1/bank-accounts/me`,
+    getMyBankAccount: `${domain}/api/v1/bank-accounts/me`,
+    updateBankAccount: (id: string) => `${domain}/api/v1/bank-accounts/${id}`,
+  },
+  withdrawal: {
+    createWithdrawalRequest: `${domain}/api/v1/withdrawal-requests`,
   },
 };
 
