@@ -144,12 +144,13 @@ export default function Page() {
       about: aboutAfterUpload,
     });
     if (response.data.status === "success") {
-      router.push(`/manage/event/${response.data.data.data._id}/ticket`);
+     
       setSnack({
         open: true,
         message: "Event created successfully!",
         type: "success",
       });
+       router.push(`/manage/event/${response.data.data.data._id}/ticket`);
     } else {
       setSnack({
         open: true,

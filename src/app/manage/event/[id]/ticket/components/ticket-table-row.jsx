@@ -92,7 +92,6 @@ export default function EventTableRow({
   const handleSave = async () => {
     if (
       dataForm.name === "" ||
-      dataForm.price === null ||
       dataForm.quantity === null ||
       dataForm.startDate === "" ||
       dataForm.endDate === "" ||
@@ -174,7 +173,7 @@ export default function EventTableRow({
       console.log(error);
       setSnack({
         open: true,
-        message: "An error occurred while saving. Please try again later.",
+        message: error.response.data.message ||"An error occurred while saving. Please try again later.",
         type: "error",
       });
     }

@@ -9,8 +9,11 @@ import {
   AccordionSummary,
   AccordionDetails,
   Divider,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
-import React, { use, useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import Link from "next/link";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -22,6 +25,9 @@ import {
   useParams,
 } from "next/navigation";
 import { styled } from "@mui/material/styles";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import UrlConfig from "@/config/urlConfig";
+import moment from "moment";
 
 // Define StyledLinkBox with conditional styles
 const StyledLinkBox = styled("div")((props) => ({
@@ -81,6 +87,7 @@ function getStatusIcon(status) {
 
 const Layout = ({ children }) => {
   const router = useRouter();
+  const axiosPrivate = useAxiosPrivate();
   const pathname = usePathname();
   const id = useParams().id;
   const [event, setEvent] = useState();
@@ -91,14 +98,14 @@ const Layout = ({ children }) => {
 
   const fetchDetailEvent = async () => {
     const response = await axiosPrivate.get(
-      UrlConfig.event.getEvent(params.id)
+      UrlConfig.event.getEvent(id)
     );
-    if (response.data.status === "success") {
-      const event = response.data.data.data;
-      console.log("event", event);
-      setEvent(event);
-    }
+    const event = response.data.data.data;
+    console.log("event", event);
+    setEvent(event);
   };
+
+  console.log("event", event);
 
   useEffect(() => {
     fetchDetailEvent();
@@ -108,14 +115,35 @@ const Layout = ({ children }) => {
     <Box sx={{ display: "flex" }}>
       <Box sx={{ width: "20%", height: "100vh", overflowY: "auto" }}>
         <Box sx={{ marginBottom: "40px" }}>
+          <FormControl sx={{ width: "60%" }}>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              // value={age}
+              // label="Age"
+              // onChange={handleChange}
+              defaultValue={"On sale"}
+              sx={{
+                height: "40px",
+                borderRadius: "20px",
+                marginBottom: "20px",
+              }}
+            >
+              <MenuItem value={"On sale"}>On sale</MenuItem>
+              <MenuItem value={20}>Change event status</MenuItem>
+            </Select>
+          </FormControl>
           <Typography variant="h4" sx={{ marginBottom: "10px" }}>
-            Happy Birthday
+            {event?.title}
           </Typography>
           <Typography
             variant="subtitle2"
             sx={{ fontWeight: "bold", marginBottom: "15px" }}
           >
-            Mon, May 27, 2024, 10:00 AM
+            {moment(event?.start_date).format("MMM DD, YYYY")} {" at "}
+            {event?.startTime ? moment(event?.startTime).format("hh:mm A") : ""}
+            {" - "}
+            {event?.endTime ? moment(event?.endTime).format("hh:mm A") : ""}
           </Typography>
           <Link href={`/event/${id}`}>
             {" "}
@@ -184,7 +212,9 @@ const Layout = ({ children }) => {
                           </MenuItem>
                         </Link>
                       </StyledLinkBox>
-                      <StyledLinkBox isActive={pathname.includes("/add-attendee")}>
+                      <StyledLinkBox
+                        isActive={pathname.includes("/add-attendee")}
+                      >
                         <Link href={`/manage/event/${id}/add-attendee`}>
                           <MenuItem sx={{ marginBottom: "15px" }}>
                             Add Attendees{" "}

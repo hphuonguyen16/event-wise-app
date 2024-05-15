@@ -30,10 +30,12 @@ import CreateTicket from "./components/create-ticket";
 import useResponsive from "@/hooks/useResponsive";
 import dayjs from "dayjs";
 import moment, { min } from "moment";
+import { useRouter } from "next/navigation";
 
 // ----------------------------------------------------------------------
 export default function UserPage({ params }) {
   const eventId = params.id;
+  const router = useRouter();
   const isMobile = useResponsive("down", "sm");
   const [openAdd, setopenAdd] = useState(false);
   const [page, setPage] = useState(0);
@@ -150,79 +152,88 @@ export default function UserPage({ params }) {
   const notFound = !dataFiltered.length && !!filterName;
 
   const handleSave = async () => {
-    if (
-      dataFormAdd.name === "" ||
-      dataFormAdd.price === null ||
-      dataFormAdd.quantity === null ||
-      dataFormAdd.startDate === "" ||
-      dataFormAdd.endDate === "" ||
-      dataFormAdd.minQuantity === null ||
-      dataFormAdd.maxQuantity === null
-    ) {
-      setSnack({
-        open: true,
-        message: "Please fill in all the required fields!",
-        type: "error",
-      });
-      return;
-    }
-
-    //validate start date and end date use isBefore
-    //compare with now
-    if (dataFormAdd.startDate.get("date") < dayjs(new Date()).get("date")) {
-      setSnack({
-        open: true,
-        message: "Start date must be greater or today!",
-        type: "error",
-      });
-      return;
-    }
-    if (dataFormAdd.endDate.get("date") < dayjs(new Date()).get("date")) {
-      setSnack({
-        open: true,
-        message: "End date must be greater than today!",
-        type: "error",
-      });
-      return;
-    }
-    if (dataFormAdd.startDate.isAfter(dataFormAdd.endDate)) {
-      setSnack({
-        open: true,
-        message: "End date must be greater than start date!",
-        type: "error",
-      });
-      return;
-    }
-
-    const response = await axiosPrivate.post(
-      UrlConfig.ticketType.createTicketType,
-      {
-        name: dataFormAdd.name,
-        price: dataFormAdd.price,
-        quantity: dataFormAdd.quantity,
-        startDate: dataFormAdd.startDate,
-        endDate: dataFormAdd.endDate,
-        minQuantity: dataFormAdd.minQuantity,
-        maxQuantity: dataFormAdd.maxQuantity,
-        event: dataFormAdd.event,
-        salesChannel: dataFormAdd.salesChannel,
-        ticketType: dataFormAdd.ticketType,
+    try {
+      if (
+        dataFormAdd.name === "" ||
+        dataFormAdd.price === null ||
+        dataFormAdd.quantity === null ||
+        dataFormAdd.startDate === "" ||
+        dataFormAdd.endDate === "" ||
+        dataFormAdd.minQuantity === null ||
+        dataFormAdd.maxQuantity === null
+      ) {
+        setSnack({
+          open: true,
+          message: "Please fill in all the required fields!",
+          type: "error",
+        });
+        return;
       }
-    );
 
-    if (response.data.status === "success") {
+      //validate start date and end date use isBefore
+      //compare with now
+      if (moment(dataFormAdd.startDate).isBefore(moment(new Date()), "day")) {
+        setSnack({
+          open: true,
+          message: "Start date must be greater or today!",
+          type: "error",
+        });
+        return;
+      }
+      if (moment(dataFormAdd.endDate).isBefore(moment(new Date()), "day")) {
+        setSnack({
+          open: true,
+          message: "End date must be greater than today!",
+          type: "error",
+        });
+        return;
+      }
+      if (dataFormAdd.startDate.isAfter(dataFormAdd.endDate)) {
+        setSnack({
+          open: true,
+          message: "End date must be greater than start date!",
+          type: "error",
+        });
+        return;
+      }
+
+      const response = await axiosPrivate.post(
+        UrlConfig.ticketType.createTicketType,
+        {
+          name: dataFormAdd.name,
+          price: dataFormAdd.price,
+          quantity: dataFormAdd.quantity,
+          startDate: dataFormAdd.startDate,
+          endDate: dataFormAdd.endDate,
+          minQuantity: dataFormAdd.minQuantity,
+          maxQuantity: dataFormAdd.maxQuantity,
+          event: dataFormAdd.event,
+          salesChannel: dataFormAdd.salesChannel,
+          ticketType: dataFormAdd.ticketType,
+        }
+      );
+
+      if (response.data.status === "success") {
+        setSnack({
+          open: true,
+          message: "Ticket add successfully!",
+          type: "success",
+        });
+        setopenAdd(false);
+        reloadWhenUpdated();
+        //after success, render the updated data
+      } else {
+        setSnack({
+          open: true,
+          message: error.response.data.message || "Something went wrong!",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      //catch error
       setSnack({
         open: true,
-        message: "Ticket add successfully!",
-        type: "success",
-      });
-      setopenAdd(false);
-      reloadWhenUpdated();
-      //after success, render the updated data
-    } else {
-      setSnack({
-        open: true,
-        message: "Something went wrong! Please try again!",
+        message: error.response.data.message || "Something went wrong!",
         type: "error",
       });
     }
@@ -247,10 +258,11 @@ export default function UserPage({ params }) {
           message: "Ticketing saved successfully!",
           type: "success",
         });
+        router.push(`/manage/event/${eventId}/publish`);
       } else {
         setSnack({
           open: true,
-          message: "Failed to save ticketing! Please try again!",
+          message: error.response.data.message || "Something went wrong!",
           type: "error",
         });
       }
@@ -276,7 +288,7 @@ export default function UserPage({ params }) {
             endDate: event.endDate,
             ticketType: event.ticketType,
             minQuantity: event.minQuantity,
-            maxQuantity: event.maxQuantity
+            maxQuantity: event.maxQuantity,
           };
         });
         setEvents(events);
@@ -415,7 +427,7 @@ export default function UserPage({ params }) {
           }}
           disabled={events.length === 0}
         >
-          Save Ticketing
+          Next
         </Button>
       </Box>
       <Modal open={openAdd} onClose={() => setopenAdd(false)}>

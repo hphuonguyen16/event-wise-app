@@ -5,7 +5,7 @@ import { Poppins } from "next/font/google";
 //
 import React, { PropsWithChildren, ReactNode, useState } from "react";
 import useResponsive from "@/hooks/useResponsive";
-import CustomSidebar from "./Sidebar1";
+import CustomSidebar from "./Sidebar";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { Avatar, Button, Fab, IconButton, Stack, Tooltip } from "@mui/material";

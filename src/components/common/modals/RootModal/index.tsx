@@ -50,7 +50,7 @@ const RootModal = ({ title, variant, open, handleClose, handleOk, children, clos
           left: '50%',
           transform: 'translate(-50%, -50%)',
           width: isMobile ? '80%' : width ? width : '50%',
-          height: isMobile ? '80%' : height ? height : '50%',
+          height: isMobile ? '80%' : height ? height : '60%',
           bgcolor: 'background.paper',
           boxShadow: 24,
           borderRadius: 2,
@@ -81,8 +81,8 @@ const RootModal = ({ title, variant, open, handleClose, handleOk, children, clos
             sx={{
               ml: 2.5,
               color: '#fff',
-              background: `${colors[variant].main} ${!isMobile && '!important'}`,
-              ':hover': { background: `${colors[variant].dark} !important` }
+              background: `${colors[variant]?.main} ${!isMobile && '!important'}`,
+              ':hover': { background: `${colors[variant]?.dark} !important` }
             }}
             onClick={handleOk}
           >

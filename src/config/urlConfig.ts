@@ -72,6 +72,9 @@ const UrlConfig: any = {
   },
   withdrawal: {
     createWithdrawalRequest: `${domain}/api/v1/withdrawal-requests`,
+    getAllWithdrawalRequests: `${domain}/api/v1/withdrawal-requests`,
+    fulfillWithdrawalRequest: (id: string) => `${domain}/api/v1/withdrawal-requests/${id}/fulfill`,
+    cancelWithdrawalRequest: (id: string) => `${domain}/api/v1/withdrawal-requests/${id}/cancel`,
   },
 };
 

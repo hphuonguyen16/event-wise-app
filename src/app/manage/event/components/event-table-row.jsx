@@ -26,10 +26,12 @@ export default function EventTableRow({
   date,
   image,
   status,
+  isPublished,
   handleClick,
   handleClickRow,
-  handleDeleteEvent
+  handleDeleteEvent,
 }) {
+  console.log('isPublished', isPublished)
   const [open, setOpen] = useState(null);
 
   const handleOpenMenu = (event) => {
@@ -97,7 +99,7 @@ export default function EventTableRow({
               (CheckStatus(date) === "Upcoming" && "success") ||
               "defaultColor"
             }
-            label={CheckStatus(date)}
+            label={isPublished ? CheckStatus(date) : "Draft"}
           />
         </TableCell>
 

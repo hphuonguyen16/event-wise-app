@@ -152,6 +152,7 @@ export default function UserPage() {
             (event.endTime ? ` - ${formatTime(event.endTime)}` : ""),
           status: event.status,
           image: event.images ? event.images[0] : "",
+          isPublished: event.isPublished,
         };
       });
       setEvents(events);
@@ -221,9 +222,10 @@ export default function UserPage() {
                     status={row.status}
                     detailLocation={row.detailLocation}
                     image={row.image}
+                    isPublished={row.isPublished}
                     selected={selected.indexOf(row.id) !== -1}
                     handleClick={(event) => handleClick(event, row.id)}
-                    handleClickRow = {() => handleClickRow(row.id)}
+                    handleClickRow={() => handleClickRow(row.id)}
                     handleDeleteEvent={(event) => handleDeleteEvent(row.id)}
                   />
                 ))}

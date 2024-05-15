@@ -20,20 +20,70 @@ import React, { useState } from "react";
 import VisibilityTwoToneIcon from "@mui/icons-material/VisibilityTwoTone";
 import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
 import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
+import WithdrawDetail from "./WithdrawDetail";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useSnackbar from "@/context/snackbarContext";
+import CustomSnackbar from "@/components/common/Snackbar";
+import UrlConfig from "@/config/urlConfig";
 
-const WithdrawHistoryTable = ({ request }) => {
+const WithdrawHistoryTable = ({ request, fetchTransactionData }) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [item, setItem] = useState({});
+  const axiosPrivate = useAxiosPrivate();
+  const { setSnack } = useSnackbar();
   const handleDeny = async (id) => {
-    // call api
+    try {
+      const res = await axiosPrivate.post(
+        UrlConfig.withdrawal.cancelWithdrawalRequest(id)
+      );
+      if (res.data.status === "success") {
+        setSnack({
+          open: true,
+          message: "The withdraw request has been denied successfully",
+          type: "success",
+        });
+        await fetchTransactionData();
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message:
+          error.response.data.message || "The withdraw request has been failed",
+        type: "error",
+      });
+    }
   };
   const handleConfirm = async (id) => {
-    // call api
+    try {
+      const res = await axiosPrivate.post(
+        UrlConfig.withdrawal.fulfillWithdrawalRequest(id)
+      );
+      if (res.data.status === "success") {
+        setSnack({
+          open: true,
+          message: "The withdraw request has been confirmed successfully",
+          type: "success",
+        });
+        await fetchTransactionData();
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message:
+          error.response.data.message || "The withdraw request has been failed",
+        type: "error",
+      });
+    }
   };
+  console.log(item);
   return (
     <>
+      <CustomSnackbar />
       <Card>
+        {open && item && (
+          <WithdrawDetail open={open} setOpen={setOpen} withdraw={item} />
+        )}
         <CardHeader title="Yeu cau" />
         <Divider />
         <TableContainer>
@@ -41,10 +91,8 @@ const WithdrawHistoryTable = ({ request }) => {
             <TableHead>
               <TableRow>
                 <TableCell>From</TableCell>
-                <TableCell>To</TableCell>
-                <TableCell>Transaction date</TableCell>
+                <TableCell>Time</TableCell>
                 <TableCell align="right">Amount</TableCell>
-                <TableCell align="right">Type</TableCell>
                 <TableCell align="right">Status</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
@@ -68,52 +116,41 @@ const WithdrawHistoryTable = ({ request }) => {
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Avatar src={cryptoOrder.user?.profile.avatar} />
-                        <Typography
-                          variant="body1"
-                          fontWeight="bold"
-                          color="text.primary"
-                          gutterBottom
-                          noWrap
-                        >
-                          {request.organizer
-                            ? request.organizer?.profile.name
-                            : "Me"}
-                        </Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
                       <Typography
                         variant="body1"
                         fontWeight="bold"
                         color="text.secondary"
                         noWrap
                       >
-                        {moment(cryptoOrder.date).format("DD/MM/YYYY")}
+                        {moment(cryptoOrder.transaction.date).format(
+                          "DD/MM/YYYY"
+                        )}
                       </Typography>
                       <Typography
                         variant="subtitle1"
                         color="text.secondary"
                         noWrap
                       >
-                        {moment(cryptoOrder.date).format("h:mm:ss A")}
+                        {moment(cryptoOrder.transaction.date).format(
+                          "h:mm:ss A"
+                        )}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="body2" color="text.secondary" noWrap>
-                        {cryptoOrder.amount.toLocaleString("vi", {
+                        {cryptoOrder.transaction.amount.toLocaleString("vi", {
                           style: "currency",
                           currency: "VND",
                         })}
                       </Typography>
                     </TableCell>
-                    <TableCell align="right">{cryptoOrder.transaction_type}</TableCell>
-                    <TableCell align="right">{cryptoOrder.status}</TableCell>
                     <TableCell align="right">
-                      {cryptoOrder.status === "proccessing" && (
+                      {cryptoOrder.transaction.status}
+                    </TableCell>
+                    <TableCell align="right">
+                      {cryptoOrder.transaction.status === "processing" && (
                         <>
-                          <Tooltip title={t("deny")} arrow>
+                          <Tooltip title={"deny"} arrow>
                             <IconButton
                               sx={{
                                 "&:hover": {
@@ -130,7 +167,7 @@ const WithdrawHistoryTable = ({ request }) => {
                               <CancelTwoToneIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title={t("confirm")} arrow>
+                          <Tooltip title={"confirm"} arrow>
                             <IconButton
                               sx={{
                                 "&:hover": {
