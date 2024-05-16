@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Rootmodal from "@/components/common/modals/RootModal";
 import { styled } from "@mui/material/styles";
 import Stepper from "@mui/material/Stepper";
@@ -22,39 +22,76 @@ import {
   MenuItem,
 } from "@mui/material";
 import moment from "moment";
-import axiosPrivate from "@/axios/axiosPrivate";
 import UrlConfig from "@/config/urlConfig";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useSnackbar from "@/context/snackbarContext";
+import CustomSnackbar from "@/components/common/Snackbar";
 
-const EventStatus = ({ open, setOpen, ticketStatus, setTicketStatus }) => {
+const EventStatus = ({ open, setOpen, eventId, reloadData }) => {
+  const axiosPrivate = useAxiosPrivate();
+  const { setSnack } = useSnackbar();
+  const [ticketStatus, setTicketStatus] = useState();
   function handleChange(event) {
-      setTicketStatus(event.target.value);
-      
+    setTicketStatus(event.target.value);
   }
+
+  async function handleSave() {
+    try {
+      const res = await axiosPrivate.put(
+        UrlConfig.event.changeTicketStatusEvent(eventId),
+        {
+          ticketStatus: ticketStatus,
+        }
+      );
+      if (res.data.status === "success") {
+        reloadData();
+        setOpen(false);
+        setSnack({
+          open: true,
+          message: "Ticket status changed successfully",
+          status: "success",
+        });
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message:
+          error.response.data.message ||
+          "Something went wrong! Please try later.",
+        status: "error",
+      });
+    }
+  }
+
   return (
     <>
+      <CustomSnackbar />
       <Rootmodal
         variant="Info"
-        title={"Detail Transaction"}
+        title={"Change Status"}
         open={open}
         handleClose={() => setOpen(false)}
-        handleOk={() => setOpen()}
-        closeOnly={true}
+        handleOk={() => handleSave()}
         width={700}
+        height={350}
       >
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 600, marginBottom: "20px" }}
+          >
             Change Status
           </Typography>
           <Typography variant="subtitle1">
             Choose a status for your event. This status affects your tickets
             wherever they are sold online.
           </Typography>
-          <FormControl fullWidth>
+          <FormControl sx={{ width: "80%", marginTop: "30px" }}>
             <InputLabel id="demo-simple-select-label">Status</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={ticketStatus}
+              defaultValue={ticketStatus}
               label="Status"
               x
               onChange={handleChange}
@@ -62,13 +99,23 @@ const EventStatus = ({ open, setOpen, ticketStatus, setTicketStatus }) => {
               <MenuItem value={"On Sale"}>On Sale</MenuItem>
               <MenuItem value={"Cancelled"}>Cancelled</MenuItem>
               <MenuItem value={"Postponed"}>Postponed</MenuItem>
-              <MenuItem value={"Upcoming"}>Upcoming</MenuItem>
             </Select>
           </FormControl>
+          {ticketStatus === "Cancelled" && (
+            <Typography variant="subtitle1" sx={{ marginTop: "10px" }}>
+              This status ends ticket sales. Be sure to issue refunds to ticket
+              holders. We will refund the fees.
+            </Typography>
+          )}
+          {ticketStatus === "Postponed" && (
+            <Typography variant="subtitle1" sx={{ marginTop: "10px" }}>
+              This status ends tickets sales.
+            </Typography>
+          )}
         </Box>
       </Rootmodal>
     </>
   );
 };
 
-export default DetailTransaction;
+export default EventStatus;

@@ -140,7 +140,7 @@ const Layout = ({ children }) => {
             variant="subtitle2"
             sx={{ fontWeight: "bold", marginBottom: "15px" }}
           >
-            {moment(event?.start_date).format("MMM DD, YYYY")} {" at "}
+            {moment(event?.date).format("MMM DD, YYYY")} {" at "}
             {event?.startTime ? moment(event?.startTime).format("hh:mm A") : ""}
             {" - "}
             {event?.endTime ? moment(event?.endTime).format("hh:mm A") : ""}

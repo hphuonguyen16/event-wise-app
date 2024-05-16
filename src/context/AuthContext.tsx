@@ -8,6 +8,8 @@ import React, {
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import axios from "axios";
+import UrlConfig from "@/config/urlConfig";
 
 // Define a user type or interface
 
@@ -46,12 +48,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const pathname = usePathname(); // Get the current route from the router
 
-  useEffect(() => {
-    // set isAuthenticated to true if have cookie in browser name 'jwt'
-    if (localStorage.getItem("persist")) {
-      setIsAuthenticated(true);
-    }
-  }, []);
+ useEffect(() => {
+   const fetchUserData = async () => {
+     try {
+       if (localStorage.getItem("persist")) {
+         setIsAuthenticated(true);
+         const response = await axios.get(UrlConfig.me.getMe, {
+           headers: {
+             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+           },
+         });
+         const data = response.data.data;
+         setUser(data);
+         setAccessToken(data.accessToken);
+       }
+     } catch (error) {
+       console.error("Error fetching user data:", error);
+     }
+   };
+
+   fetchUserData();
+ }, []); 
+  
+  console.log("user", user)
+
+
 
   useEffect(() => {
     // set isAuthenticated to true if have cookie in browser name 'jwt'

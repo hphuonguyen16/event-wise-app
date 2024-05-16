@@ -1,58 +1,66 @@
-import { axiosPrivate } from '@/axios'
-import { useEffect } from 'react'
-import useRefreshToken from './useRefreshToken'
-import { useAuth } from '@/context/AuthContext'
-import { useRouter } from 'next/navigation'
+import { axiosPrivate } from "@/axios";
+import { useEffect } from "react";
+import useRefreshToken from "./useRefreshToken";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import UrlConfig from "@/config/urlConfig";
+import axios from "axios";
 
 const useAxiosPrivate = () => {
-  const refresh = useRefreshToken()
-  const {setAccessToken, setUser } = useAuth()
-  const router = useRouter()
+  const refresh = useRefreshToken();
+  const { setAccessToken, setUser } = useAuth();
+  const router = useRouter();
   const accessToken = localStorage.getItem("accessToken");
-
 
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
       async (config: any) => {
-        if (!config.headers['Authorization']) {
-          if (localStorage.getItem('persist') && !accessToken) {
-            const newAccesstoken = await refresh()
-            config.headers['Authorization'] = `Bearer ${newAccesstoken}`
+        if (!config.headers["Authorization"]) {
+          if (localStorage.getItem("persist") && !accessToken) {
+            const newAccesstoken = await refresh();
+            config.headers["Authorization"] = `Bearer ${newAccesstoken}`;
           } else {
-            config.headers['Authorization'] = `Bearer ${accessToken}`
+            config.headers["Authorization"] = `Bearer ${accessToken}`;
           }
         }
-        return config
+        return config;
       },
       (error: any) => Promise.reject(error)
-    )
+    );
 
     const responseIntercept = axiosPrivate.interceptors.response.use(
       (response: any) => response,
       async (error: any) => {
-        const prevRequest = error?.config
-        // if ((error?.response?.status === 403 || error?.response?.status === 401) && !prevRequest?.sent) {
-        //   prevRequest.sent = true
-        //   const newAccessToken = await refresh()
-        //   prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
-        //   return axiosPrivate(prevRequest)
-        // } else if (error?.response?.status === 404) {
-        //   router.push('/page-not-found')
-        // } else if (error?.response?.status === 500) {
-        //   router.push('/server-error')
-        // }
-        return Promise.reject(error)
+        const prevRequest = error?.config;
+        if (
+          (error?.response?.status === 403 ||
+            error?.response?.status === 401) &&
+          !prevRequest?.sent
+        ) {
+          // prevRequest.sent = true
+          // const newAccessToken = await refresh()
+          // prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
+          // return axiosPrivate(prevRequest)
+          
+          router.push("/login");
+          // } else if (error?.response?.status === 404) {
+          //   router.push("/page-not-found");
+          // } else if (error?.response?.status === 500) {
+          //   router.push("/server-error");
+          // }
+          return Promise.reject(error);
+        }
       }
-    )
+    );
 
     return () => {
-      axiosPrivate.interceptors.request.eject(requestIntercept)
-      axiosPrivate.interceptors.response.eject(responseIntercept)
-    }
+      axiosPrivate.interceptors.request.eject(requestIntercept);
+      axiosPrivate.interceptors.response.eject(responseIntercept);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, refresh])
+  }, [accessToken, refresh]);
 
-  return axiosPrivate
-}
+  return axiosPrivate;
+};
 
-export default useAxiosPrivate
+export default useAxiosPrivate;

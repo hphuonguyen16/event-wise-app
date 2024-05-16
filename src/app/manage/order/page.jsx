@@ -29,10 +29,12 @@ import TablePagination from "@mui/material/TablePagination";
 import Card from "@mui/material/Card";
 import CustomSnackbar from "@/components/common/Snackbar";
 import useSnackbar from "@/context/snackbarContext";
-
+import Rootmodal from "@/components/common/modals/RootModal";
+import { useAuth } from "@/context/AuthContext";
 
 function Row(props) {
-  const { row, handleDeleteOrder } = props;
+  const { row, handleDeleteOrder, openRefund, setOpenRefund, handleRefund } =
+    props;
   const [open, setOpen] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState(null);
   const axiosPrivate = useAxiosPrivate();
@@ -135,8 +137,24 @@ function Row(props) {
             <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
             Delete
           </MenuItem>
+          <MenuItem onClick={() => { setOpenRefund(true) }}>
+            <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+            Refund
+          </MenuItem>
         </Popover>
       </TableRow>
+      <Rootmodal
+        variant="Info"
+        title={"Change Status"}
+        open={openRefund}
+        handleClose={() => setOpenRefund(false)}
+        handleOk={handleRefund}
+        width={700}
+        height={300}
+      >
+        Are you sure you want to refund this order? This action cannot be undone
+        and will initiate the refund process for the customer.
+      </Rootmodal>
     </React.Fragment>
   );
 }
@@ -144,6 +162,8 @@ function Row(props) {
 export default function CollapsibleTable() {
   const [orderData, setOrderData] = React.useState([]);
   const axiosPrivate = useAxiosPrivate();
+  const { user } = useAuth();
+  const [openRefund, setOpenRefund] = useState(false);
 
   console.log("orderData", orderData);
 
@@ -196,6 +216,32 @@ export default function CollapsibleTable() {
           type: "error",
         });
       });
+  }
+
+  async function handleRefund(orderId) {
+    try {
+      console.log(orderId)
+      const res = await axiosPrivate.put(UrlConfig.order.refund(orderId), {
+        organizer: user._id,
+      });
+      if (res.data.status === "success") {
+        reloadData();
+        setOpen(false);
+        setSnack({
+          open: true,
+          message: "Ticket status changed successfully",
+          status: "success",
+        });
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message:
+          error.response.data.message ||
+          "Something went wrong! Please try later.",
+        status: "error",
+      });
+    }
   }
 
   const handleSelectAllClick = (event) => {
@@ -294,6 +340,9 @@ export default function CollapsibleTable() {
                   key={row._id}
                   row={row}
                   handleDeleteOrder={(event) => handleDeleteOrder(row._id)}
+                  handleRefund={(event) => handleRefund(row._id)}
+                  openRefund={openRefund}
+                  setOpenRefund={setOpenRefund}
                 />
               ))}
           </TableBody>

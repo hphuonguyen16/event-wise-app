@@ -47,6 +47,7 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const axiosPrivate = useAxiosPrivate();
+  const [reload , setReload] = useState(false);
   const router = useRouter();
   const { setSnack } = useSnackbar();
 
@@ -136,28 +137,34 @@ export default function UserPage() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  async function fetchEvents() { 
+     const url = UrlConfig?.event.getMyEvents;
+     console.log(url);
+     axiosPrivate.get(UrlConfig?.event.getMyEvents).then((res) => {
+       const events = res.data.data.map((event) => {
+         return {
+           id: event._id,
+           title: event.title,
+           location: event.location.formatted,
+           detailLocation: event.detailLocation,
+           date:
+             formatOnlyDate(event.date) +
+             (event.startTime ? ` at ${formatTime(event.startTime)}` : "") +
+             (event.endTime ? ` - ${formatTime(event.endTime)}` : ""),
+           status: event.status,
+           image: event.images ? event.images[0] : "",
+           isPublished: event.isPublished,
+           ticketStatus: event.ticketStatus,
+         };
+       });
+       setEvents(events);
+     });
+  }
+
+
   useEffect(() => {
-    const url = UrlConfig?.event.getMyEvents;
-    console.log(url);
-    axiosPrivate.get(UrlConfig?.event.getMyEvents).then((res) => {
-      const events = res.data.data.map((event) => {
-        return {
-          id: event._id,
-          title: event.title,
-          location: event.location.formatted,
-          detailLocation: event.detailLocation,
-          date:
-            formatOnlyDate(event.date) +
-            (event.startTime ? ` at ${formatTime(event.startTime)}` : "") +
-            (event.endTime ? ` - ${formatTime(event.endTime)}` : ""),
-          status: event.status,
-          image: event.images ? event.images[0] : "",
-          isPublished: event.isPublished,
-        };
-      });
-      setEvents(events);
-    });
-  }, []);
+   fetchEvents();
+  }, [reload]);
 
   console.log(events);
 
@@ -215,11 +222,12 @@ export default function UserPage() {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
                   <EventTableRow
+                    id={row.id}
                     key={row.id}
                     title={row.title}
                     location={row.location}
                     date={row.date}
-                    status={row.status}
+                    ticketStatus={row.ticketStatus}
                     detailLocation={row.detailLocation}
                     image={row.image}
                     isPublished={row.isPublished}
@@ -227,6 +235,7 @@ export default function UserPage() {
                     handleClick={(event) => handleClick(event, row.id)}
                     handleClickRow={() => handleClickRow(row.id)}
                     handleDeleteEvent={(event) => handleDeleteEvent(row.id)}
+                    reloadData={() => setReload(!reload)}
                   />
                 ))}
 

@@ -73,11 +73,11 @@ export function applyFilter({ inputData, comparator, filterName, filterStatus })
         return true;
       } 
       else if (filterStatus === "onsale") {
-        return CheckStatus(event.date) === "On Sale";
+        return event.ticketStatus === "On Sale";
       } else if (filterStatus === "upcoming") {
-        return CheckStatus(event.date) === "Upcoming";
+        return event.ticketStatus === "Upcoming";
       } else if (filterStatus === "completed") {
-        return CheckStatus(event.date) === "Completed";
+        return event.ticketStatus === "Completed";
       }
       return true;
     });

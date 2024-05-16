@@ -80,10 +80,11 @@ export default function EventTableRow({
     const parsedendDate = moment(ticket.endDate);
     const currentDate = new Date();
 
-    if (currentDate < parsedstartDate) {
-      return TicketStatus.UPCOMING;
-    } else if (currentDate > parsedendDate) {
+    if (currentDate >= parsedendDate) {
       return TicketStatus.COMPLETED;
+    } 
+    else if (currentDate < parsedstartDate) {
+      return TicketStatus.UPCOMING;
     } else {
       return TicketStatus.ON_SALE;
     }

@@ -15,24 +15,28 @@ import Chip from "@mui/material/Chip";
 import Label from "@/components/label";
 import Iconify from "@/components/iconify";
 import moment from "moment";
+import EventStatus from "./event-status";
 
 // ----------------------------------------------------------------------
 
 export default function EventTableRow({
   selected,
+  id,
   title,
   location,
   detailLocation,
   date,
   image,
-  status,
+  ticketStatus,
   isPublished,
   handleClick,
   handleClickRow,
   handleDeleteEvent,
+  reloadData,
 }) {
-  console.log('isPublished', isPublished)
   const [open, setOpen] = useState(null);
+  const [openStatus, setOpenStatus] = useState(false);
+  console.log(ticketStatus);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -58,6 +62,14 @@ export default function EventTableRow({
   }
   return (
     <>
+      {openStatus && (
+        <EventStatus
+          open={openStatus}
+          setOpen={setOpenStatus}
+          eventId={id}
+          reloadData={reloadData}
+        />
+      )}
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
@@ -94,12 +106,12 @@ export default function EventTableRow({
           <Chip
             variant="outlined"
             color={
-              (CheckStatus(date) === "On Sale" && "error") ||
-              (CheckStatus(date) === "Completed" && "info") ||
-              (CheckStatus(date) === "Upcoming" && "success") ||
-              "defaultColor"
+              (ticketStatus === "On Sale" && "error") ||
+              (ticketStatus === "Completed" && "info") ||
+              (ticketStatus === "Upcoming" && "success") ||
+              "default"
             }
-            label={isPublished ? CheckStatus(date) : "Draft"}
+            label={isPublished ? ticketStatus : "Draft"}
           />
         </TableCell>
 
@@ -117,7 +129,7 @@ export default function EventTableRow({
         anchorOrigin={{ vertical: "top", horizontal: "left" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
-          sx: { width: 140 },
+          sx: { width: 200 },
         }}
       >
         <MenuItem onClick={handleCloseMenu}>
@@ -125,9 +137,34 @@ export default function EventTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleDeleteEvent} sx={{ color: "error.main" }}>
+        <MenuItem
+          onClick={handleDeleteEvent}
+          sx={{ color: "error.main" }}
+          disabled={
+            (
+              ticketStatus === "On Sale" ||
+              ticketStatus === "Cancelled" ||
+              ticketStatus === "Postponed"
+            )
+          }
+        >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => setOpenStatus(true)}
+          sx={{ color: "info.main" }}
+          disabled={
+            (
+              ticketStatus === "Upcoming" ||
+              ticketStatus === "Completed" ||
+              !isPublished
+            )
+          }
+        >
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+          Change Status
         </MenuItem>
       </Popover>
     </>

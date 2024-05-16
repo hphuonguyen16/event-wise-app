@@ -7,7 +7,7 @@ const UrlConfig: any = {
   user: {
     login: `${domain}/api/v1/users/login`,
     signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/signup`,
-    refresh: `/api/v1/users/refresh`,
+    refresh: `${domain}/api/v1/users/refresh`,
     forgotPassword: "/api/v1/users/forgotPassword",
   },
   me: {
@@ -35,6 +35,8 @@ const UrlConfig: any = {
     deleteEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     updateEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     publishEvent: `${domain}/api/v1/events/publish`,
+    changeTicketStatusEvent: (id: string) =>
+      `${domain}/api/v1/events/${id}/ticket-status`,
   },
   ticketType: {
     getTicketTypesByEventId: (eventId: string) =>
@@ -53,6 +55,7 @@ const UrlConfig: any = {
     deleteOrder: (orderId: string) =>
       `${domain}/api/v1/registrations/${orderId}`,
     myOrders: `${domain}/api/v1/registrations/my-registrations`,
+    refund: (orderId: string) => `${domain}/api/v1/registrations/${orderId}/refund`,
   },
   category: {
     getAllCategories: `${domain}/api/v1/categories`,
@@ -73,8 +76,10 @@ const UrlConfig: any = {
   withdrawal: {
     createWithdrawalRequest: `${domain}/api/v1/withdrawal-requests`,
     getAllWithdrawalRequests: `${domain}/api/v1/withdrawal-requests`,
-    fulfillWithdrawalRequest: (id: string) => `${domain}/api/v1/withdrawal-requests/${id}/fulfill`,
-    cancelWithdrawalRequest: (id: string) => `${domain}/api/v1/withdrawal-requests/${id}/cancel`,
+    fulfillWithdrawalRequest: (id: string) =>
+      `${domain}/api/v1/withdrawal-requests/${id}/fulfill`,
+    cancelWithdrawalRequest: (id: string) =>
+      `${domain}/api/v1/withdrawal-requests/${id}/cancel`,
   },
 };
 

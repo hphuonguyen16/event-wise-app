@@ -66,9 +66,9 @@ const RootModal = ({ title, variant, open, handleClose, handleOk, children, clos
             <Button
               variant='outlined'
               sx={{
-                color: colors[variant].main,
-                borderColor: colors[variant].light,
-                ':hover': { background: colors[variant].lighter, borderColor: colors[variant].main }
+                color: colors[variant]?.main,
+                borderColor: colors[variant]?.light,
+                ':hover': { background: colors[variant]?.lighter, borderColor: colors[variant]?.main }
               }}
               onClick={handleClose}
             >
