@@ -83,7 +83,12 @@ function TicketCardList({ tickets, handleSave }) {
                       </h6>
 
                       <h6 class="font-medium text-base leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
-                        {ticket.price > 0 ? ticket.price + "d" : "Free"}
+                        {ticket.price > 0
+                          ? ticket.price.toLocaleString("vi", {
+                              style: "currency",
+                              currency: "VND",
+                            }) 
+                          : "Free"}
                       </h6>
                       <h6 class="font-medium text-sm leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
                         {ticket.quantity - ticket.sold > 0

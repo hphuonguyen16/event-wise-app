@@ -60,10 +60,15 @@ function Row(props) {
           {row._id}
         </TableCell>
         <TableCell align="left">
-          <Typography sx={{ fontWeight: "bold", marginBottom:'7px' }}>{row.event.title}</Typography>
+          <Typography sx={{ fontWeight: "bold", marginBottom: "7px" }}>
+            {row.event.title}
+          </Typography>
           <Typography variant="subtitle2">
             {" "}
-            {"start at " + moment(row.registrationDate).format("MM-DD-YYYY") + " at " + moment(row.registrationDate).format("HH:mm")} 
+            {"start at " +
+              moment(row.registrationDate).format("MM-DD-YYYY") +
+              " at " +
+              moment(row.registrationDate).format("HH:mm")}
           </Typography>
         </TableCell>
         <TableCell align="right">
@@ -100,11 +105,19 @@ function Row(props) {
                         {historyRow.ticketType.name}
                       </TableCell>
                       <TableCell component="th" scope="row" align="left">
-                        {historyRow.ticketType.price}
+                        {historyRow.ticketType.price.toLocaleString("vi", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </TableCell>
                       <TableCell>{historyRow.quantity}</TableCell>
                       <TableCell align="right">
-                        {historyRow.ticketType.price * historyRow.quantity}
+                        {(
+                          historyRow.ticketType.price * historyRow.quantity
+                        ).toLocaleString("vi", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </TableCell>
                     </TableRow>
                   ))}

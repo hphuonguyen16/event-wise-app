@@ -49,7 +49,7 @@ const EventStatus = ({ open, setOpen, eventId, reloadData }) => {
         setSnack({
           open: true,
           message: "Ticket status changed successfully",
-          status: "success",
+          type: "success",
         });
       }
     } catch (error) {
@@ -58,7 +58,7 @@ const EventStatus = ({ open, setOpen, eventId, reloadData }) => {
         message:
           error.response.data.message ||
           "Something went wrong! Please try later.",
-        status: "error",
+        type: "error",
       });
     }
   }

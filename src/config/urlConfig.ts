@@ -55,7 +55,9 @@ const UrlConfig: any = {
     deleteOrder: (orderId: string) =>
       `${domain}/api/v1/registrations/${orderId}`,
     myOrders: `${domain}/api/v1/registrations/my-registrations`,
-    refund: (orderId: string) => `${domain}/api/v1/registrations/${orderId}/refund`,
+    refund: (orderId: string) =>
+      `${domain}/api/v1/registrations/${orderId}/refund`,
+    bulkRefund: `${domain}/api/v1/registrations/bulk-refund`,
   },
   category: {
     getAllCategories: `${domain}/api/v1/categories`,

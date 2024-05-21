@@ -11,6 +11,9 @@ import { Avatar, Button, IconButton, Stack } from "@mui/material";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import SearchTextbox from "../SearchTextbox/SearchTextbox";
 import ProfilePopover from "../ProfilePopover";
+import { menuUser } from "../menu";
+import { useAuth } from "@/context/AuthContext";
+import CustomSidebar from "../Sidebar";
 
 // ----------------------------------------------------------------------
 
@@ -19,8 +22,8 @@ const APP_BAR_DESKTOP = 92;
 
 const StyledRoot = styled("div")(({ theme }) => ({
   display: "flex",
-  minHeight: "100%",
-  overflow: "auto",
+  // height: "100vh",
+  // overflow: "auto",
   maxHeight: "100vh",
   width: "100%", // Set width to 100% by default
   backgroundColor: "white",
@@ -40,7 +43,7 @@ const poppins = Poppins({
 
 const Main = styled("div")(({ theme }) => ({
   flexGrow: 1,
-  minHeight: "100%",
+  maxHeight: "100vh",
   width: "100%",
   // overflow: 'auto',
   paddingBottom: "20px",
@@ -77,9 +80,14 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const isMobile = useResponsive("down", "sm");
+  const {user} = useAuth()
 
   return (
     <StyledRoot>
+      <aside style={{ backgroundColor: "#fcfff5" }}>
+        {user && user.role === "user" && <CustomSidebar menuItems={menuUser} />}
+        
+      </aside>
       <Main className={poppins.variable}>
         <HeaderBar>
           <SearchTextbox />

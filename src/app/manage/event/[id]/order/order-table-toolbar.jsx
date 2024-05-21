@@ -17,6 +17,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 
 // ----------------------------------------------------------------------
@@ -29,6 +31,7 @@ export default function UserTableToolbar({
   filterStatus,
   filterData,
   setFilterData,
+  openModalBulkRefund,
 }) {
   return (
     <Toolbar
@@ -70,10 +73,12 @@ export default function UserTableToolbar({
           <Grid item md={2} sx={{ marginTop: "8px" }}>
             <FormControl fullWidth>
               <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={filterData.status || "all"}
-                  onChange={(e) => { setFilterData({ ...filterData, status: e.target.value }) }}
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={filterData.status || "all"}
+                onChange={(e) => {
+                  setFilterData({ ...filterData, status: e.target.value });
+                }}
               >
                 <MenuItem value={"all"}>All Orders</MenuItem>
                 <MenuItem value={"pending_refund"}>
@@ -92,7 +97,7 @@ export default function UserTableToolbar({
                   value={filterData.startDate || null}
                   onChange={(newValue) => {
                     //@ts-ignore
-                    setFilterData({ ...filterData, startDate: newValue });  
+                    setFilterData({ ...filterData, startDate: newValue });
                   }}
                   label="Start Date"
                   fullWidth
@@ -119,11 +124,21 @@ export default function UserTableToolbar({
       )}
 
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <Iconify icon="eva:trash-2-fill" />
-          </IconButton>
-        </Tooltip>
+        <Stack direction="row" spacing={2} alignItems={'center'}>
+          <Tooltip title="Delete">
+            <IconButton>
+              <Iconify icon="eva:trash-2-fill" />
+            </IconButton>
+          </Tooltip>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={openModalBulkRefund}
+            sx={{ marginLeft: "10px" }}
+          >
+            Bulk Refunds
+          </Button>
+        </Stack>
       ) : (
         <Tooltip title="Filter list">
           <IconButton>

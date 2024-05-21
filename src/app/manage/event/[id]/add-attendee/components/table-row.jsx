@@ -120,7 +120,12 @@ export default function EventTableRow({
         <TableCell sx={{ width: "10%" }}>
           {ticket.sold}/{ticket.quantity}
         </TableCell>
-        <TableCell sx={{ width: "10%" }}>{ticket.price}</TableCell>
+        <TableCell sx={{ width: "10%" }}>
+          {ticket.price.toLocaleString("vi", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </TableCell>
         <TableCell sx={{ width: "15%" }}>
           <Chip
             variant="outlined"

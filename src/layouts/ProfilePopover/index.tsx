@@ -94,7 +94,6 @@ const ProfilePopover = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [profileImage, setProfileImage] = useState<any>(null);
-  console.log("user", user);
 
   const containerRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -147,7 +146,7 @@ const ProfilePopover = () => {
         onClose={handleClose}
         sx={{
           "& .MuiList-root": {
-            height: parent ? "150px" : "295px",
+            // height: parent ? "150px" : "295px",
             overflow: "hidden",
             transition: "0.2s all ease-in-out",
           },
@@ -223,7 +222,7 @@ const ProfilePopover = () => {
                     padding: "5px",
                   }}
                 >
-                  <Avatar src={""} alt="photoURL" />
+                  <Avatar src={user?.profile.avatar} alt="photoURL" />
                   <Box sx={{ ml: 1.5 }}>
                     <Typography
                       variant="h5"
@@ -233,12 +232,21 @@ const ProfilePopover = () => {
                         marginRight: "10px",
                       }}
                     >
-                      {/* {user?.profile.firstname + " " + user?.profile.lastname} */}
-                      {user?.profile.name
-                        ? user?.name
-                        : user?.profile.firstname +
-                          " " +
-                          user?.profile.lastname}
+                      {user?.profile.name}
+                    </Typography>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        color: "text.primary",
+                        lineHeight: "1",
+                        marginRight: "10px",
+                        marginTop:'10px'
+                      }}
+                    >
+                      {user?.balance.toLocaleString("vi", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
                     </Typography>
                   </Box>
                 </Box>
@@ -246,40 +254,34 @@ const ProfilePopover = () => {
 
               <Divider sx={{ m: "0 !important" }} />
 
-              <Stack sx={{ p: "8px" }}>
-                <Link href="/manage/event">
-                  <StyledMenuItem onClick={() => handleClose()}>
-                    <ListItemIcon sx={{ alignItems: "center" }}>
-                      <AccountCircle fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Manage Events</ListItemText>
-                  </StyledMenuItem>
-                </Link>
-                <Link href="/profile">
-                  <StyledMenuItem onClick={() => handleClose()}>
-                    <ListItemIcon sx={{ alignItems: "center" }}>
-                      <AccountCircle fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Manage Profile</ListItemText>
-                  </StyledMenuItem>
-                </Link>
-                <Link href="/my-tickets">
-                  <StyledMenuItem onClick={() => handleClose()}>
-                    <ListItemIcon sx={{ alignItems: "center" }}>
-                      <AccountCircle fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Manage Tickets</ListItemText>
-                  </StyledMenuItem>
-                </Link>
-                <Link href="/settings">
-                  <StyledMenuItem onClick={handleClose}>
-                    <ListItemIcon sx={{ alignItems: "center" }}>
-                      <Settings fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Settings</ListItemText>
-                  </StyledMenuItem>
-                </Link>
-              </Stack>
+              {user && user.role === "user" && (
+                <Stack sx={{ p: "8px" }}>
+                  <Link href="/profile">
+                    <StyledMenuItem onClick={() => handleClose()}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <AccountCircle fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Manage Profile</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                  <Link href="/me/manage-order">
+                    <StyledMenuItem onClick={() => handleClose()}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <AccountCircle fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>My Orders</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                  <Link href="/settings">
+                    <StyledMenuItem onClick={handleClose}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <Settings fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Settings</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                </Stack>
+              )}
 
               <Divider sx={{ m: "0px 0" }} />
 

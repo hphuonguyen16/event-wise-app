@@ -33,11 +33,13 @@ import Rootmodal from "@/components/common/modals/RootModal";
 import { useAuth } from "@/context/AuthContext";
 
 function Row(props) {
-  const { row, handleDeleteOrder, openRefund, setOpenRefund, handleRefund } =
-    props;
+  const { row, handleDeleteOrder, reloadDataFn } = props;
   const [open, setOpen] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState(null);
   const axiosPrivate = useAxiosPrivate();
+  const [openRefund, setOpenRefund] = useState(false);
+  const { user } = useAuth();
+  const { setSnack } = useSnackbar();
 
   const handleOpenMenu = (event) => {
     setOpenMenu(event.currentTarget);
@@ -46,6 +48,31 @@ function Row(props) {
   const handleCloseMenu = () => {
     setOpenMenu(null);
   };
+  async function handleRefund(orderId) {
+    try {
+      const res = await axiosPrivate.put(UrlConfig.order.refund(orderId), {
+        _id: orderId,
+        organizer: user._id,
+      });
+      if (res?.data?.status === "success") {
+        reloadDataFn();
+        setOpenRefund(false);
+        setSnack({
+          open: true,
+          message: "Ticket has been refunded successfully",
+          type: "success",
+        });
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message:
+          error?.response?.data?.message ||
+          "Something went wrong! Please try later.",
+        type: "error",
+      });
+    }
+  }
 
   return (
     <React.Fragment>
@@ -105,11 +132,19 @@ function Row(props) {
                         {historyRow.ticketType.name}
                       </TableCell>
                       <TableCell component="th" scope="row" align="left">
-                        {historyRow.ticketType.price}
+                        {historyRow.ticketType.price.toLocaleString("vi", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </TableCell>
                       <TableCell>{historyRow.quantity}</TableCell>
                       <TableCell align="right">
-                        {historyRow.ticketType.price * historyRow.quantity}
+                        {(
+                          historyRow.ticketType.price * historyRow.quantity
+                        ).toLocaleString("vi", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -137,7 +172,11 @@ function Row(props) {
             <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
             Delete
           </MenuItem>
-          <MenuItem onClick={() => { setOpenRefund(true) }}>
+          <MenuItem
+            onClick={() => {
+              setOpenRefund(true);
+            }}
+          >
             <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
             Refund
           </MenuItem>
@@ -145,12 +184,12 @@ function Row(props) {
       </TableRow>
       <Rootmodal
         variant="Info"
-        title={"Change Status"}
+        title={"Refund Order"}
         open={openRefund}
         handleClose={() => setOpenRefund(false)}
-        handleOk={handleRefund}
+        handleOk={() => handleRefund(row._id)}
         width={700}
-        height={300}
+        height={250}
       >
         Are you sure you want to refund this order? This action cannot be undone
         and will initiate the refund process for the customer.
@@ -162,7 +201,6 @@ function Row(props) {
 export default function CollapsibleTable() {
   const [orderData, setOrderData] = React.useState([]);
   const axiosPrivate = useAxiosPrivate();
-  const { user } = useAuth();
   const [openRefund, setOpenRefund] = useState(false);
 
   console.log("orderData", orderData);
@@ -177,6 +215,8 @@ export default function CollapsibleTable() {
   const [filterName, setFilterName] = useState("");
 
   const [filterStatus, setFilterStatus] = useState("all");
+
+  const [reloadData, setReloadData] = useState(false);
 
   const [filterData, setFilterData] = useState({
     name: "",
@@ -211,37 +251,11 @@ export default function CollapsibleTable() {
         setSnack({
           open: true,
           message:
-            err.response.data.message ||
+            err?.response?.data?.message ||
             "Order delete failed! Please try again later!",
           type: "error",
         });
       });
-  }
-
-  async function handleRefund(orderId) {
-    try {
-      console.log(orderId)
-      const res = await axiosPrivate.put(UrlConfig.order.refund(orderId), {
-        organizer: user._id,
-      });
-      if (res.data.status === "success") {
-        reloadData();
-        setOpen(false);
-        setSnack({
-          open: true,
-          message: "Ticket status changed successfully",
-          status: "success",
-        });
-      }
-    } catch (error) {
-      setSnack({
-        open: true,
-        message:
-          error.response.data.message ||
-          "Something went wrong! Please try later.",
-        status: "error",
-      });
-    }
   }
 
   const handleSelectAllClick = (event) => {
@@ -290,6 +304,10 @@ export default function CollapsibleTable() {
     setFilterStatus(event.target.value);
   };
 
+  function reloadDataFn() {
+    setReloadData(!reloadData);
+  }
+
   const dataFiltered = applyFilter({
     inputData: orderData,
     comparator: getComparator(order, orderBy),
@@ -303,7 +321,7 @@ export default function CollapsibleTable() {
       await fetchOrderData();
     };
     fetchData();
-  }, []);
+  }, [reloadData]);
 
   return (
     <Card>
@@ -340,9 +358,7 @@ export default function CollapsibleTable() {
                   key={row._id}
                   row={row}
                   handleDeleteOrder={(event) => handleDeleteOrder(row._id)}
-                  handleRefund={(event) => handleRefund(row._id)}
-                  openRefund={openRefund}
-                  setOpenRefund={setOpenRefund}
+                  reloadDataFn={(event) => reloadDataFn()}
                 />
               ))}
           </TableBody>

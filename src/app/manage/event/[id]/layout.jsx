@@ -113,7 +113,7 @@ const Layout = ({ children }) => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <Box sx={{ width: "20%", height: "100vh", overflowY: "auto" }}>
+      <Box sx={{ width: "20%", maxHeight: "100vh", overflowY: "auto" }}>
         <Box sx={{ marginBottom: "40px" }}>
           <FormControl sx={{ width: "60%" }}>
             <Select
@@ -239,7 +239,15 @@ const Layout = ({ children }) => {
           </MenuList>
         </Paper>
       </Box>
-      <Box sx={{ width: "80%", backgroundColor: "#fbf9fa", padding: "10px" }}>
+      <Box
+        sx={{
+          width: "80%",
+          backgroundColor: "#fbf9fa",
+          padding: "10px",
+          maxHeight: "100vh",
+          overflowY: "auto",
+        }}
+      >
         {children}
       </Box>
     </Box>

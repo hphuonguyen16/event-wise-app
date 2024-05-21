@@ -1,10 +1,8 @@
-import { axiosPrivate } from "@/axios";
-import { useEffect } from "react";
-import useRefreshToken from "./useRefreshToken";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import UrlConfig from "@/config/urlConfig";
-import axios from "axios";
+import { axiosPrivate } from '@/axios'
+import { useEffect } from 'react'
+import useRefreshToken from './useRefreshToken'
+import { useAuth } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation'
 
 const useAxiosPrivate = () => {
   const refresh = useRefreshToken();
@@ -32,24 +30,17 @@ const useAxiosPrivate = () => {
       (response: any) => response,
       async (error: any) => {
         const prevRequest = error?.config;
-        if (
-          (error?.response?.status === 403 ||
-            error?.response?.status === 401) &&
-          !prevRequest?.sent
-        ) {
-          // prevRequest.sent = true
-          // const newAccessToken = await refresh()
-          // prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
-          // return axiosPrivate(prevRequest)
-          
-          router.push("/login");
-          // } else if (error?.response?.status === 404) {
-          //   router.push("/page-not-found");
-          // } else if (error?.response?.status === 500) {
-          //   router.push("/server-error");
-          // }
-          return Promise.reject(error);
-        }
+        // if ((error?.response?.status === 403 || error?.response?.status === 401) && !prevRequest?.sent) {
+        //   prevRequest.sent = true
+        //   const newAccessToken = await refresh()
+        //   prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
+        //   return axiosPrivate(prevRequest)
+        // } else if (error?.response?.status === 404) {
+        //   router.push('/page-not-found')
+        // } else if (error?.response?.status === 500) {
+        //   router.push('/server-error')
+        // }
+        return Promise.reject(error);
       }
     );
 

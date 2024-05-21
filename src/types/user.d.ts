@@ -7,5 +7,6 @@ export interface User {
   role: string
   preferences: string[]
   createdAt: string
-  profile: any
+  profile: any,
+  balance: number
 }

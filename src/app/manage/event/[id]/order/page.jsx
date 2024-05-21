@@ -29,11 +29,19 @@ import TablePagination from "@mui/material/TablePagination";
 import Card from "@mui/material/Card";
 import CustomSnackbar from "@/components/common/Snackbar";
 import useSnackbar from "@/context/snackbarContext";
+import Checkbox from "@mui/material/Checkbox";
+import { useAuth } from "@/context/AuthContext";
+import Rootmodal from "@/components/common/modals/RootModal";
+
 
 function Row(props) {
-  const { row, handleDeleteOrder } = props;
+  const { row, handleDeleteOrder, selected, handleClick, reloadDataFn } = props;
   const [open, setOpen] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState(null);
+  const [openRefund, setOpenRefund] = useState(false);
+  const { setSnack } = useSnackbar();
+  const axiosPrivate = useAxiosPrivate();
+  const { user } = useAuth();
 
   const handleOpenMenu = (event) => {
     setOpenMenu(event.currentTarget);
@@ -43,9 +51,46 @@ function Row(props) {
     setOpenMenu(null);
   };
 
+  async function handleRefund(orderId) {
+    try {
+      const res = await axiosPrivate.put(UrlConfig.order.refund(orderId), {
+        _id: orderId,
+        organizer: user._id,
+      });
+      if (res?.data?.status === "success") {
+        reloadDataFn();
+        setOpenRefund(false);
+        setSnack({
+          open: true,
+          message: "Ticket has been refunded successfully",
+          type: "success",
+        });
+      }
+    } catch (error) {
+      setOpenRefund(false);
+      setSnack({
+        open: true,
+        message:
+          error?.response?.data?.message ||
+          "Something went wrong! Please try later.",
+        type: "error",
+      });
+    }
+  }
+
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+      <TableRow
+        sx={{ "& > *": { borderBottom: "unset" } }}
+        hover
+        tabIndex={-1}
+        role="checkbox"
+        selected={selected}
+      >
+        <TableCell padding="checkbox">
+          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+        </TableCell>
+
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -101,11 +146,19 @@ function Row(props) {
                         {historyRow.ticketType.name}
                       </TableCell>
                       <TableCell component="th" scope="row" align="left">
-                        {historyRow.ticketType.price}
+                        {historyRow.ticketType.price.toLocaleString("vi", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </TableCell>
                       <TableCell>{historyRow.quantity}</TableCell>
                       <TableCell align="right">
-                        {historyRow.ticketType.price * historyRow.quantity}
+                        {(
+                          historyRow.ticketType.price * historyRow.quantity
+                        ).toLocaleString("vi", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -133,8 +186,31 @@ function Row(props) {
             <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
             Delete
           </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setOpenRefund(true);
+            }}
+          >
+            <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+            Refund
+          </MenuItem>
         </Popover>
       </TableRow>
+      <Rootmodal
+        variant="Info"
+        title={"Refund Order"}
+        open={openRefund}
+        handleClose={() => setOpenRefund(false)}
+        handleOk={() => {
+          console.log(row._id);
+          handleRefund(row._id);
+        }}
+        width={700}
+        height={250}
+      >
+        Are you sure you want to refund this order? This action cannot be undone
+        and will initiate the refund process for the customer.
+      </Rootmodal>
     </React.Fragment>
   );
 }
@@ -153,15 +229,16 @@ export default function CollapsibleTable({ params }) {
     }
   }
 
-  console.log("orderData", orderData);
   const eventId = params.id;
 
   const [order, setOrder] = useState("asc");
   const [selected, setSelected] = useState([]);
-
+  const { user } = useAuth();
   const [orderBy, setOrderBy] = useState("name");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const[openRefund, setOpenRefund] = useState(false);
+  const [reloadData, setReloadData] = useState(false);
 
   const [filterName, setFilterName] = useState("");
 
@@ -176,6 +253,7 @@ export default function CollapsibleTable({ params }) {
   });
   const { setSnack } = useSnackbar();
 
+  console.log(selected);
 
   function handleDeleteOrder(_id) {
     axiosPrivate
@@ -189,6 +267,7 @@ export default function CollapsibleTable({ params }) {
         });
       })
       .catch((err) => {
+        
         setSnack({
           open: true,
           message:
@@ -198,7 +277,6 @@ export default function CollapsibleTable({ params }) {
         });
       });
   }
-
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -246,6 +324,40 @@ export default function CollapsibleTable({ params }) {
     setFilterStatus(event.target.value);
   };
 
+   function reloadDataFn() {
+     setReloadData(!reloadData);
+   }
+
+  async function handleBulkRefund() {
+    try {
+      const res = await axiosPrivate.post(UrlConfig.order.bulkRefund, {
+        registrationIds: selected,
+        organizerId: user._id,
+      });
+      console.log(res);
+      if (res?.data?.status === "success") {
+         setReloadData(!reloadData);
+         setOpenRefund(false);
+        setSnack({
+          open: true,
+          message: "All orders have been refunded successfully",
+          type: "success",
+        });
+       
+      }
+    } catch (error) {
+      console.log(error);
+      setOpenRefund(false);
+      setSnack({
+        open: true,
+        message:
+          error?.response?.data?.message ||
+          "Something went wrong! Please try later.",
+        type: "error",
+      });
+    }
+  }
+
   const dataFiltered = applyFilter({
     inputData: orderData,
     comparator: getComparator(order, orderBy),
@@ -259,7 +371,7 @@ export default function CollapsibleTable({ params }) {
       await fetchOrderData();
     };
     fetchData();
-  }, []);
+  }, [reloadData]);
 
   return (
     <Card>
@@ -274,10 +386,22 @@ export default function CollapsibleTable({ params }) {
           onFilterStatus={handleFilterStatus}
           filterData={filterData}
           setFilterData={setFilterData}
+          openModalBulkRefund={(event) => setOpenRefund(true)}
         />
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  indeterminate={
+                    selected.length > 0 && selected.length < orderData.length
+                  }
+                  checked={
+                    orderData.length > 0 && selected.length === orderData.length
+                  }
+                  onChange={handleSelectAllClick}
+                />
+              </TableCell>
               <TableCell />
               <TableCell>Order Id</TableCell>
               <TableCell align="left">Attendee</TableCell>
@@ -296,7 +420,10 @@ export default function CollapsibleTable({ params }) {
                 <Row
                   key={row._id}
                   row={row}
+                  selected={selected.indexOf(row._id) !== -1}
                   handleDeleteOrder={(event) => handleDeleteOrder(row._id)}
+                  handleClick={(event) => handleClick(event, row._id)}
+                  reloadDataFn={reloadDataFn}
                 />
               ))}
           </TableBody>
@@ -311,6 +438,18 @@ export default function CollapsibleTable({ params }) {
         rowsPerPageOptions={[5, 10, 25]}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      <Rootmodal
+        variant="Info"
+        title={"Bulk Refund Order"}
+        open={openRefund}
+        handleClose={() => setOpenRefund(false)}
+        handleOk={() => handleBulkRefund()}
+        width={700}
+        height={250}
+      >
+        Are you sure you want to refund all this orders? This action cannot be
+        undone and will initiate the refund process for the customer.
+      </Rootmodal>
     </Card>
   );
 }

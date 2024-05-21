@@ -3,7 +3,12 @@
 import { styled } from "@mui/material/styles";
 import { Poppins } from "next/font/google";
 //
-import React, { PropsWithChildren, ReactNode, useState } from "react";
+import React, {
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import useResponsive from "@/hooks/useResponsive";
 import CustomSidebar from "./Sidebar";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -11,9 +16,11 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { Avatar, Button, Fab, IconButton, Stack, Tooltip } from "@mui/material";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import SearchTextbox from "./SearchTextbox/SearchTextbox";
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ProfilePopover from "./ProfilePopover";
 import Recharge from "./Recharge/Recharge";
+import { useAuth } from "@/context/AuthContext";
+import { menuAdmin, menuOrganizer } from "./menu";
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +30,7 @@ const APP_BAR_DESKTOP = 92;
 const StyledRoot = styled("div")(({ theme }) => ({
   display: "flex",
   minHeight: "100%",
-  overflow: "auto",
+  // overflow: "auto",
   maxHeight: "100vh",
   width: "100%", // Set width to 100% by default
   backgroundColor: "white",
@@ -43,9 +50,9 @@ const poppins = Poppins({
 
 const Main = styled("div")(({ theme }) => ({
   flexGrow: 1,
-  minHeight: "100%",
+  minHeight: "100vh",
   width: "100%",
-  // overflow: 'auto',
+  overflow: 'auto',
   marginLeft: "20px",
   paddingBottom: "20px",
   [theme.breakpoints.down("sm")]: {
@@ -81,30 +88,45 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const isMobile = useResponsive("down", "sm");
-  const [openRecharge, setOpenRecharge] = useState(false)
+  const [openRecharge, setOpenRecharge] = useState(false);
+  const { user } = useAuth();
+  console.log(user?.role);
 
   return (
-    <StyledRoot>
-      <aside style={{ backgroundColor: "#fcfff5" }}>
-        <CustomSidebar />
-      </aside>
-      <Main className={poppins.variable}>
-        {openRecharge && <Recharge openRecharge={openRecharge} setOpenRecharge={setOpenRecharge} />}
-
-        <HeaderBar>
-          <SearchTextbox />
-          <Stack direction='row'>
-            <Tooltip title='Nap tien' arrow>
-              <Fab size='small' aria-label='recharge' onClick={() => setOpenRecharge(true)}>
-                <AttachMoneyIcon />
-              </Fab>
-            </Tooltip>
-            <ProfilePopover></ProfilePopover>
-          </Stack>
-        </HeaderBar>
-        {children}
-      </Main>
-    </StyledRoot>
+    user && (
+      <StyledRoot>
+        <aside style={{ backgroundColor: "#fcfff5" }}>
+          {user.role === "admin" && <CustomSidebar menuItems={menuAdmin} />}
+          {user.role === "organizer" && (
+            <CustomSidebar menuItems={menuOrganizer} />
+          )}
+        </aside>
+        <Main className={poppins.variable}>
+          {openRecharge && (
+            <Recharge
+              openRecharge={openRecharge}
+              setOpenRecharge={setOpenRecharge}
+            />
+          )}
+          <HeaderBar>
+            <SearchTextbox />
+            <Stack direction="row" alignItems={"center"} spacing={2}>
+              <Tooltip title="Deposit" arrow>
+                <Fab
+                  size="small"
+                  aria-label="recharge"
+                  onClick={() => setOpenRecharge(true)}
+                >
+                  <AttachMoneyIcon />
+                </Fab>
+              </Tooltip>
+              <ProfilePopover />
+            </Stack>
+          </HeaderBar>
+          {children}
+        </Main>
+      </StyledRoot>
+    )
   );
 };
 
