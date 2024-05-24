@@ -2,13 +2,44 @@ import React, { use } from "react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect } from "react";
+import moment from "moment";
+
+const TicketStatus = {
+  ON_SALE: "On Sale",
+  UPCOMING: "Upcoming",
+  COMPLETED: "Completed",
+};
+
+function getTicketStatus(ticket) {
+  const parsedstartDate = moment(ticket?.startDate);
+  const parsedendDate = moment(ticket?.endDate);
+  const currentDate = new Date();
+
+  if (currentDate >= parsedendDate) {
+    return TicketStatus.COMPLETED;
+  } else if (currentDate < parsedstartDate) {
+    return "Upcoming at " + parsedstartDate.format("DD/MM/YYYY");
+  } else {
+    return ticket.quantity - ticket.sold > 0
+      ? ticket.quantity - ticket.sold + " Tickets Available"
+      : "Sold Out";
+  }
+}
+
 function TicketCardList({ tickets, handleSave }) {
   const [orders, setOrders] = useState([]);
 
-  console.log(orders);
-
   function handleAddQuantity(id) {
     const ticket = tickets.find((ticket) => ticket._id === id);
+    // check if ticket on sale
+    const parsedstartDate = moment(ticket?.startDate);
+    const parsedendDate = moment(ticket?.endDate);
+    const currentDate = new Date();
+    if (currentDate >= parsedendDate) {
+      return;
+    } else if (currentDate < parsedstartDate) {
+      return;
+    }
     const remaining = ticket.quantity - ticket.sold;
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
@@ -23,6 +54,16 @@ function TicketCardList({ tickets, handleSave }) {
   }
 
   function handleSubtractQuantity(id) {
+    // check if ticket on sale
+    const ticket = tickets.find((ticket) => ticket._id === id);
+    const parsedstartDate = moment(ticket?.startDate);
+    const parsedendDate = moment(ticket?.endDate);
+    const currentDate = new Date();
+    if (currentDate >= parsedendDate) {
+      return;
+    } else if (currentDate < parsedstartDate) {
+      return;
+    }
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
         order.id === id
@@ -87,13 +128,11 @@ function TicketCardList({ tickets, handleSave }) {
                           ? ticket.price.toLocaleString("vi", {
                               style: "currency",
                               currency: "VND",
-                            }) 
+                            })
                           : "Free"}
                       </h6>
                       <h6 class="font-medium text-sm leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
-                        {ticket.quantity - ticket.sold > 0
-                          ? ticket.quantity - ticket.sold + " Tickets Available"
-                          : "Sold Out"}
+                        {getTicketStatus(ticket)}
                       </h6>
                     </div>
                   </div>
