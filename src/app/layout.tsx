@@ -31,7 +31,7 @@ export default function RootLayout({
               {noLayoutPaths.includes(pathname) ? (
                 <ThemeProvider>{children}</ThemeProvider>
               ) : userLayoutPaths.includes(pathname) ||
-                pathname.startsWith("/event/") ? (
+                pathname.startsWith("/event/") || pathname.startsWith("/me") ? (
                 <ThemeProvider>
                   <UserLayout>{children}</UserLayout>
                 </ThemeProvider>

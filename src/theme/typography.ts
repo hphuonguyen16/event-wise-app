@@ -46,6 +46,7 @@ const typography = {
 	fontWeightRegular: 400,
 	fontWeightMedium: 600,
 	fontWeightBold: 700,
+	color:'black',
 	h1: {
 		fontWeight: 800,
 		lineHeight: 80 / 64,

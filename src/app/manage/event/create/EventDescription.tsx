@@ -1,9 +1,11 @@
 import React from 'react'
 import { useState } from 'react'
 import { Box, IconButton, TextField } from '@mui/material'
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
 
 interface EventDescriptionProps {
   type: string

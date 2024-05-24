@@ -25,6 +25,7 @@ const StyledRoot = styled("div")(({ theme }) => ({
   // height: "100vh",
   // overflow: "auto",
   maxHeight: "100vh",
+  height: "100%",
   width: "100%", // Set width to 100% by default
   backgroundColor: "white",
 
@@ -80,13 +81,12 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const isMobile = useResponsive("down", "sm");
-  const {user} = useAuth()
+  const { user } = useAuth();
 
   return (
     <StyledRoot>
       <aside style={{ backgroundColor: "#fcfff5" }}>
         {user && user.role === "user" && <CustomSidebar menuItems={menuUser} />}
-        
       </aside>
       <Main className={poppins.variable}>
         <HeaderBar>

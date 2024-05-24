@@ -46,31 +46,33 @@ export default function BasicTabs() {
     setValue(newValue);
   };
 
-    return (
-      <Box sx={{padding:'30px'}}>
-        <Typography variant="h2">Organization Settings</Typography>
-        <Box sx={{ width: "100%", marginTop:'20px' }}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              aria-label="basic tabs example"
-            >
-              <Tab label="Organizer Profile" {...a11yProps(0)} />
-              <Tab label="Team Management" {...a11yProps(1)} />
-              <Tab label="Ticket Fees" {...a11yProps(2)} />
-            </Tabs>
-          </Box>
-          <CustomTabPanel value={value} index={0}>
-            <Profile/>
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={1}>
-            Item Two
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={2}>
-            Item Three
-          </CustomTabPanel>
+  //using useEffect and check type with typeof window
+  
+  return (
+    <Box sx={{ padding: "30px" }}>
+      <Typography variant="h2">Organization Settings</Typography>
+      <Box sx={{ width: "100%", marginTop: "20px" }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
+            <Tab label="Organizer Profile" {...a11yProps(0)} />
+            <Tab label="Team Management" {...a11yProps(1)} />
+            <Tab label="Ticket Fees" {...a11yProps(2)} />
+          </Tabs>
         </Box>
+        <CustomTabPanel value={value} index={0}>
+          <Profile />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          Item Two
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={2}>
+          Item Three
+        </CustomTabPanel>
       </Box>
-    );
+    </Box>
+  );
 }

@@ -1,18 +1,19 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
 //import ImageCropper from "@/components/ImageCropper";
 import LinkIcon from "@mui/icons-material/Link";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import UrlConfig from "@/config/urlConfig";
-import he from "he";
 import useSnackbar from "@/context/snackbarContext";
 import CustomSnackbar from "@/components/common/Snackbar";
 import ImageCropper from "@/components/common/ImageCropper";
 import { IconButton, Stack } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 function Profile() {
   const axiosPrivate = useAxiosPrivate();
@@ -96,7 +97,6 @@ function Profile() {
       console.log(error);
     }
   }
-  console.log(dataForm);
   async function handleSave() {
     try {
       setIsSubmitting(true);

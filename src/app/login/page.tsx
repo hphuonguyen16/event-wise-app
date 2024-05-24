@@ -139,14 +139,13 @@ export default function LoginPage() {
       localStorage.setItem("persist", "persist");
       localStorage.setItem("role", user.role);
       localStorage.setItem("accessToken", resJson.token);
-      // if (user.role === "admin") {
-      //   router.push("/admin/overview");
-      // } else if (user.role === "business") {
-      //   router.push("/business/advertisement");
-      // } else {
-      //   router.push("/home");
-      // }
-      router.push("/");
+      if (user.role === "admin") {
+        router.push("/admin/transaction");
+      } else if (user.role === "organizer") {
+        router.push("/manage/event");
+      } else {
+        router.push("/home");
+      }
     } else {
       setIsLoggingIn(false);
       setSnack({ open: true, type: "error", message: resJson.message });

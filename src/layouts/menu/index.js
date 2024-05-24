@@ -69,6 +69,15 @@ export const menuAdmin = [
 
 export const menuUser = [
   {
+    link: "/home",
+    name: "Home",
+    icon: (
+      <DashboardOutlinedIcon
+        sx={{ fontSize: "32px", stroke: "#ffffff", strokeWidth: 1 }}
+      />
+    ),
+  },
+  {
     link: "/me/manage-order",
     name: "Transaction",
     icon: (

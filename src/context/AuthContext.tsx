@@ -61,10 +61,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
          });
          const data = response.data.data;
          setUser(data);
+         localStorage.setItem("accessToken", data.accessToken);
          setAccessToken(data.accessToken);
        }
      } catch (error) {
        console.error("Error fetching user data:", error);
+       //@ts-ignore
+       if (error.response.status === 401 || error.response.status === 403) {
+         setIsAuthenticated(false);
+         localStorage.removeItem("persist");
+         router.push("/login");
+       }
      }
    };
 

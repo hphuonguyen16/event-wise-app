@@ -1,26 +1,33 @@
-'use client'
-import { axiosPrivate } from '@/axios'
-import { useEffect } from 'react'
-import useRefreshToken from './useRefreshToken'
-import { useAuth } from '@/context/AuthContext'
-import { useRouter } from 'next/navigation'
+"use client";
+import { axiosPrivate } from "@/axios";
+import { useEffect } from "react";
+import useRefreshToken from "./useRefreshToken";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const useAxiosPrivate = () => {
-  const refresh = useRefreshToken();
-  const { setAccessToken, setUser } = useAuth();
+  // const refresh = useRefreshToken();
+  const { accessToken, setAccessToken, setUser } = useAuth();
   const router = useRouter();
-  const accessToken = localStorage.getItem("accessToken");
+  // const [accessToken, setAccess] = useState<string | null>(null);
 
   useEffect(() => {
+    // setAccess(localStorage.getItem("accessToken"));
     const requestIntercept = axiosPrivate.interceptors.request.use(
       async (config: any) => {
-        if (!config.headers["Authorization"]) {
-          if (localStorage.getItem("persist") && !accessToken) {
-            const newAccesstoken = await refresh();
-            config.headers["Authorization"] = `Bearer ${newAccesstoken}`;
-          } else {
-            config.headers["Authorization"] = `Bearer ${accessToken}`;
-          }
+        // if (!config.headers["Authorization"]) {
+        //   if (localStorage.getItem("persist") && !accessToken) {
+        //     const newAccesstoken = await refresh();
+        //     config.headers["Authorization"] = `Bearer ${newAccesstoken}`;
+        //   } else {
+        //     config.headers["Authorization"] = `Bearer ${accessToken}`;
+        //   }
+        // }
+        if (accessToken) {
+          config.headers["Authorization"] = `Bearer ${localStorage.getItem(
+            "accessToken"
+          )}`;
         }
         return config;
       },
@@ -31,11 +38,15 @@ const useAxiosPrivate = () => {
       (response: any) => response,
       async (error: any) => {
         const prevRequest = error?.config;
-        // if ((error?.response?.status === 403 || error?.response?.status === 401) && !prevRequest?.sent) {
-        //   prevRequest.sent = true
-        //   const newAccessToken = await refresh()
-        //   prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
-        //   return axiosPrivate(prevRequest)
+
+        if (
+          error?.response?.status === 403 ||
+          error?.response?.status === 401
+        ) {
+          localStorage.removeItem("persist");
+          router.push("/login");
+          return axiosPrivate(prevRequest);
+        }
         // } else if (error?.response?.status === 404) {
         //   router.push('/page-not-found')
         // } else if (error?.response?.status === 500) {
@@ -50,7 +61,7 @@ const useAxiosPrivate = () => {
       axiosPrivate.interceptors.response.eject(responseIntercept);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, refresh]);
+  }, [accessToken]);
 
   return axiosPrivate;
 };

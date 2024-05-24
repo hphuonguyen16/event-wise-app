@@ -59,7 +59,14 @@ function HomePage() {
   }, []);
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box
+      sx={{
+        width: "100%",
+        height: "100%",
+        overflowY: "scroll",
+        overflowX: "hidden",
+      }}
+    >
       <Box sx={{ width: "100%", overflow: "hidden" }}>
         <img
           src="https://cdn.evbstatic.com/s3-build/fe/build/images/9662fa598ddd4e8f78fd87196067cfd3-homepage_banner_nightlife_1067x470.webp"
@@ -81,7 +88,14 @@ function HomePage() {
         {events &&
           Object.keys(events).map((category: string) => (
             <Box key={category} sx={{ mt: 5 }}>
-              <Typography variant="h3">{category}</Typography>
+              <Typography
+                variant="h3"
+                sx={{
+                  color: "black",
+                }}
+              >
+                {category}
+              </Typography>
               <Stack
                 direction="row"
                 spacing={2}
