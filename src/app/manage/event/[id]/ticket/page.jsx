@@ -1,7 +1,5 @@
 "use client";
 
-//@ts-nocheck
-
 import { useEffect, useState } from "react";
 
 import Card from "@mui/material/Card";
@@ -26,28 +24,29 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import UrlConfig from "@/config/urlConfig";
 import useSnackbar from "@/context/snackbarContext";
 import CustomSnackbar from "@/components/common/Snackbar";
+import Link from "next/link";
 import Modal from "@mui/material/Modal";
 import CreateTicket from "./components/create-ticket";
 import useResponsive from "@/hooks/useResponsive";
 import dayjs from "dayjs";
-import moment from "moment";
+import moment, { min } from "moment";
 import { useRouter } from "next/navigation";
 
 // ----------------------------------------------------------------------
-export default function UserPage({ params }: any) {
+export default function UserPage({ params }) {
   const eventId = params.id;
   const router = useRouter();
   const isMobile = useResponsive("down", "sm");
-  const [openAdd, setOpenAdd] = useState(false);
+  const [openAdd, setopenAdd] = useState(false);
   const [page, setPage] = useState(0);
 
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState([]);
 
-  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const [order, setOrder] = useState("asc");
 
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState<string>("name");
+  const [orderBy, setOrderBy] = useState("name");
 
   const [filterName, setFilterName] = useState("");
 
@@ -57,10 +56,10 @@ export default function UserPage({ params }: any) {
   const [isUpdated, setIsUpdated] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const { setSnack } = useSnackbar();
-  const [dataFormAdd, setDataFormAdd] = useState<any>({
+  const [dataFormAdd, setdataFormAdd] = useState({
     name: "",
-    price: 0,
-    quantity: 0,
+    price: "",
+    quantity: "",
     event: eventId,
     startDate: dayjs(new Date()),
     endDate: dayjs(new Date()).add(1, "day"),
@@ -70,7 +69,7 @@ export default function UserPage({ params }: any) {
     ticketType: "free",
   });
 
-  const handleSort = (event: any, id: string) => {
+  const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === "asc";
     if (id !== "") {
       setOrder(isAsc ? "desc" : "asc");
@@ -78,18 +77,18 @@ export default function UserPage({ params }: any) {
     }
   };
 
-  const handleSelectAllClick = (event: any) => {
+  const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = events.map((n: any) => n.id);
+      const newSelecteds = events.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event: any, name: string) => {
+  const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
-    let newSelected: string[] = [];
+    let newSelected = [];
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
@@ -105,21 +104,21 @@ export default function UserPage({ params }: any) {
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event: any, newPage: number) => {
+  const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: any) => {
+  const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const handleFilterByName = (event: any) => {
+  const handleFilterByName = (event) => {
     setPage(0);
     setFilterName(event.target.value);
   };
 
-  const handleFilterStatus = (event: any) => {
+  const handleFilterStatus = (event) => {
     setPage(0);
     setFilterStatus(event.target.value);
   };
@@ -130,11 +129,10 @@ export default function UserPage({ params }: any) {
     filterName,
     filterStatus,
   });
-
-  const handleDeleteEvent = (id: string) => {
+  const handleDeleteEvent = (id) => {
     axiosPrivate
       .delete(UrlConfig?.ticketType.deleteTicketType(id))
-      .then((res: any) => {
+      .then((res) => {
         setEvents((prev) => prev.filter((event) => event.id !== id));
         setSnack({
           open: true,
@@ -145,7 +143,7 @@ export default function UserPage({ params }: any) {
       .catch((err) => {
         setSnack({
           open: true,
-          message: "Ticket deletion failed!",
+          message: "Ticket deleted failed!",
           type: "error",
         });
       });
@@ -172,12 +170,12 @@ export default function UserPage({ params }: any) {
         return;
       }
 
-      // validate start date and end date using isBefore
-      // compare with now
+      //validate start date and end date use isBefore
+      //compare with now
       if (moment(dataFormAdd.startDate).isBefore(moment(new Date()), "day")) {
         setSnack({
           open: true,
-          message: "Start date must be today or later!",
+          message: "Start date must be greater or today!",
           type: "error",
         });
         return;
@@ -185,7 +183,7 @@ export default function UserPage({ params }: any) {
       if (moment(dataFormAdd.endDate).isBefore(moment(new Date()), "day")) {
         setSnack({
           open: true,
-          message: "End date must be today or later!",
+          message: "End date must be greater than today!",
           type: "error",
         });
         return;
@@ -193,7 +191,7 @@ export default function UserPage({ params }: any) {
       if (dataFormAdd.startDate.isAfter(dataFormAdd.endDate)) {
         setSnack({
           open: true,
-          message: "End date must be after start date!",
+          message: "End date must be greater than start date!",
           type: "error",
         });
         return;
@@ -218,28 +216,30 @@ export default function UserPage({ params }: any) {
       if (response.data.status === "success") {
         setSnack({
           open: true,
-          message: "Ticket added successfully!",
+          message: "Ticket add successfully!",
           type: "success",
         });
-        setOpenAdd(false);
+        setopenAdd(false);
         reloadWhenUpdated();
+        //after success, render the updated data
       } else {
         setSnack({
           open: true,
-          message: response.data.message || "Something went wrong!",
+          message: error.response.data.message || "Something went wrong!",
           type: "error",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
+      //catch error
       setSnack({
         open: true,
-        message: error.response?.data?.message || "Something went wrong!",
+        message: error.response.data.message || "Something went wrong!",
         type: "error",
       });
     }
   };
 
-  async function handleSaveTicketing(status: string) {
+  async function handleSaveTicketing(status) {
     try {
       if (events.length === 0) {
         setSnack({
@@ -262,11 +262,11 @@ export default function UserPage({ params }: any) {
       } else {
         setSnack({
           open: true,
-          message: res.data.message || "Something went wrong!",
+          message: error.response.data.message || "Something went wrong!",
           type: "error",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
     }
   }
@@ -274,8 +274,8 @@ export default function UserPage({ params }: any) {
   useEffect(() => {
     axiosPrivate
       .get(UrlConfig?.ticketType.getTicketTypesByEventId(eventId))
-      .then((res: any) => {
-        const events = res.data.data.map((event: any) => {
+      .then((res) => {
+        const events = res.data.data.map((event) => {
           return {
             id: event._id,
             name: event.name,
@@ -293,125 +293,169 @@ export default function UserPage({ params }: any) {
         });
         setEvents(events);
       });
+
+    return () => {
+      setdataFormAdd({
+        name: "",
+        price: "",
+        quantity: "",
+        event: eventId,
+        startDate: dayjs(new Date()),
+        endDate: dayjs(new Date()).add(1, "day"),
+        minQuantity: 1,
+        maxQuantity: 10,
+        ticketType: "free",
+        salesChannel: "both", // Default value
+      });
+    };
   }, [isUpdated]);
+
+  useEffect(() => {
+    const saveTicketing = async () => {
+      if (events.length === 0) {
+        const res = await axiosPrivate.put(
+          UrlConfig.event.updateEvent(eventId),
+          {
+            status: "building",
+          }
+        );
+      }
+    };
+
+    saveTicketing();
+  }, [events]);
 
   const reloadWhenUpdated = () => {
     setIsUpdated(!isUpdated);
   };
 
   return (
-    <>
+    <Box sx={{ px: 5 }}>
+      <CustomSnackbar />
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
         mb={5}
       >
-        <Typography variant="h4" gutterBottom>
-          Ticketing
-        </Typography>
+        <Typography variant="h3">TICKETS</Typography>{" "}
+        {/* Replace "/new-event-page" with the actual link */}
         <Button
           variant="contained"
-          //@ts-ignore
+          color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={() => setOpenAdd(true)}
+          onClick={() => setopenAdd(true)}
         >
-          Create Ticket
+          New Ticket
         </Button>
       </Stack>
-
       <Card>
         <TicketTableToolbar
+          numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
           filterStatus={filterStatus}
           onFilterStatus={handleFilterStatus}
         />
 
-        <TableContainer sx={{ minWidth: 800 }}>
-          <Table>
+        <TableContainer sx={{ overflow: "unset" }}>
+          <Table sx={{ minWidth: 800 }}>
             <TicketTableHead
               order={order}
               orderBy={orderBy}
-              headLabel={[
-                { id: "name", label: "Ticket Name", alignRight: false },
-                { id: "price", label: "Price", alignRight: false },
-                { id: "quantity", label: "Quantity", alignRight: false },
-                { id: "status", label: "Status", alignRight: false },
-                { id: "startTime", label: "Start Time", alignRight: false },
-                { id: "endTime", label: "End Time", alignRight: false },
-                { id: "" },
-              ]}
               rowCount={events.length}
               numSelected={selected.length}
               onRequestSort={handleSort}
               onSelectAllClick={handleSelectAllClick}
+              headLabel={[
+                { id: "name", label: "Name" },
+                { id: "date", label: "Date" },
+                { id: "price", label: "Price" },
+                { id: "sold", label: "Sold" },
+                { id: "status", label: "Status" },
+              ]}
             />
             <TableBody>
               {dataFiltered
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row: any) => (
+                .map((row) => (
                   <TicketTableRow
                     key={row.id}
-                    //@ts-ignore
-                    row={row}
-                    selected={selected.includes(row.id)}
-                    onSelectRow={(event: any) => handleClick(event, row.id)}
-                    onDeleteRow={() => handleDeleteEvent(row.id)}
+                    ticket={row}
+                    selected={selected.indexOf(row.id) !== -1}
+                    handleClick={(event) => handleClick(event, row.id)}
+                    handleDeleteEvent={(event) => handleDeleteEvent(row.id)}
+                    eventId={eventId}
+                    reloadWhenUpdated={reloadWhenUpdated}
                   />
                 ))}
 
               <TableEmptyRows
-                height={72}
+                height={77}
                 emptyRows={emptyRows(page, rowsPerPage, events.length)}
               />
 
-                {/*@ts-ignore */ }
-              <TableNoData isNotFound={notFound} />
+              {notFound && <TableNoData query={filterName} />}
             </TableBody>
           </Table>
         </TableContainer>
 
-        <Box sx={{ position: "relative" }}>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={events.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Box>
+        <TablePagination
+          page={page}
+          component="div"
+          count={dataFiltered.length}
+          rowsPerPage={rowsPerPage}
+          onPageChange={handleChangePage}
+          rowsPerPageOptions={[5, 10, 25]}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Card>
-
-      <Box mt={3} display="flex" justifyContent="flex-end" gap={2}>
+      <Box sx={{ display: "flex", justifyContent: "end" }}>
         <Button
           variant="contained"
-          onClick={() => handleSaveTicketing("DRAFT")}
+          sx={{
+            marginTop: "20px",
+            background:
+              events.length === 0
+                ? //@ts-ignore
+                  (theme) => `${theme.palette.disabled}!important`
+                : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
+            color: "white !important",
+          }}
+          onClick={() => {
+            handleSaveTicketing("ticketing");
+          }}
+          disabled={events.length === 0}
         >
-          Save as Draft
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleSaveTicketing("PUBLISHED")}
-        >
-          Publish
+          Next
         </Button>
       </Box>
-
-      <Modal open={openAdd} onClose={() => setOpenAdd(false)}>
-        <CreateTicket
-          /*@ts-ignore */
-          onCancel={() => setOpenAdd(false)}
-          dataFormAdd={dataFormAdd}
-          setDataFormAdd={setDataFormAdd}
-          onSave={handleSave}
-        />
+      <Modal open={openAdd} onClose={() => setopenAdd(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            //   width: isMobile ? '80vw' : width ? width : '100vw',
+            width: isMobile ? "80%" : "40%",
+            height: isMobile ? "80%" : "83%",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            borderRadius: 2,
+            padding: isMobile ? 3 : "20px",
+          }}
+        >
+          <CreateTicket
+            handleClose={() => {
+              setopenAdd(false);
+            }}
+            dataForm={dataFormAdd}
+            setDataForm={setdataFormAdd}
+            handleSave={handleSave}
+          />
+        </Box>
       </Modal>
-
-      <CustomSnackbar />
-    </>
+    </Box>
   );
 }

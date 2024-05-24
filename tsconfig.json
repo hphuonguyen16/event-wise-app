@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/manage/event/page.jsx", "src/app/manage/event/[id]/ticket/page.tsx", "src/app/manage/event/[id]/order/page.jsx", "src/app/manage/event/[id]/add-attendee/page.jsx", "src/components/Events/EventCard.jsx", "src/app/event/[id]/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/manage/event/page.jsx", "src/app/manage/event/[id]/ticket/page.jsx", "src/app/manage/event/[id]/order/page.jsx", "src/app/manage/event/[id]/add-attendee/page.jsx", "src/components/Events/EventCard.jsx", "src/app/event/[id]/page.jsx"],
   "exclude": ["node_modules"]
 }

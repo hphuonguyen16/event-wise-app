@@ -45,16 +45,16 @@ export default function EventTableRow({
   const [openEdit, setOpenEdit] = useState(null);
   const isMobile = useResponsive("down", "sm");
   const [dataForm, setDataForm] = useState({
-    name: ticket.name,
-    price: ticket.price,
-    quantity: ticket.quantity,
+    name: ticket?.name,
+    price: ticket?.price,
+    quantity: ticket?.quantity,
     event: eventId,
-    startDate: dayjs(ticket.startDate),
-    endDate: dayjs(ticket.endDate),
-    minQuantity: ticket.minQuantity,
-    maxQuantity: ticket.maxQuantity,
-    salesChannel: ticket.salesChannel, // Default value
-    ticketType: ticket.ticketType, // Default value
+    startDate: dayjs(ticket?.startDate),
+    endDate: dayjs(ticket?.endDate),
+    minQuantity: ticket?.minQuantity,
+    maxQuantity: ticket?.maxQuantity,
+    salesChannel: ticket?.salesChannel, // Default value
+    ticketType: ticket?.ticketType, // Default value
   });
 
   const handleOpenMenu = (event) => {
@@ -76,8 +76,8 @@ export default function EventTableRow({
   };
 
   function getTicketStatus(ticket) {
-    const parsedstartDate = moment(ticket.startDate);
-    const parsedendDate = moment(ticket.endDate);
+    const parsedstartDate = moment(ticket?.startDate);
+    const parsedendDate = moment(ticket?.endDate);
     const currentDate = new Date();
 
     if (currentDate >= parsedendDate) {
@@ -117,14 +117,14 @@ export default function EventTableRow({
     //   });
     //   return;
     // }
-    if (dataForm.endDate.get("date") < dayjs(new Date()).get("date")){
-      setSnack({
-        open: true,
-        message: "End date cannot be past!",
-        type: "error",
-      });
-      return;
-    }
+    // if (dataForm.endDate.get("date") < dayjs(new Date()).get("date")){
+    //   setSnack({
+    //     open: true,
+    //     message: "End date cannot be past!",
+    //     type: "error",
+    //   });
+    //   return;
+    // }
     if (dataForm.startDate.isAfter(dataForm.endDate)) {
       setSnack({
         open: true,
@@ -191,19 +191,19 @@ export default function EventTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Typography variant="subtitle" noWrap>
-            {ticket.name}
+            {ticket?.name}
           </Typography>
         </TableCell>
 
         <TableCell>
           {" "}
-          {"On sale on " + formatDate(ticket.startDate)}
+          {"On sale on " + formatDate(ticket?.startDate)}
           <Typography variant="subtitle2" noWrap>
-            {"Ends on " + formatDate(ticket.endDate)}
+            {"Ends on " + formatDate(ticket?.endDate)}
           </Typography>
         </TableCell>
-        <TableCell>{ticket.price}</TableCell>
-        <TableCell>{"0/" + ticket.quantity}</TableCell>
+        <TableCell>{ticket?.price}</TableCell>
+        <TableCell>{"0/" + ticket?.quantity}</TableCell>
 
         <TableCell>
           <Chip

@@ -65,9 +65,9 @@ async function handleFileUpload(files: File[]) {
 }
 
 interface EventCreateProps {
-    eventForm: any;
-    setEventForm: any;
-    handleSave: any;
+  eventForm: any;
+  setEventForm: any;
+  handleSave: any;
 }
 
 export default function EventCreate({
@@ -75,7 +75,6 @@ export default function EventCreate({
   setEventForm,
   handleSave,
 }: EventCreateProps) {
-  
   console.log(eventForm);
 
   const handleAddDescriptionText = (e: any) => {
@@ -131,7 +130,6 @@ export default function EventCreate({
       ),
     }));
   };
-
 
   return (
     <Box
@@ -378,7 +376,7 @@ export default function EventCreate({
                   Add more details about your event and include what people can
                   expect if they attend.
                 </Typography>
-                {eventForm.about.map((item:any, index:any) => {
+                {eventForm.about.map((item: any, index: any) => {
                   return (
                     <EventDescription
                       key={index}
