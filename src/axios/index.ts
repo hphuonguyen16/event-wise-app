@@ -1,5 +1,5 @@
 import axios from 'axios'
-const BASE_URL = process.env.NEXT_APP_BEEGIN_DOMAIN
+const BASE_URL = process.env.NEXT_PUBLIC_DOMAIN;
 
 export default axios.create({
   baseURL: BASE_URL

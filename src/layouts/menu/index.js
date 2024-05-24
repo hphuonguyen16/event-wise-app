@@ -79,7 +79,7 @@ export const menuUser = [
   },
   {
     link: "/me/manage-order",
-    name: "Transaction",
+    name: "My orders",
     icon: (
       <AssignmentOutlinedIcon
         sx={{ fontSize: "32px", stroke: "#ffffff", strokeWidth: 1 }}

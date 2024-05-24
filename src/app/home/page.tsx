@@ -75,7 +75,7 @@ function HomePage() {
         />
       </Box>
       <Box sx={{ margin: "40px auto", width: "80%" }}>
-        <Stack direction={"row"} alignItems={"center"} spacing={7}>
+        {/* <Stack direction={"row"} alignItems={"center"} spacing={7}>
           <CategoryTag />
           <CategoryTag />
           <CategoryTag />
@@ -84,7 +84,7 @@ function HomePage() {
           <CategoryTag />
           <CategoryTag />
           <CategoryTag />
-        </Stack>
+        </Stack> */}
         {events &&
           Object.keys(events).map((category: string) => (
             <Box key={category} sx={{ mt: 5 }}>

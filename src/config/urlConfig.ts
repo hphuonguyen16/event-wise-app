@@ -1,7 +1,9 @@
 import { publicDecrypt } from "crypto";
 import { create } from "domain";
 
-const domain = "http://localhost:8000";
+const domain = process.env.NEXT_PUBLIC_DOMAIN;
+
+console.log("domain", domain);
 
 const UrlConfig: any = {
   user: {
