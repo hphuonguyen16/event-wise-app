@@ -4,6 +4,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import BackupTableOutlinedIcon from "@mui/icons-material/BackupTableOutlined";
 
 export const menuOrganizer = [
   {
@@ -46,6 +47,15 @@ export const menuOrganizer = [
 
 
 export const menuAdmin = [
+  {
+    link: "/admin/manage/category",
+    name: "Category",
+    icon: (
+      <BackupTableOutlinedIcon
+        sx={{ fontSize: "32px", stroke: "#ffffff", strokeWidth: 1 }}
+      />
+    ),
+  },
   {
     link: "/admin/manage/transaction",
     name: "Transaction",
