@@ -134,7 +134,6 @@ export default function LoginPage() {
       setIsAuthenticated(true);
       setAccessToken(resJson.token);
       setUser(user);
-      setUser(user);
       //set local storage
       console.log(resJson.token);
       localStorage.setItem("persist", "persist");
