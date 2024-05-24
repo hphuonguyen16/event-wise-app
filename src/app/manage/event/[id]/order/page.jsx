@@ -202,7 +202,6 @@ function Row(props) {
         open={openRefund}
         handleClose={() => setOpenRefund(false)}
         handleOk={() => {
-          console.log(row._id);
           handleRefund(row._id);
         }}
         width={700}
@@ -253,7 +252,6 @@ export default function CollapsibleTable({ params }) {
   });
   const { setSnack } = useSnackbar();
 
-  console.log(selected);
 
   function handleDeleteOrder(_id) {
     axiosPrivate
@@ -334,7 +332,6 @@ export default function CollapsibleTable({ params }) {
         registrationIds: selected,
         organizerId: user._id,
       });
-      console.log(res);
       if (res?.data?.status === "success") {
          setReloadData(!reloadData);
          setOpenRefund(false);
@@ -346,7 +343,6 @@ export default function CollapsibleTable({ params }) {
        
       }
     } catch (error) {
-      console.log(error);
       setOpenRefund(false);
       setSnack({
         open: true,

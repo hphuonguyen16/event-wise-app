@@ -51,7 +51,6 @@ const CreateTicket = ({
     }));
   };
 
-  console.log(dataForm);
 
   return (
     <Grid container spacing={5} sx={{ padding: "15px" }}>

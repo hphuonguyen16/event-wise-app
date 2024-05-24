@@ -12,7 +12,6 @@ import {
 import moment from "moment";
 
 const WithdrawDetail = ({ open, setOpen, withdraw }) => {
-    console.log(withdraw);  
   return (
     <>
       <Rootmodal

@@ -127,7 +127,6 @@ const PublishPage = ({ params }: { params: { id: string } }) => {
     );
     if (response.data.status === "success") {
       const event = response.data.data.data;
-      console.log("event", event);
       setFormData({
         visibility: event.visibility,
         category: event.category,
@@ -137,7 +136,6 @@ const PublishPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  console.log("formData", formData);
 
   React.useEffect(() => {
     getCategories();

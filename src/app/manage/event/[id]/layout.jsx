@@ -101,11 +101,9 @@ const Layout = ({ children }) => {
       UrlConfig.event.getEvent(id)
     );
     const event = response.data.data.data;
-    console.log("event", event);
     setEvent(event);
   };
 
-  console.log("event", event);
 
   useEffect(() => {
     fetchDetailEvent();

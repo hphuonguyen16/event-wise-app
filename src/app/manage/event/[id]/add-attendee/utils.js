@@ -40,7 +40,6 @@ function CheckStatus(eventDate) {
   const currentDate = new Date();
   const dateObject = moment(eventDate, "ddd MMM DD YYYY").toDate();
   const parsedEventDate = new Date(dateObject);
-  console.log(parsedEventDate);
 
   if (parsedEventDate > currentDate) {
     return "On Sale";

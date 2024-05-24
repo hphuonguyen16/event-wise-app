@@ -189,7 +189,6 @@ export default function Page({ params }: { params: { id: string } }) {
     fetchData();
   }, []);
 
-  console.log(eventForm);
 
   return (
     <>

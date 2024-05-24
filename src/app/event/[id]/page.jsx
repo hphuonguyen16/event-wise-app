@@ -36,7 +36,6 @@ const EventDetail = ({ params }) => {
           order.quantity != 0 &&
           order.quantity !== ""
       );
-      console.log("orders", orders);
       const response = await axiosPrivate.post(UrlConfig.order.createOrder, {
         event: params.id,
         orders: orders.map((order) => ({
@@ -91,7 +90,6 @@ const EventDetail = ({ params }) => {
         setTickets(res.data.data);
       });
   }, [isUpdated]);
-  console.log(tickets);
   return (
     <Box sx={{ width: "70%", margin: "auto", paddingBottom: "30px" }}>
       <CustomSnackbar />

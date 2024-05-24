@@ -27,7 +27,6 @@ function Page() {
   const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState([]);
   const router = useRouter();
-  console.log(searchParams.get("q"));
   async function fetchSearchData() {
     const res = await axiosPrivate.get(
       `${UrlConfig.search.searchEvents}?q=${searchParams.get("q")}`

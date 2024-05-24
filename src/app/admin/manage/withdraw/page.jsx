@@ -34,7 +34,6 @@ const TransactionManagement = () => {
     setTransactionData(res.data.data);
   };
 
-  console.log(transactionData);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

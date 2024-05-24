@@ -76,7 +76,6 @@ const WithdrawHistoryTable = ({ request, fetchTransactionData }) => {
       });
     }
   };
-  console.log(item);
   return (
     <>
       <CustomSnackbar />

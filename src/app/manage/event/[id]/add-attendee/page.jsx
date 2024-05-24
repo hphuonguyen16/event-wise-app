@@ -141,7 +141,6 @@ const AddAttendee = ({ params }) => {
           order.quantity != 0 &&
           order.quantity !== ""
       );
-      console.log("orders", orders);
       const response = await axiosPrivate.post(UrlConfig.order.createOrder, {
         event: eventId,
         orders: orders,
@@ -191,7 +190,6 @@ const AddAttendee = ({ params }) => {
     }
   };
 
-  console.log("dataFormAdd", dataFormAdd);
 
   function validateForm() {
     if (

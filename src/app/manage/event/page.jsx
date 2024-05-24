@@ -139,7 +139,6 @@ export default function UserPage() {
 
   async function fetchEvents() { 
      const url = UrlConfig?.event.getMyEvents;
-     console.log(url);
      axiosPrivate.get(UrlConfig?.event.getMyEvents).then((res) => {
        const events = res.data.data.map((event) => {
          return {
@@ -166,7 +165,6 @@ export default function UserPage() {
    fetchEvents();
   }, [reload]);
 
-  console.log(events);
 
   return (
     <Box sx={{ px: 5 }}>

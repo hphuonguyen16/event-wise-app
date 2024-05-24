@@ -116,7 +116,6 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     setIsLoggingIn(true);
-    console.log(urlConfig.user.login);
     const res = await fetch(urlConfig.user.login, {
       method: "POST",
       headers: {

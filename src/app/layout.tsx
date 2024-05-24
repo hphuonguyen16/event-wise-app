@@ -4,7 +4,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Layout from "@/layouts";
 import ThemeProvider from "../theme";
-import { ProSidebarProvider } from "react-pro-sidebar";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Script from "next/script";
@@ -23,27 +22,24 @@ export default function RootLayout({
   const pathname = usePathname();
   const noLayoutPaths = ["/login", "/register"];
   const userLayoutPaths = ["/organization/info", "/home", "/event/"];
-  console.log(pathname);
   return (
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
           <SnackbarContextProvider>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <ProSidebarProvider>
-                {noLayoutPaths.includes(pathname) ? (
-                  <ThemeProvider>{children}</ThemeProvider>
-                ) : userLayoutPaths.includes(pathname) ||
-                  pathname.startsWith("/event/") ? (
-                  <ThemeProvider>
-                    <UserLayout>{children}</UserLayout>
-                  </ThemeProvider>
-                ) : (
-                  <ThemeProvider>
-                    <Layout>{children}</Layout>
-                  </ThemeProvider>
-                )}
-              </ProSidebarProvider>
+              {noLayoutPaths.includes(pathname) ? (
+                <ThemeProvider>{children}</ThemeProvider>
+              ) : userLayoutPaths.includes(pathname) ||
+                pathname.startsWith("/event/") ? (
+                <ThemeProvider>
+                  <UserLayout>{children}</UserLayout>
+                </ThemeProvider>
+              ) : (
+                <ThemeProvider>
+                  <Layout>{children}</Layout>
+                </ThemeProvider>
+              )}
             </LocalizationProvider>
           </SnackbarContextProvider>
         </AuthProvider>
