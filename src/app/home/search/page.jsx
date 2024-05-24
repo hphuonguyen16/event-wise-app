@@ -1,13 +1,9 @@
 "use client";
-import React from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { useState } from "react";
 import UrlConfig from "@/config/urlConfig";
-import { useEffect } from "react";
-import { Box } from "@mui/material";
-import { Typography } from "@mui/material";
-import { Grid } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import EventCard from "@/components/Events/EventCard";
 import ProfileCard from "@/components/Organization/ProfileCard";
 
@@ -22,33 +18,41 @@ function chunk(array, size) {
   }, []);
 }
 
-function Page() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState([]);
   const router = useRouter();
+
   async function fetchSearchData() {
     const res = await axiosPrivate.get(
       `${UrlConfig.search.searchEvents}?q=${searchParams.get("q")}`
     );
     setData(res.data.data);
   }
+
   useEffect(() => {
     const fetchData = async () => {
-      //await fetchCategories();
       await fetchSearchData();
     };
     fetchData();
   }, []);
+
   const eventSearch = chunk(data.events, 4);
   const organizerSearch = chunk(data.organizers, 4);
 
   return (
     <div>
-      <Box sx={{ marginTop: "100px", width: "100%", margin: "auto" }}>
+      <Box
+        sx={{
+          marginTop: "100px",
+          width: "100%",
+          margin: "auto",
+          marginLeft: "20px",
+        }}
+      >
         <Typography variant="h3" sx={{ mt: 5 }}>
-          {" "}
-          Events{" "}
+          Events
         </Typography>
 
         {eventSearch?.map((chunk, rowIndex) => (
@@ -64,15 +68,14 @@ function Page() {
           </Grid>
         ))}
       </Box>
-      <Box sx={{ marginTop: "100px", margin: "auto" }}>
+      <Box sx={{ marginTop: "100px", margin: "auto", marginLeft: "20px" }}>
         <Typography variant="h3" sx={{ mt: 5 }}>
-          {" "}
-          Organizers{" "}
+          Organizers
         </Typography>
 
         {organizerSearch?.map((chunk, rowIndex) => (
           <Grid container spacing={1} key={rowIndex} sx={{ mt: 2 }}>
-            {organizerSearch.map((o, index) => (
+            {chunk.map((o, index) => (
               <Grid item key={index} xs={12} sm={6} md={3}>
                 <ProfileCard profile={o} />
               </Grid>
@@ -81,6 +84,14 @@ function Page() {
         ))}
       </Box>
     </div>
+  );
+}
+
+function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }
 
