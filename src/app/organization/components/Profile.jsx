@@ -13,6 +13,8 @@ import { IconButton, Stack } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 import dynamic from "next/dynamic";
+import he from "he";
+
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 function Profile() {

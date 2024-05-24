@@ -24,7 +24,7 @@ const useAxiosPrivate = () => {
         //     config.headers["Authorization"] = `Bearer ${accessToken}`;
         //   }
         // }
-        if (accessToken) {
+        if (localStorage.getItem("accessToken")) {
           config.headers["Authorization"] = `Bearer ${localStorage.getItem(
             "accessToken"
           )}`;

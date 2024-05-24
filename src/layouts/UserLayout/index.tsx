@@ -14,6 +14,11 @@ import ProfilePopover from "../ProfilePopover";
 import { menuUser } from "../menu";
 import { useAuth } from "@/context/AuthContext";
 import CustomSidebar from "../Sidebar";
+import Recharge from "../Recharge/Recharge";
+import { useState } from "react";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import { Fab, Tooltip } from "@mui/material";
+
 
 // ----------------------------------------------------------------------
 
@@ -82,6 +87,8 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const isMobile = useResponsive("down", "sm");
   const { user } = useAuth();
+  const [openRecharge, setOpenRecharge] = useState(false);
+
 
   return (
     <StyledRoot>
@@ -89,9 +96,26 @@ const Layout = ({ children }: LayoutProps) => {
         {user && user.role === "user" && <CustomSidebar menuItems={menuUser} />}
       </aside>
       <Main className={poppins.variable}>
+        {openRecharge && (
+          <Recharge
+            openRecharge={openRecharge}
+            setOpenRecharge={setOpenRecharge}
+          />
+        )}
         <HeaderBar>
           <SearchTextbox />
-          <ProfilePopover></ProfilePopover>
+          <Stack direction="row" alignItems={"center"} spacing={2}>
+            <Tooltip title="Deposit" arrow>
+              <Fab
+                size="small"
+                aria-label="recharge"
+                onClick={() => setOpenRecharge(true)}
+              >
+                <AttachMoneyIcon />
+              </Fab>
+            </Tooltip>
+            <ProfilePopover />
+          </Stack>
         </HeaderBar>
         {children}
       </Main>

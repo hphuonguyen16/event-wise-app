@@ -22,6 +22,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const noLayoutPaths = ["/login", "/register"];
   const userLayoutPaths = ["/organization/info", "/home", "/event/"];
+  console.log(pathname);
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -31,7 +32,9 @@ export default function RootLayout({
               {noLayoutPaths.includes(pathname) ? (
                 <ThemeProvider>{children}</ThemeProvider>
               ) : userLayoutPaths.includes(pathname) ||
-                pathname.startsWith("/event/") || pathname.startsWith("/me") ? (
+                pathname.startsWith("/event/") ||
+                pathname.startsWith("/me") ||
+                pathname.startsWith("/home") ? (
                 <ThemeProvider>
                   <UserLayout>{children}</UserLayout>
                 </ThemeProvider>

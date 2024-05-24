@@ -136,6 +136,7 @@ export default function LoginPage() {
       setUser(user);
       setUser(user);
       //set local storage
+      console.log(resJson.token);
       localStorage.setItem("persist", "persist");
       localStorage.setItem("role", user.role);
       localStorage.setItem("accessToken", resJson.token);
@@ -156,7 +157,7 @@ export default function LoginPage() {
   return (
     <>
       <Snackbar />
-      <title> Login | Beegin </title>
+      <title> Login | EventWise </title>
       <StyledRoot>
         {mdUp && (
           <StyledBanner>
@@ -204,7 +205,7 @@ export default function LoginPage() {
               style={{ margin: "0" }}
             />
             <Typography variant="h4" gutterBottom className="mt-8 mb-6">
-              Sign in to Beegin
+              Sign in to EventWise
             </Typography>
             <Stack spacing={3} className="w-full">
               <TextField

@@ -61,7 +61,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
          });
          const data = response.data.data;
          setUser(data);
-         localStorage.setItem("accessToken", data.accessToken);
          setAccessToken(data.accessToken);
        }
      } catch (error) {
