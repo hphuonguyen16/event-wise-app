@@ -147,6 +147,7 @@ const EventDetail = ({ params }) => {
                   )}
                 </Box>
               </Box>
+             
             </Box>
             <Box sx={{ marginTop: "40px" }}>
               <Typography variant="h4">About this event</Typography>

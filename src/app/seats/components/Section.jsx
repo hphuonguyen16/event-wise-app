@@ -1,6 +1,7 @@
 import React from "react";
 import { Rect, Group, Text } from "./react-konva";
 import SubSection from "./SubSection";
+import { useState } from "react";
 import {
   SECTION_TOP_PADDING,
   getSectionWidth,
@@ -30,8 +31,14 @@ const Section = React.memo(
     }, [section, selectedSeatsIds]);
 
     const width = getSectionWidth(section);
+    const [isSelected, setIsSelected] = useState(false);
+
+    const handleClick = () => {
+      setIsSelected(true);
+    };
     let lastSubsectionX = 0;
 
+    console.log("is selected", isSelected);
     return (
       <Group
         y={y}
@@ -41,14 +48,15 @@ const Section = React.memo(
         skewX={skewX}
         skewY={skewY}
         rotation={rotation}
+        onClick={handleClick}
       >
         <Rect
           width={width}
           height={height}
           fill="white"
-          // strokeWidth={1}
-          // stroke="lightgrey"
-          //cornerRadius={10} // Added more corner radius for curving
+          stroke={isSelected ? "blue" : ""}
+          strokeWidth={isSelected ? 2 : 0}
+          dash={isSelected ? [4, 4] : []}
         />
         {section.subsections.map((subsection) => {
           const subWidth = getSubsectionWidth(subsection);

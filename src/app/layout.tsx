@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const noLayoutPaths = ["/login", "/register"];
+  const noLayoutPaths = ["/login", "/register", "/seats"];
   const userLayoutPaths = ["/organization/info", "/home", "/event/"];
   console.log(pathname);
   return (

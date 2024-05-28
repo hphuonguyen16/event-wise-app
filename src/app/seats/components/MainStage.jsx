@@ -5,6 +5,11 @@ import SeatPopup from "./SeatPopup";
 import jsonData from "./seats-data.json";
 import TableWithChairs from "./TableWithChairs";
 import RectTableWithChairs from "./RectTableWithChairs";
+import { Stack, Button, IconButton } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import SplitscreenIcon from "@mui/icons-material/Splitscreen";
+
 
 import * as layout from "./helper";
 
@@ -12,13 +17,14 @@ const MainStage = (props) => {
   const containerRef = React.useRef(null);
   const stageRef = React.useRef(null);
 
-  const [scale, setScale] = React.useState(1);
+  const [scale, setScale] = React.useState(1.7);
   const [scaleToFit, setScaleToFit] = React.useState(1);
   const [size, setSize] = React.useState({
     width: 1000,
     height: 1000,
     virtualWidth: 1000,
   });
+  console.log(scale);
   const [virtualWidth, setVirtualWidth] = React.useState(1000);
 
   const [selectedSeatsIds, setSelectedSeatsIds] = React.useState([]);
@@ -44,9 +50,9 @@ const MainStage = (props) => {
     const stage = stageRef.current;
     const clientRect = stage.getClientRect({ skipTransform: true });
 
-    const scaleToFit = size.width / clientRect.width;
-    setScale(scaleToFit);
-    setScaleToFit(scaleToFit);
+    // const scaleToFit = size.width / clientRect.width;
+    // setScale(scaleToFit);
+    // setScaleToFit(scaleToFit);
     setVirtualWidth(clientRect.width);
   }, [jsonData, size]);
 
@@ -113,10 +119,6 @@ const MainStage = (props) => {
       }}
       ref={containerRef}
     >
-      <div style={{ position: "absolute", top: 10, left: 10, zIndex: 1 }}>
-        <button onClick={handleScaleUp}>Zoom In</button>
-        <button onClick={handleScaleDown}>Zoom Out</button>
-      </div>
       <Stage
         ref={stageRef}
         width={size.width}
@@ -176,6 +178,26 @@ const MainStage = (props) => {
           }}
         />
       )}
+      <Stack
+        direction="column"
+        sx={{
+          width: "80px",
+          height: "150px",
+          position: "fixed",
+          left: "2%",
+          top: "10%",
+          zIndex: 1000,
+          justifyContent: "space-evenly",
+          alignItems: "center",
+        }}
+      >
+        <IconButton sx={{ border: "1px solid " }} variant="contained">
+          <AddIcon sx={{ fontSize: "30px" }} onClick={handleScaleUp} />
+        </IconButton>
+        <IconButton sx={{ border: "1px solid " }} variant="contained">
+          <RemoveIcon sx={{ fontSize: "30px" }} onClick={handleScaleDown} />
+        </IconButton>
+      </Stack>
     </div>
   );
 };
