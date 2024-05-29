@@ -37,6 +37,7 @@ const Popup = ({ position, seatId, onClose }) => {
         boxShadow: "0 0 5px grey",
         zIndex: 10,
         backgroundColor: "white",
+        color: "black",
       }}
     >
       <div>Seat {seatId}</div>

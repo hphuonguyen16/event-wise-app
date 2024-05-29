@@ -10,10 +10,9 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
 
-
 import * as layout from "./helper";
 
-const MainStage = (props) => {
+const MainStage = ({ mapData, setMapData }) => {
   const containerRef = React.useRef(null);
   const stageRef = React.useRef(null);
 
@@ -108,7 +107,7 @@ const MainStage = (props) => {
   const maxSectionWidth = layout.getMaximimSectionWidth(
     jsonData.seats.sections
   );
-
+  console.log(mapData);
   return (
     <div
       style={{
@@ -129,7 +128,7 @@ const MainStage = (props) => {
         scaleY={scale}
       >
         <Layer>
-          {jsonData.seats.sections.map((section, index) => {
+          {mapData.sections.map((section, index) => {
             const height = layout.getSectionHeight(section);
             const position = lastSectionPosition + layout.SECTIONS_MARGIN;
             lastSectionPosition = position + height;
@@ -152,21 +151,33 @@ const MainStage = (props) => {
             );
           })}
         </Layer>
-        {/* <Layer>
-          <TableWithChairs
-            x={size.width / 2 - virtualWidth / 2}
-            y={size.height / 2 - 100}
-            width={virtualWidth}
-          />
-        </Layer> */}
-        <Layer>
-          <RectTableWithChairs
-            width={40} // Specify the width of the table
-            height={150} // Specify the height of the table
-            numChairsHeight={10} // Specify the number of chairs along the height
-            numChairsWidth={3} // Specify the number of chairs along the width
-          />
-        </Layer>
+        {mapData.tables.map((table, index) =>
+          table.style === "circle" ? (
+            <Layer key={index}>
+              <TableWithChairs
+                x={size.width / 2 - virtualWidth / 2}
+                y={size.height / 2 - 100}
+                width={virtualWidth}
+                numChairs={table.seats}
+                tableInfo={table}
+                selectedSeatsIds={selectedSeatsIds}
+                onHoverSeat={handleHover}
+                onSelectSeat={handleSelect}
+                onDeselectSeat={handleDeselect}
+                seatsInfo={table.seatsInfo}
+              />
+            </Layer>
+          ) : (
+            <Layer key={index}>
+              <RectTableWithChairs
+                width={40} // Specify the width of the table
+                height={150} // Specify the height of the table
+                numChairsHeight={Number(table.seats)} // Specify the number of chairs along the height
+                numChairsWidth={Number(table.endSeats)} // Specify the number of chairs along the width
+              />
+            </Layer>
+          )
+        )}
       </Stage>
       {/* draw popup as html */}
       {popup.seat && (

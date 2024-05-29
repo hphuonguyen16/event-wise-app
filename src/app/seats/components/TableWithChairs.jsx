@@ -1,5 +1,6 @@
 import React from "react";
 import { Layer, Circle, Group } from "./react-konva";
+import Seat from "./Seat";
 
 // Function to calculate positions of chairs around the table
 const calculateChairPositions = (
@@ -25,8 +26,15 @@ const calculateChairPositions = (
   return positions;
 };
 
-
-const CircleTable = ({ numChairs = 10 }) => {
+const CircleTable = ({
+  numChairs,
+  seatsInfo,
+  onHoverSeat,
+  onSelectSeat,
+  onDeselectSeat,
+  selectedSeatsIds,
+  tableInfo
+}) => {
   const tableX = 200;
   const tableY = 200;
   const tableRadius = 20; // Smaller table radius
@@ -46,17 +54,26 @@ const CircleTable = ({ numChairs = 10 }) => {
       <Circle x={tableX} y={tableY} radius={tableRadius} fill="brown" />
       {/* Draw the chairs */}
       {chairPositions.map((pos, index) => (
-        <Circle
+        // <Circle
+        //   key={index}
+        //   x={pos.x}
+        //   y={pos.y}
+        //   radius={chairRadius}
+        //   fill="blue"
+        // />
+        <Seat
           key={index}
           x={pos.x}
           y={pos.y}
-          radius={chairRadius}
-          fill="blue"
+          data={seatsInfo[index]}
+          onHover={onHoverSeat}
+          onSelect={onSelectSeat}
+          onDeselect={onDeselectSeat}
+          isSelected={selectedSeatsIds.indexOf(seatsInfo[index]?.name) >= 0}
         />
       ))}
     </Group>
   );
 };
-
 
 export default CircleTable;

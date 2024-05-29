@@ -13,7 +13,8 @@ function getColor(isBooked, isSelected) {
 }
 
 const Seat = (props) => {
-  const isBooked = props.data.status === "booked";
+  const isBooked = props.data?.status === "booked";
+  console.log(props.data);
 
   return (
     <Circle
@@ -24,7 +25,7 @@ const Seat = (props) => {
       strokeWidth={1}
       onMouseEnter={(e) => {
         e.target._clearCache();
-        props.onHover(props.data.name, e.target.getAbsolutePosition());
+        props.onHover(props.data?.name, e.target.getAbsolutePosition());
         const container = e.target.getStage().container();
         if (isBooked) {
           container.style.cursor = "not-allowed";

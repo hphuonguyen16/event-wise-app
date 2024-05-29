@@ -52,6 +52,13 @@ function a11yProps(index) {
 
 export default function BasicTabs() {
   const [value, setValue] = React.useState(0);
+  const [chosenSection, setChosenSection] = React.useState(null);
+  const [mapData, setMapData] = React.useState({
+    sections: [],
+    tables: [],
+    objects: [],
+    texts: [],
+  });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -77,6 +84,8 @@ export default function BasicTabs() {
               onSelectSeat={(seatId) => {
                 console.log("selected - " + seatId);
               }}
+              mapData={mapData}
+              setMapData={setMapData}
             />
           </Box>
         </CustomTabPanel>
@@ -105,7 +114,12 @@ export default function BasicTabs() {
           alignContent="center"
         >
           <Tooltip title="Add Section" arrow>
-            <IconButton variant="contained">
+            <IconButton
+              variant="contained"
+              onClick={() => {
+                setChosenSection(0);
+              }}
+            >
               <SplitscreenIcon
                 sx={{
                   fontSize: "30px",
@@ -114,7 +128,12 @@ export default function BasicTabs() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Add Table" arrow>
-            <IconButton variant="contained">
+            <IconButton
+              variant="contained"
+              onClick={() => {
+                setChosenSection(1);
+              }}
+            >
               <TableRestaurantOutlinedIcon
                 sx={{
                   fontSize: "30px",
@@ -123,7 +142,12 @@ export default function BasicTabs() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Add Object" arrow>
-            <IconButton variant="contained">
+            <IconButton
+              variant="contained"
+              onClick={() => {
+                setChosenSection(2);
+              }}
+            >
               <AllInboxOutlinedIcon
                 sx={{
                   fontSize: "30px",
@@ -133,7 +157,12 @@ export default function BasicTabs() {
           </Tooltip>
 
           <Tooltip title="Add Text" arrow>
-            <IconButton variant="contained">
+            <IconButton
+              variant="contained"
+              onClick={() => {
+                setChosenSection(3);
+              }}
+            >
               <FormatColorTextOutlinedIcon
                 sx={{
                   fontSize: "30px",
@@ -142,7 +171,14 @@ export default function BasicTabs() {
             </IconButton>
           </Tooltip>
         </Stack>
-       <TextCard />
+        {chosenSection === 0 && (
+          <SectionCard mapData={mapData} setMapData={setMapData} />
+        )}
+        {chosenSection === 1 && (
+          <TableCard mapData={mapData} setMapData={setMapData} />
+        )}
+        {chosenSection === 2 && <ObjectCard />}
+        {chosenSection === 3 && <TextCard />}
       </Box>
     </Stack>
   );

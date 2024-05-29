@@ -87,7 +87,8 @@ const Section = React.memo(
           width={width}
           align="center"
           verticalAlign="middle"
-          fontSize={20}
+          fontSize={14}
+          y={SECTION_TOP_PADDING - 20}
         />
       </Group>
     );

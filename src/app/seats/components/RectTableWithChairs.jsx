@@ -1,5 +1,5 @@
-import React from "react";
-import { Rect, Circle, Group } from "./react-konva";
+import React, { useState } from "react";
+import { Rect, Circle, Group } from "react-konva";
 
 const calculateChairPositions = (
   tableX,
@@ -42,41 +42,50 @@ const calculateChairPositions = (
   return positions;
 };
 
-const TableWithChairs = ({
-  width,
-  height,
-  numChairsHeight = 8,
-  numChairsWidth =2
-}) => {
+const TableWithChairs = ({numChairsHeight,numChairsWidth }) => {
+
+
+  const chairRadius = 6; // Define the chair radius
+  const chairSpacing = 2 * chairRadius; // Define the spacing between chairs and the table
+
+  // Calculate the table width and height based on the number of chairs and spacing
+  const tableWidth = (numChairsWidth + 1) * chairSpacing;
+  const tableHeight = (numChairsHeight + 1) * chairSpacing;
+
   const tableX = 100;
   const tableY = 100;
-  const chairRadius = 5;
 
   const chairPositions = calculateChairPositions(
     tableX,
     tableY,
-    width,
-    height,
+    tableWidth,
+    tableHeight,
     chairRadius,
     numChairsHeight,
     numChairsWidth
   );
 
   return (
-    <Group draggable>
-      {/* Draw the rectangle table */}
-      <Rect x={tableX} y={tableY} width={width} height={height} fill="brown" />
-      {/* Draw the circle chairs */}
-      {chairPositions.map((pos, index) => (
-        <Circle
-          key={index}
-          x={pos.x}
-          y={pos.y}
-          radius={chairRadius}
-          fill="blue"
+      <Group draggable>
+        {/* Draw the rectangle table */}
+        <Rect
+          x={tableX}
+          y={tableY}
+          width={tableWidth}
+          height={tableHeight}
+          fill="brown"
         />
-      ))}
-    </Group>
+        {/* Draw the circle chairs */}
+        {chairPositions.map((pos, index) => (
+          <Circle
+            key={index}
+            x={pos.x}
+            y={pos.y}
+            radius={chairRadius}
+            fill="blue"
+          />
+        ))}
+      </Group>
   );
 };
 
