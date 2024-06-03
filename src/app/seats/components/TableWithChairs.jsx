@@ -1,8 +1,8 @@
-import React from "react";
-import { Layer, Circle, Group } from "./react-konva";
+import React, { useState } from "react";
+import { Group, Circle } from "react-konva";
 import Seat from "./Seat";
+import { useMapObjectContext } from "@/context/MapObjectContext";
 
-// Function to calculate positions of chairs around the table
 const calculateChairPositions = (
   tableX,
   tableY,
@@ -32,44 +32,65 @@ const CircleTable = ({
   onHoverSeat,
   onSelectSeat,
   onDeselectSeat,
-  selectedSeatsIds,
-  tableInfo
+  tableInfo,
+  rotationAngle,
+  isSelected// Pass rotation angle as props
 }) => {
   const tableX = 200;
   const tableY = 200;
-  const tableRadius = 20; // Smaller table radius
+  const tableRadius = tableInfo.size || 20;
   const chairRadius = 6; // Smaller chair radius
 
   const chairPositions = calculateChairPositions(
     tableX,
     tableY,
-    tableRadius,
+   tableRadius,
     chairRadius,
     numChairs
   );
+  const { mapData, setMapData, chosenOption, setChosenOption } = useMapObjectContext();
+
+  const handleClick = (e) => {
+    setMapData({
+      ...mapData,
+      selectedObject: {
+        section: null,
+        object: null,
+        text: null,
+        table: tableInfo,
+      },
+    });
+    setChosenOption(null);
+  };
 
   return (
-    <Group draggable>
+    <Group
+      draggable
+      x={tableX}
+      y={tableY}
+      rotation={tableInfo.rotation} // Apply rotation to the Group
+      onClick={handleClick}
+    >
       {/* Draw the table */}
-      <Circle x={tableX} y={tableY} radius={tableRadius} fill="brown" />
+      <Circle
+        x={0} // Position relative to the group
+        y={0} // Position relative to the group
+        radius={tableRadius}
+        fill="brown"
+        stroke={isSelected ? "blue" : ""}
+        strokeWidth={isSelected ? 2 : 0}
+        dash={isSelected ? [4, 4] : []}
+      />
       {/* Draw the chairs */}
       {chairPositions.map((pos, index) => (
-        // <Circle
-        //   key={index}
-        //   x={pos.x}
-        //   y={pos.y}
-        //   radius={chairRadius}
-        //   fill="blue"
-        // />
         <Seat
           key={index}
-          x={pos.x}
-          y={pos.y}
+          x={pos.x - tableX} // Adjust position relative to the group
+          y={pos.y - tableY} // Adjust position relative to the group
           data={seatsInfo[index]}
           onHover={onHoverSeat}
           onSelect={onSelectSeat}
           onDeselect={onDeselectSeat}
-          isSelected={selectedSeatsIds.indexOf(seatsInfo[index]?.name) >= 0}
         />
       ))}
     </Group>

@@ -11,6 +11,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { SnackbarContextProvider } from "@/context/snackbarContext";
 import { usePathname } from "next/navigation";
 import UserLayout from "@/layouts/UserLayout";
+import {MapObjectProvider} from "@/context/MapObjectContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,22 +29,24 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <SnackbarContextProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {noLayoutPaths.includes(pathname) ? (
-                <ThemeProvider>{children}</ThemeProvider>
-              ) : userLayoutPaths.includes(pathname) ||
-                pathname.startsWith("/event/") ||
-                pathname.startsWith("/me") ||
-                pathname.startsWith("/home") ? (
-                <ThemeProvider>
-                  <UserLayout>{children}</UserLayout>
-                </ThemeProvider>
-              ) : (
-                <ThemeProvider>
-                  <Layout>{children}</Layout>
-                </ThemeProvider>
-              )}
-            </LocalizationProvider>
+            <MapObjectProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {noLayoutPaths.includes(pathname) ? (
+                  <ThemeProvider>{children}</ThemeProvider>
+                ) : userLayoutPaths.includes(pathname) ||
+                  pathname.startsWith("/event/") ||
+                  pathname.startsWith("/me") ||
+                  pathname.startsWith("/home") ? (
+                  <ThemeProvider>
+                    <UserLayout>{children}</UserLayout>
+                  </ThemeProvider>
+                ) : (
+                  <ThemeProvider>
+                    <Layout>{children}</Layout>
+                  </ThemeProvider>
+                )}
+              </LocalizationProvider>
+            </MapObjectProvider>
           </SnackbarContextProvider>
         </AuthProvider>
       </body>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Group, Text } from "./react-konva";
 import Seat from "./Seat";
 import { SEATS_DISTANCE, SUBSECTION_PADDING, SEAT_SIZE } from "./helper";
+import { useMapObjectContext } from "@/context/MapObjectContext";
 
 const SubSection = ({
   width,
@@ -11,13 +12,13 @@ const SubSection = ({
   onHoverSeat,
   onSelectSeat,
   onDeselectSeat,
-  selectedSeatsIds,
   skewX = 0, // default skew values
   skewY = 0,
   rotation = 0, // default rotation value
 }) => {
   // State to track the position of the SubSection
   const [position, setPosition] = useState({ x, y });
+  const { mapData, setMapData, chosenOption, setChosenOption, selectedSeats, setSelectedSeats } = useMapObjectContext();
 
   return (
     <Group
@@ -47,7 +48,7 @@ const SubSection = ({
                 onHover={onHoverSeat}
                 onSelect={onSelectSeat}
                 onDeselect={onDeselectSeat}
-                isSelected={selectedSeatsIds.indexOf(seat.name) >= 0}
+                isSelected={selectedSeats.indexOf(seat.name) >= 0}
               />
             ))}
             <Text

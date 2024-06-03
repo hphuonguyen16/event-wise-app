@@ -16,6 +16,8 @@ import SectionCard from "./components/SectionCard";
 import TableCard from "./components/TableCard";
 import ObjectCard from "./components/ObjectCard";
 import TextCard from "./components/TextCard";
+import TierCard from "./components/TierCard";
+import { useMapObjectContext } from "@/context/MapObjectContext";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -52,49 +54,36 @@ function a11yProps(index) {
 
 export default function BasicTabs() {
   const [value, setValue] = React.useState(0);
-  const [chosenSection, setChosenSection] = React.useState(null);
-  const [mapData, setMapData] = React.useState({
-    sections: [],
-    tables: [],
-    objects: [],
-    texts: [],
-  });
+  const { mapData, setMapData, chosenOption, setChosenOption } =
+    useMapObjectContext();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  const handleChosenOption = (option) => {
+    setChosenOption(option);
+    setMapData({
+      ...mapData,
+      selectedObject: {
+        section: null,
+        object: null,
+        text: null,
+        table: null,
+      },
+    });
+  };
+
   return (
     <Stack direction="row">
       <Box sx={{ width: "70%" }}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="basic tabs example"
-          >
-            <Tab label="Map" {...a11yProps(0)} />
-            <Tab label="Tiers" {...a11yProps(1)} />
-            <Tab label="Item Three" {...a11yProps(2)} />
-          </Tabs>
-        </Box>
-        <CustomTabPanel value={value} index={0}>
-          <Box sx={{ width: "100%" }}>
-            <MainStage
-              onSelectSeat={(seatId) => {
-                console.log("selected - " + seatId);
-              }}
-              mapData={mapData}
-              setMapData={setMapData}
-            />
-          </Box>
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
-          Item Two
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
-          Item Three
-        </CustomTabPanel>
+        <MainStage
+          onSelectSeat={(seatId) => {
+            console.log("selected - " + seatId);
+          }}
+          mapData={mapData}
+          setMapData={setMapData}
+        />
       </Box>
 
       <Box
@@ -106,79 +95,121 @@ export default function BasicTabs() {
           backgroundColor: "#4B4D63",
         }}
       >
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ p: 2, backgroundColor: "white", color: "black", m: 2 }}
-          justifyContent="space-evenly"
-          alignContent="center"
-        >
-          <Tooltip title="Add Section" arrow>
-            <IconButton
-              variant="contained"
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
+            <Tab label="Map" {...a11yProps(0)} />
+            <Tab
+              label="Tiers"
+              {...a11yProps(1)}
               onClick={() => {
-                setChosenSection(0);
+                handleChosenOption(4);
               }}
-            >
-              <SplitscreenIcon
-                sx={{
-                  fontSize: "30px",
+            />
+            <Tab label="Item Three" {...a11yProps(2)} />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={value} index={0}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ p: 2, backgroundColor: "white", color: "black", m: 2 }}
+            justifyContent="space-evenly"
+            alignContent="center"
+          >
+            <Tooltip title="Add Section" arrow>
+              <IconButton
+                variant="contained"
+                onClick={() => {
+                  handleChosenOption(0);
                 }}
-              />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Add Table" arrow>
-            <IconButton
-              variant="contained"
-              onClick={() => {
-                setChosenSection(1);
-              }}
-            >
-              <TableRestaurantOutlinedIcon
-                sx={{
-                  fontSize: "30px",
+              >
+                <SplitscreenIcon
+                  sx={{
+                    fontSize: "30px",
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Add Table" arrow>
+              <IconButton
+                variant="contained"
+                onClick={() => {
+                  handleChosenOption(1);
                 }}
-              />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Add Object" arrow>
-            <IconButton
-              variant="contained"
-              onClick={() => {
-                setChosenSection(2);
-              }}
-            >
-              <AllInboxOutlinedIcon
-                sx={{
-                  fontSize: "30px",
+              >
+                <TableRestaurantOutlinedIcon
+                  sx={{
+                    fontSize: "30px",
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Add Object" arrow>
+              <IconButton
+                variant="contained"
+                onClick={() => {
+                  handleChosenOption(2);
                 }}
-              />
-            </IconButton>
-          </Tooltip>
+              >
+                <AllInboxOutlinedIcon
+                  sx={{
+                    fontSize: "30px",
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
 
-          <Tooltip title="Add Text" arrow>
-            <IconButton
-              variant="contained"
-              onClick={() => {
-                setChosenSection(3);
-              }}
-            >
-              <FormatColorTextOutlinedIcon
-                sx={{
-                  fontSize: "30px",
+            <Tooltip title="Add Text" arrow>
+              <IconButton
+                variant="contained"
+                onClick={() => {
+                  handleChosenOption(3);
                 }}
-              />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-        {chosenSection === 0 && (
-          <SectionCard mapData={mapData} setMapData={setMapData} />
-        )}
-        {chosenSection === 1 && (
-          <TableCard mapData={mapData} setMapData={setMapData} />
-        )}
-        {chosenSection === 2 && <ObjectCard />}
-        {chosenSection === 3 && <TextCard />}
+              >
+                <FormatColorTextOutlinedIcon
+                  sx={{
+                    fontSize: "30px",
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+          {chosenOption === 0 && (
+            <SectionCard editData={mapData.selectedObject.section} />
+          )}
+          {chosenOption === 1 && (
+            <TableCard editData={mapData.selectedObject.table} />
+          )}
+          {chosenOption === 2 && (
+            <ObjectCard editData={mapData.selectedObject.object} />
+          )}
+          {chosenOption === 3 && (
+            <TextCard editData={mapData.selectedObject.text} />
+          )}
+          {chosenOption === 4 && <TierCard />}
+          {mapData.selectedObject.section && (
+            <SectionCard editData={mapData.selectedObject.section} />
+          )}
+          {mapData.selectedObject.table && (
+            <TableCard editData={mapData.selectedObject.table} />
+          )}
+          {mapData.selectedObject.object && (
+            <ObjectCard editData={mapData.selectedObject.object} />
+          )}
+          {mapData.selectedObject.text && (
+            <TextCard editData={mapData.selectedObject.text} />
+          )}
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          <TierCard />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={2}>
+          Item Three
+        </CustomTabPanel>
       </Box>
     </Stack>
   );

@@ -4,6 +4,7 @@ export const SUBSECTION_PADDING = 30;
 
 export const SECTIONS_MARGIN = 10;
 export const SECTION_TOP_PADDING = 40;
+const TEXT_PADDING = 15; 
 
 export const getSubsectionWidth = (subsection) => {
   const rows = Object.keys(subsection.seats_by_rows);
@@ -27,7 +28,7 @@ export const getSectionWidth = (section) => {
 
 export const getSectionHeight = (section) => {
   return (
-    Math.max(...section.subsections.map(getSubsectionHeight)) +
+    Math.max(...section.subsections?.map(getSubsectionHeight)) +
     SECTION_TOP_PADDING
   );
 };

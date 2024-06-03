@@ -9,13 +9,17 @@ import { Stack, Button, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import SplitscreenIcon from "@mui/icons-material/Splitscreen";
+import Text from "./TextCanvas";
+import Object from "./Object";
 
 import * as layout from "./helper";
+import { useMapObjectContext } from "@/context/MapObjectContext";
 
-const MainStage = ({ mapData, setMapData }) => {
+const MainStage = () => {
   const containerRef = React.useRef(null);
   const stageRef = React.useRef(null);
-
+  const { mapData, setMapData, selectedSeats, setSelectedSeats } =
+    useMapObjectContext();
   const [scale, setScale] = React.useState(1.7);
   const [scaleToFit, setScaleToFit] = React.useState(1);
   const [size, setSize] = React.useState({
@@ -74,40 +78,45 @@ const MainStage = ({ mapData, setMapData }) => {
     setScale(scale - 0.1);
   };
 
-  let lastSectionPosition = 0;
+  // const handleHover = React.useCallback((seat, pos) => {
+  //   setPopup({
+  //     seat: seat,
+  //     position: pos,
+  //   });
+  // }, []);
 
-  const handleHover = React.useCallback((seat, pos) => {
-    setPopup({
-      seat: seat,
-      position: pos,
+  const handleSelect = (seat) => {
+    console.log("selected", seat);
+    setSelectedSeats((prev) => {
+      if (!prev.find((item) => item.id === seat.id)) {
+        return [...prev, seat];
+      } else {
+        return prev; // Return previous state if seat already exists
+      }
     });
-  }, []);
+  };
 
-  const handleSelect = React.useCallback(
-    (seatId) => {
-      const newIds = selectedSeatsIds.concat([seatId]);
-      setSelectedSeatsIds(newIds);
-    },
-    [selectedSeatsIds]
-  );
+  console.log(selectedSeats);
 
-  const handleDeselect = React.useCallback(
-    (seatId) => {
-      const ids = selectedSeatsIds.slice();
-      ids.splice(ids.indexOf(seatId), 1);
-      setSelectedSeatsIds(ids);
-    },
-    [selectedSeatsIds]
-  );
+  const handleDeselect = (seat) => {
+    setSelectedSeats((prev) => prev.filter((item) => item.id !== seat.id));
+  };
 
   if (jsonData === null) {
     return <div ref={containerRef}>Loading...</div>;
   }
 
-  const maxSectionWidth = layout.getMaximimSectionWidth(
-    jsonData.seats.sections
+  const maxSectionWidth = layout.getMaximimSectionWidth(mapData.sections);
+  const totalSectionsHeight = mapData.sections.reduce(
+    (sum, section) =>
+      sum + layout.getSectionHeight(section) + layout.SECTIONS_MARGIN,
+    0
   );
-  console.log(mapData);
+  const centerX = (size.width - maxSectionWidth) / 2;
+  const centerY = (size.height - totalSectionsHeight) / 2;
+
+  let lastSectionPosition = 0;
+
   return (
     <div
       style={{
@@ -126,58 +135,101 @@ const MainStage = ({ mapData, setMapData }) => {
         onDblClick={toggleScale}
         scaleX={scale}
         scaleY={scale}
+        draggable
       >
-        <Layer>
-          {mapData.sections.map((section, index) => {
-            const height = layout.getSectionHeight(section);
-            const position = lastSectionPosition + layout.SECTIONS_MARGIN;
-            lastSectionPosition = position + height;
-            const width = layout.getSectionWidth(section);
+        {mapData.sections.map((section, index) => {
+          const height = layout.getSectionHeight(section);
+          const position = lastSectionPosition + layout.SECTIONS_MARGIN;
+          lastSectionPosition = position + height;
+          const width = layout.getSectionWidth(section);
+          const offsetX = (maxSectionWidth - width) / 2;
 
-            const offset = (maxSectionWidth - width) / 2;
-
-            return (
+          return (
+            <Layer key={section.id}>
               <Section
-                x={offset}
-                y={position}
+                x={centerX + offsetX}
+                y={centerY + position}
                 height={height}
                 key={index}
                 section={section}
-                selectedSeatsIds={selectedSeatsIds}
-                onHoverSeat={handleHover}
+                // onHoverSeat={handleHover}
                 onSelectSeat={handleSelect}
                 onDeselectSeat={handleDeselect}
+                isSelected={
+                  mapData.selectedObject.section &&
+                  mapData.selectedObject.section.id === section.id
+                }
               />
-            );
-          })}
-        </Layer>
+            </Layer>
+          );
+        })}
         {mapData.tables.map((table, index) =>
           table.style === "circle" ? (
-            <Layer key={index}>
+            <Layer key={table.id}>
               <TableWithChairs
                 x={size.width / 2 - virtualWidth / 2}
                 y={size.height / 2 - 100}
                 width={virtualWidth}
                 numChairs={table.seats}
                 tableInfo={table}
-                selectedSeatsIds={selectedSeatsIds}
-                onHoverSeat={handleHover}
+                // onHoverSeat={handleHover}
                 onSelectSeat={handleSelect}
                 onDeselectSeat={handleDeselect}
                 seatsInfo={table.seatsInfo}
+                isSelected={
+                  mapData.selectedObject.table &&
+                  mapData.selectedObject.table.style === "circle" &&
+                  mapData.selectedObject.table.id === table.id
+                }
               />
             </Layer>
           ) : (
-            <Layer key={index}>
+            <Layer key={table.id}>
               <RectTableWithChairs
                 width={40} // Specify the width of the table
                 height={150} // Specify the height of the table
                 numChairsHeight={Number(table.seats)} // Specify the number of chairs along the height
                 numChairsWidth={Number(table.endSeats)} // Specify the number of chairs along the width
+                tableInfo={table}
+                selectedSeatsIds={selectedSeatsIds}
+                // onHoverSeat={handleHover}
+                onSelectSeat={handleSelect}
+                onDeselectSeat={handleDeselect}
+                seatsInfo={table.seatsInfo}
+                isSelected={
+                  mapData.selectedObject.table &&
+                  mapData.selectedObject.table.style === "square" &&
+                  mapData.selectedObject.table.id === table.id
+                }
               />
             </Layer>
           )
         )}
+        {mapData.texts.map((item, index) => (
+          <Layer key={item.id}>
+            <Text
+              textInfo={item}
+              isSelected={
+                mapData.selectedObject.text &&
+                mapData.selectedObject.text.id === item.id
+              }
+            />
+          </Layer>
+        ))}
+        {mapData.objects.map((item, index) => (
+          <Layer key={item.id}>
+            <Object
+              label={item.label}
+              shape={item.style}
+              icon={item.icon}
+              objectInfo={item}
+              isSelected={
+                mapData.selectedObject.object &&
+                mapData.selectedObject.object.id === item.id
+              }
+            />
+          </Layer>
+        ))}
       </Stage>
       {/* draw popup as html */}
       {popup.seat && (

@@ -1,12 +1,11 @@
 import React from "react";
 import { Circle } from "./react-konva";
 import { SEAT_SIZE } from "./helper";
+import { useMapObjectContext } from "@/context/MapObjectContext";
 
-function getColor(isBooked, isSelected) {
+function getColor(isSelected, isAssigned) {
   if (isSelected) {
     return "red";
-  } else if (isBooked) {
-    return "lightgrey";
   } else {
     return "#1b728d";
   }
@@ -14,45 +13,65 @@ function getColor(isBooked, isSelected) {
 
 const Seat = (props) => {
   const isBooked = props.data?.status === "booked";
-  console.log(props.data);
+  const { mapData, setMapData, chosenOption, setChosenOption, selectedSeats } =
+    useMapObjectContext();
+  const isSelected = selectedSeats.find((seat) => seat.name === props.data.name)
+    ? true
+    : false;
+  const colorAssigned = props.data?.tier?.color;
+  function handleClick(e) {
+    if (props.isSelected) {
+      props.onDeselect(props.data);
+    } else {
+      props.onSelect(props.data);
+    }
+    // setMapData({
+    //   ...mapData,
+    //   selectedSeats: [...mapData.selectedSeats, props.data],
+    // });
+  }
+
 
   return (
     <Circle
       x={props.x}
       y={props.y}
       radius={SEAT_SIZE / 2}
-      fill={getColor(isBooked, props.isSelected)}
+      fill={colorAssigned ? colorAssigned : getColor(isSelected)} 
       strokeWidth={1}
-      onMouseEnter={(e) => {
-        e.target._clearCache();
-        props.onHover(props.data?.name, e.target.getAbsolutePosition());
-        const container = e.target.getStage().container();
-        if (isBooked) {
-          container.style.cursor = "not-allowed";
-        } else {
-          container.style.cursor = "pointer";
-        }
-      }}
-      onMouseLeave={(e) => {
-        props.onHover(null);
-        const container = e.target.getStage().container();
-        container.style.cursor = "";
-      }}
+      // onMouseEnter={(e) => {
+      //   e.target._clearCache();
+      //   props.onHover(props.data?.name, e.target.getAbsolutePosition());
+      //   const container = e.target.getStage().container();
+      //   if (isBooked) {
+      //     container.style.cursor = "not-allowed";
+      //   } else {
+      //     container.style.cursor = "pointer";
+      //   }
+      // }}
+      // onMouseLeave={(e) => {
+      //   props.onHover(null);
+      //   const container = e.target.getStage().container();
+      //   container.style.cursor = "";
+      // }}
+      // onClick={(e) => {
+      //   if (isBooked) {
+      //     return;
+      //   }
+      //   if (props.isSelected) {
+      //     props.onDeselect(props.data.name);
+      //   } else {
+      //     props.onSelect(props.data.name);
+      //   }
+      // }}
       onClick={(e) => {
-        if (isBooked) {
-          return;
-        }
-        if (props.isSelected) {
-          props.onDeselect(props.data.name);
-        } else {
-          props.onSelect(props.data.name);
-        }
+        handleClick();
       }}
       onTap={(e) => {
         if (isBooked) {
           return;
         }
-        if (props.isSelected) {
+        if (isSelected) {
           props.onDeselect(props.data.name);
         } else {
           props.onSelect(props.data.name);

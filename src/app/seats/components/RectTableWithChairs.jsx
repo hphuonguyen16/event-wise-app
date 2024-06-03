@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Rect, Circle, Group } from "react-konva";
+import { Rect, Group } from "react-konva";
+import Seat from "./Seat";
+import { useMapObjectContext } from "@/context/MapObjectContext";
 
 const calculateChairPositions = (
   tableX,
@@ -42,15 +44,24 @@ const calculateChairPositions = (
   return positions;
 };
 
-const TableWithChairs = ({numChairsHeight,numChairsWidth }) => {
-
-
+const TableWithChairs = ({
+  numChairsHeight,
+  numChairsWidth,
+  seatsInfo,
+  onHoverSeat,
+  onSelectSeat,
+  onDeselectSeat,
+  selectedSeatsIds,
+  tableInfo,
+  isSelected
+}) => {
   const chairRadius = 6; // Define the chair radius
   const chairSpacing = 2 * chairRadius; // Define the spacing between chairs and the table
+  const { mapData, setMapData, chosenOption, setChosenOption } = useMapObjectContext();
 
   // Calculate the table width and height based on the number of chairs and spacing
-  const tableWidth = (numChairsWidth + 1) * chairSpacing;
-  const tableHeight = (numChairsHeight + 1) * chairSpacing;
+  const tableWidth = (numChairsWidth + 1) * chairSpacing 
+  const tableHeight = (numChairsHeight + 1) * chairSpacing 
 
   const tableX = 100;
   const tableY = 100;
@@ -65,27 +76,54 @@ const TableWithChairs = ({numChairsHeight,numChairsWidth }) => {
     numChairsWidth
   );
 
+  const handleClick = (e) => {
+    setMapData({
+      ...mapData,
+      selectedObject: {
+        table: tableInfo,
+        section: null,
+        object: null,
+        text: null,
+      },
+    });
+    setChosenOption(null);
+  };
+
+
   return (
-      <Group draggable>
-        {/* Draw the rectangle table */}
-        <Rect
-          x={tableX}
-          y={tableY}
-          width={tableWidth}
-          height={tableHeight}
-          fill="brown"
+    <Group
+      draggable
+      x={tableX + tableWidth / 2}
+      y={tableY + tableHeight / 2}
+      rotation={tableInfo.rotation} // Apply rotation to the Group
+      onClick={handleClick}
+      offsetX={tableWidth / 2}
+      offsetY={tableHeight / 2}
+    >
+      {/* Draw the rectangle table */}
+      <Rect
+        x={-tableWidth / 2}
+        y={-tableHeight / 2}
+        width={tableWidth}
+        height={tableHeight}
+        fill="brown"
+        stroke={isSelected ? "blue" : ""}
+        strokeWidth={isSelected ? 2 : 0}
+        dash={isSelected ? [4, 4] : []}
+      />
+      {/* Draw the circle chairs */}
+      {chairPositions.map((pos, index) => (
+        <Seat
+          key={index}
+          x={pos.x - (tableX + tableWidth / 2)}
+          y={pos.y - (tableY + tableHeight / 2)}
+          data={seatsInfo[index]}
+          onHover={onHoverSeat}
+          onSelect={onSelectSeat}
+          onDeselect={onDeselectSeat}
         />
-        {/* Draw the circle chairs */}
-        {chairPositions.map((pos, index) => (
-          <Circle
-            key={index}
-            x={pos.x}
-            y={pos.y}
-            radius={chairRadius}
-            fill="blue"
-          />
-        ))}
-      </Group>
+      ))}
+    </Group>
   );
 };
 

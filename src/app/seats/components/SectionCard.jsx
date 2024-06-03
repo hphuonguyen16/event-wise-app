@@ -14,28 +14,67 @@ import {
   Select,
   Stack,
   Button,
+  Slider,
 } from "@mui/material";
+import { useMapObjectContext } from "@/context/MapObjectContext";
 
-function SectionCard({ mapData, setMapData }) {
-  const [row, setRow] = React.useState(0);
-  const [column, setColumn] = React.useState(0);
-  const [sectionName, setSectionName] = React.useState("");
+function SectionCard({ editData }) {
+  const [row, setRow] = React.useState(editData?.row || "");
+  const [column, setColumn] = React.useState(editData?.column || "");
+  const [sectionName, setSectionName] = React.useState(editData?.name || "");
+  const { mapData, setMapData } = useMapObjectContext();
+  console.log(editData);
+  const generateSeatsByRows = (row, column, sectionId, sectionName) => {
+    return Array.from({ length: row }, (_, rowIndex) => ({
+      [rowIndex + 1]: Array.from({ length: column }, (_, colIndex) => ({
+        name: `Seat ${rowIndex + 1}-${colIndex + 1}`,
+        status: "free",
+        type: "section",
+        sectionId: sectionId,
+        sectionName: sectionName,
+        id : Math.random().toString(36).substr(2, 9),
+      })),
+    })).reduce((acc, curr) => ({ ...acc, ...curr }), {});
+  };
+
   const addSectionSeat = () => {
-    if (row && column) {
-      const seatsByRows = Array.from({ length: row }, (_, rowIndex) => ({
-        [rowIndex + 1]: Array.from({ length: column }, (_, colIndex) => ({
-          name: `Seat ${rowIndex + 1}-${colIndex + 1}`,
-          status: "free",
-        })),
-      })).reduce((acc, curr) => ({ ...acc, ...curr }), {});
+    if (editData) {
+      const updatedSections = mapData.sections.map((section) => {
+        if (section?.id === editData?.id) {
+          return {
+            ...section,
+            name: sectionName,
+            row: row,
+            column: column,
+            subsections: [
+              {
+                ...section.subsections[0], // Assuming only one subsection per section
+                seats_by_rows: generateSeatsByRows(row, column, section.id, section.name),
+              },
+            ],
+          };
+        }
+        return section;
+      });
+      setMapData({
+        ...mapData,
+        sections: updatedSections,
+      });
+    } else if (row && column) {
+      const sectionId = Math.random().toString(36).substr(2, 9);
       const newSection = {
-        event_id: 1,
+        id: sectionId,
         name: sectionName,
+        rotation: 0,
+        skewX: 0,
+        skewY: 0,
+        row: row,
+        column: column,
         subsections: [
           {
             id: 1,
-            section_id: 1,
-            seats_by_rows: seatsByRows,
+            section_id: sectionId,
+            seats_by_rows: generateSeatsByRows(row, column, sectionId),
           },
         ],
       };
@@ -46,7 +85,35 @@ function SectionCard({ mapData, setMapData }) {
     }
   };
 
-  console.log(mapData);
+  const handleSliderChange = (event, newValue, name) => {
+    const selectedSection = mapData.selectedObject?.section;
+    const updatedSections = mapData.sections.map((section) => {
+      if (section?.id === selectedSection?.id) {
+        return {
+          ...section,
+          [name]: newValue,
+        };
+      }
+      return section;
+    });
+    setMapData({
+      ...mapData,
+      sections: updatedSections,
+    });
+  };
+
+  const handleDelete = () => {
+    const updatedSections = mapData.sections.filter(
+      (section) => section?.id !== editData?.id
+    );
+    setMapData({
+      ...mapData,
+      sections: updatedSections,
+    });
+    setSectionName("");
+    setRow("");
+    setColumn("");
+  };
 
   return (
     <Box sx={{ background: "white", m: 2 }}>
@@ -111,6 +178,58 @@ function SectionCard({ mapData, setMapData }) {
               />
             </TableCell>
           </TableRow>
+          {/* <TableRow>
+            <TableCell>
+              <Typography>Curve: </Typography>
+            </TableCell>
+            <TableCell>
+              <Slider
+                aria-label="Volume"
+                // value={value}
+                onChange={(event, newValue) =>
+                  handleSliderChange(event, newValue, "curve")
+                }
+              />
+            </TableCell>
+          </TableRow> */}
+          {editData && (
+            <>
+              <TableRow>
+                <TableCell>
+                  <Typography>Skew X: </Typography>
+                </TableCell>
+                <TableCell>
+                  <Slider
+                    aria-label="Volume1"
+                    defaultValue={editData?.skewX}
+                    onChange={(event, newValue) =>
+                      handleSliderChange(event, newValue, "skewX")
+                    }
+                    min={-1.5}
+                    max={1.5}
+                    step={0.1}
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography>Rotate: </Typography>
+                </TableCell>
+                <TableCell>
+                  <Slider
+                    aria-label="Volume"
+                    // value={value}
+                    defaultValue={editData?.rotation}
+                    onChange={(event, newValue) =>
+                      handleSliderChange(event, newValue, "rotation")
+                    }
+                    min={0}
+                    max={360}
+                  />
+                </TableCell>
+              </TableRow>
+            </>
+          )}
         </TableBody>
       </Table>
       <Stack
@@ -119,9 +238,18 @@ function SectionCard({ mapData, setMapData }) {
         sx={{ p: 2 }}
         justifyContent={"flex-end"}
       >
+        {editData && (
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => handleDelete()}
+          >
+            Delete
+          </Button>
+        )}
         <Button variant="outlined">Cancel</Button>
         <Button variant="contained" onClick={(event) => addSectionSeat()}>
-          Create
+          Save
         </Button>
       </Stack>
     </Box>
