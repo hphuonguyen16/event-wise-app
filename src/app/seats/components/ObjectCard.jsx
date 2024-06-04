@@ -27,6 +27,7 @@ import LocalBarOutlinedIcon from "@mui/icons-material/LocalBarOutlined";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import CelebrationOutlinedIcon from "@mui/icons-material/CelebrationOutlined";
 import { useMapObjectContext } from "@/context/MapObjectContext";
+import { generateObjectId } from "@/utils/mongooseObjectId";
 
 function ObjectCard({ editData }) {
   const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ function ObjectCard({ editData }) {
 
     if (editData) {
       const updatedObjects = mapData.objects.map((object) => {
-        if (object.id === editData.id) {
+        if (object._id === editData._id) {
           return {
             ...object,
             shape,
@@ -90,7 +91,7 @@ function ObjectCard({ editData }) {
       objects: [
         ...prevData.objects,
         {
-          id: Math.random().toString(36).substr(2, 9),
+          _id: generateObjectId(),
           shape,
           label,
           icon,
@@ -106,7 +107,7 @@ function ObjectCard({ editData }) {
   const handleSliderChange = (event, newValue, name) => {
     const selectedSection = mapData.selectedObject?.object;
     const updatedSections = mapData.objects.map((section) => {
-      if (section?.id === selectedSection?.id) {
+      if (section?._id === selectedSection?._id) {
         return {
           ...section,
           [name]: newValue,
@@ -120,9 +121,12 @@ function ObjectCard({ editData }) {
     });
   };
 
+  console.log("formData", formData);
+  console.log("mapData", mapData);
+
   const handleDelete = () => {
     const updatedObjects = mapData.objects.filter(
-      (object) => object.id !== editData.id
+      (object) => object._id !== editData._id
     );
     setMapData((prevData) => ({
       ...prevData,
@@ -136,7 +140,7 @@ function ObjectCard({ editData }) {
       height: "",
       size: "",
     });
-  }
+  };
 
   return (
     <Box sx={{ background: "white", m: 2 }}>
@@ -174,57 +178,67 @@ function ObjectCard({ editData }) {
             <TableCell>
               <TextField
                 variant="standard"
-                sx={{ width: "200px" }}
+                sx={{ width: "50%" }}
                 value={formData.label}
                 onChange={handleLabelChange}
               />
             </TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography>Width</Typography>
-            </TableCell>
-            <TableCell>
-              <TextField
-                variant="standard"
-                sx={{ width: "200px" }}
-                value={formData.width}
-                onChange={(e) =>
-                  setFormData({ ...formData, width: e.target.value })
-                }
-              />
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography>Height</Typography>
-            </TableCell>
-            <TableCell>
-              <TextField
-                variant="standard"
-                sx={{ width: "200px" }}
-                value={formData.height}
-                onChange={(e) =>
-                  setFormData({ ...formData, height: e.target.value })
-                }
-              />
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Typography>Size</Typography>
-            </TableCell>
-            <TableCell>
-              <TextField
-                variant="standard"
-                sx={{ width: "200px" }}
-                value={formData.size}
-                onChange={(e) =>
-                  setFormData({ ...formData, size: e.target.value })
-                }
-              />
-            </TableCell>
-          </TableRow>
+          {editData && (
+            <>
+              {editData?.shape === "square" && (
+                <>
+                  <TableRow>
+                    <TableCell>
+                      <Typography>Width</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        variant="standard"
+                        sx={{ width: "50%" }}
+                        value={formData.width}
+                        onChange={(e) =>
+                          setFormData({ ...formData, width: e.target.value })
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>
+                      <Typography>Height</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        variant="standard"
+                        sx={{ width: "50%" }}
+                        value={formData.height}
+                        onChange={(e) =>
+                          setFormData({ ...formData, height: e.target.value })
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                </>
+              )}
+              {editData?.shape === "circle" && (
+                <TableRow>
+                  <TableCell>
+                    <Typography>Size</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      variant="standard"
+                      sx={{ width: "50%" }}
+                      value={formData.size}
+                      onChange={(e) =>
+                        setFormData({ ...formData, size: e.target.value })
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
+            </>
+          )}
           {editData && (
             <TableRow>
               <TableCell>

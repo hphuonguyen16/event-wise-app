@@ -15,6 +15,7 @@ import {
 import Brightness1OutlinedIcon from "@mui/icons-material/Brightness1Outlined";
 import SquareOutlinedIcon from "@mui/icons-material/SquareOutlined";
 import { useMapObjectContext } from "@/context/MapObjectContext";
+import { generateObjectId } from "@/utils/mongooseObjectId";
 
 function TableCard({ editData }) {
   const [formData, setFormData] = React.useState({
@@ -39,7 +40,7 @@ function TableCard({ editData }) {
   const addTable = () => {
     if (editData) {
       const updatedTables = mapData.tables.map((table) => {
-        if (table?.id === editData?.id) {
+        if (table?._id === editData?._id) {
           return {
             ...table,
             style: formData.style,
@@ -68,26 +69,25 @@ function TableCard({ editData }) {
       alert("Invalid table style.");
     }
 
-    const tableId = Math.random().toString(36).substr(2, 9);
+    const tableId = generateObjectId();
     let numEndSeats = formData.style === "circle" ? 0 : formData.endSeats;
     const seatsInfo = Array.from(
       { length: formData.seats * 2 + numEndSeats * 2 },
       (_, index) => ({
         name: `${formData.tablePrefix} - ${formData.seatPrefix} - ${index + 1}`,
-        status: "free",
-        id: Math.random().toString(36).substr(2, 9),
+        // status: "free",
+        _id: generateObjectId(),
         type: "table",
-        tableId: tableId,
+        sectionId: tableId,
       })
     );
 
     const newTable = {
-      event_id: 1,
-      id: tableId,
+      _id: tableId,
       style: formData.style,
       seats: formData.seats,
       endSeats: formData.endSeats,
-      status: "free",
+      // status: "free",
       seatsInfo: seatsInfo,
       tablePrefix: formData.tablePrefix,
       seatPrefix: formData.seatPrefix,
@@ -112,7 +112,7 @@ function TableCard({ editData }) {
   const handleSliderChange = (event, newValue, name) => {
     const selectedSection = mapData.selectedObject?.table;
     const updatedSections = mapData.tables.map((section) => {
-      if (section?.id === selectedSection?.id) {
+      if (section?._id === selectedSection?._id) {
         return {
           ...section,
           [name]: newValue,
@@ -128,7 +128,7 @@ function TableCard({ editData }) {
 
   const handleDelete = () => {
     const updatedTables = mapData.tables.filter(
-      (table) => table?.id !== editData?.id
+      (table) => table?._id !== editData?._id
     );
     setMapData({
       ...mapData,

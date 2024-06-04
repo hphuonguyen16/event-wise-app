@@ -63,13 +63,37 @@ const CircleTable = ({
     setChosenOption(null);
   };
 
+
+  const handleDragMove = (e) => {
+    setMapData((prev) => {
+      //find the section and update its position
+      const updatedTables = prev.tables.map((item) => {
+        if (tableInfo._id === item._id) {
+          return {
+            ...item,
+            position: {
+              x: e.target.x(),
+              y: e.target.y(),
+            },
+          };
+        }
+        return item;
+      });
+      return {
+        ...prev,
+        tables: updatedTables,
+      };
+    });
+  }
+
   return (
     <Group
       draggable
-      x={tableX}
-      y={tableY}
+      x={tableInfo.position?.x || tableX} // Apply position to the Group  
+      y={tableInfo.position?.y || tableY} // Apply position to the Group
       rotation={tableInfo.rotation} // Apply rotation to the Group
       onClick={handleClick}
+      onDragEnd={handleDragMove}
     >
       {/* Draw the table */}
       <Circle

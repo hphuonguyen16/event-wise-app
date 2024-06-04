@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   Box,
   IconButton,
@@ -12,39 +12,42 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DoneRoundedIcon from "@mui/icons-material/DoneRounded";
 import { useMapObjectContext } from "@/context/MapObjectContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import UrlConfig from "@/config/urlConfig";
+import _ from "lodash";
+import { colors } from "@/constants/colors";
 
-const colors = [
-  "#FF6961", // Pastel Red
-  "#FFB347", // Pastel Orange
-  "#FFFB77", // Pastel Yellow
-  "#77DD77", // Pastel Green
-  "#AEC6CF", // Pastel Blue
-  "#CBAACB", // Pastel Purple
-  "#FFD1DC", // Pastel Pink
-  "#FFDAB9", // Pastel Peach
-  "#C1E1C1", // Pastel Mint
-  "#E6E6FA", // Pastel Lavender
-  "#B2EBF2", // Pastel Cyan
-  "#F49AC2", // Pastel Magenta
-  //   "#99C5C4", // Pastel Teal
-  //   "#FFB3AB", // Pastel Coral
-  //   "#D4A4E0", // Pastel Lilac
-];
-
-const TierItem = ({ data, setTiers }) => {
-  const [backgroundColor, setBackgroundColor] = useState(colors);
+const TierItem = ({ data, setTiers, tiers, handleDelete }) => {
   const [editColor, setEditColor] = useState(false);
   const { mapData, setMapData, selectedSeats, setSelectedSeats } =
     useMapObjectContext();
   const [tier, setTier] = useState(data);
+  const axiosPrivate = useAxiosPrivate();
   function changeColor(color) {
     setTier({ ...tier, color: color });
     setTiers((prev) =>
       prev.map((item) =>
-        item.id === tier.id ? { ...item, color: color } : item
+        item._id === tier._id ? { ...item, color: color } : item
       )
     );
   }
+  const handleUpdate = async (id, updatedTier) => {
+    try {
+      const response = await axiosPrivate.put(
+        UrlConfig.tier.updateTier(id),
+        updatedTier
+      );
+
+      if (response.data.status === "success") {
+        const updatedTiers = tiers.map((tier) =>
+          tier._id === id ? updatedTier : tier
+        );
+        setTiers(updatedTiers);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   function handleEditColor(e) {
     setEditColor(!editColor);
   }
@@ -56,7 +59,7 @@ const TierItem = ({ data, setTiers }) => {
     selectedSeats.forEach((selectedSeat) => {
       if (selectedSeat.type === "section") {
         updatedMapData.sections = updatedMapData.sections.map((section) => {
-          if (section.id === selectedSeat.sectionId) {
+          if (section._id === selectedSeat.sectionId) {
             section.subsections.forEach((subsection) => {
               for (let row in subsection.seats_by_rows) {
                 const seats = subsection.seats_by_rows[row];
@@ -73,7 +76,7 @@ const TierItem = ({ data, setTiers }) => {
         });
       } else if (selectedSeat.type === "table") {
         updatedMapData.tables = updatedMapData.tables.map((table) => {
-          if (table.id === selectedSeat.tableId) {
+          if (table._id === selectedSeat.sectionId) {
             table.seatsInfo.forEach((seat) => {
               if (seat.name === selectedSeat.name) {
                 seat.tier = data; // Ensure selectedSeat.tier is defined
@@ -89,18 +92,27 @@ const TierItem = ({ data, setTiers }) => {
     setSelectedSeats([]); // Clear selected seats
   };
 
-  console.log("selectedSeats", selectedSeats);
-  console.log("mapData", mapData);
-
-
   function handleChangeTier(name, value) {
     setTier({ ...tier, [name]: value });
     setTiers((prev) =>
       prev.map((item) =>
-        item.id === tier.id ? { ...item, [name]: value } : item
+        item._id === tier._id ? { ...item, [name]: value } : item
       )
     );
   }
+
+  const debouncedUpdate = useCallback(
+    _.debounce((id, updatedTier) => {
+      handleUpdate(id, updatedTier);
+    }, 1000),
+    []
+  );
+
+  useEffect(() => {
+    if (tier._id) {
+      debouncedUpdate(tier._id, tier);
+    }
+  }, [tier, debouncedUpdate]);
 
   const isAssigned = selectedSeats.length > 0;
   return (
@@ -129,11 +141,17 @@ const TierItem = ({ data, setTiers }) => {
               variant="standard"
               sx={{ width: "40%" }}
               onChange={(e) => handleChangeTier("name", e.target.value)}
+              maxLength={20}
             />
             <Typography variant="subtitle2">{data.seats} seats</Typography>
           </Box>
         </Stack>
-        <IconButton>
+        <IconButton
+          onClick={handleDelete}
+          sx={{
+            padding: "10px",
+          }}
+        >
           <DeleteOutlineOutlinedIcon />
         </IconButton>
       </Stack>

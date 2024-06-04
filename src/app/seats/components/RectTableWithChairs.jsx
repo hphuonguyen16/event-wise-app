@@ -53,15 +53,16 @@ const TableWithChairs = ({
   onDeselectSeat,
   selectedSeatsIds,
   tableInfo,
-  isSelected
+  isSelected,
 }) => {
   const chairRadius = 6; // Define the chair radius
   const chairSpacing = 2 * chairRadius; // Define the spacing between chairs and the table
-  const { mapData, setMapData, chosenOption, setChosenOption } = useMapObjectContext();
+  const { mapData, setMapData, chosenOption, setChosenOption } =
+    useMapObjectContext();
 
   // Calculate the table width and height based on the number of chairs and spacing
-  const tableWidth = (numChairsWidth + 1) * chairSpacing 
-  const tableHeight = (numChairsHeight + 1) * chairSpacing 
+  const tableWidth = (numChairsWidth + 1) * chairSpacing;
+  const tableHeight = (numChairsHeight + 1) * chairSpacing;
 
   const tableX = 100;
   const tableY = 100;
@@ -89,16 +90,38 @@ const TableWithChairs = ({
     setChosenOption(null);
   };
 
+  const handleDragMove = (e) => {
+    setMapData((prev) => {
+      //find the section and update its position
+      const updatedTables = prev.tables.map((item) => {
+        if (tableInfo._id === item._id) {
+          return {
+            ...item,
+            position: {
+              x: e.target.x(),
+              y: e.target.y(),
+            },
+          };
+        }
+        return item;
+      });
+      return {
+        ...prev,
+        tables: updatedTables,
+      };
+    });
+  };
 
   return (
     <Group
       draggable
-      x={tableX + tableWidth / 2}
-      y={tableY + tableHeight / 2}
+      x={tableInfo.position?.x || tableX + tableWidth / 2} // Apply position to the Group
+      y={tableInfo.position?.y || tableY + tableHeight / 2} // Apply position to the Group
       rotation={tableInfo.rotation} // Apply rotation to the Group
       onClick={handleClick}
       offsetX={tableWidth / 2}
       offsetY={tableHeight / 2}
+      onDragEnd={handleDragMove}
     >
       {/* Draw the rectangle table */}
       <Rect

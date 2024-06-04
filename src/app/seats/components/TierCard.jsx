@@ -1,61 +1,94 @@
 import { Typography, Box, Divider, Stack, Button } from "@mui/material";
 import React from "react";
 import TierItem from "./TierItem";
+import { colors } from "@/constants/colors";
+import UrlConfig from "@/config/urlConfig";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useMapObjectContext } from "@/context/MapObjectContext";
+import { useEffect } from "react";
+// const tierItems = [
+//   {
+//     name: "Tier 1",
+//     seats: 10,
+//     //id: Math.random().toString(36).substr(2, 9),
+//     color: "#FFFB77",
+//   },
+//   {
+//     name: "Tier 2",
+//     seats: 20,
+//     //id: Math.random().toString(36).substr(2, 9),
+//     color: "#FF6961",
+//   },
+// ];
 
-const tierItems = [
-  {
-    name: "Tier 1",
-    seats: 10,
-    id: Math.random().toString(36).substr(2, 9),
-    color: "#FFFB77",
-  },
-  {
-    name: "Tier 2",
-    seats: 20,
-    id: Math.random().toString(36).substr(2, 9),
-    color: "#FF6961",
-  },
-];
+const TierCard = ({ eventId }) => {
+  const [tiers, setTiers] = React.useState([]);
+  const axiosPrivate = useAxiosPrivate();
 
-const colors = [
-  "#FF6961", // Pastel Red
-  "#FFB347", // Pastel Orange
-  "#FFFB77", // Pastel Yellow
-  "#77DD77", // Pastel Green
-  "#AEC6CF", // Pastel Blue
-  "#CBAACB", // Pastel Purple
-  "#FFD1DC", // Pastel Pink
-  "#FFDAB9", // Pastel Peach
-  "#C1E1C1", // Pastel Mint
-  "#E6E6FA", // Pastel Lavender
-  "#B2EBF2", // Pastel Cyan
-  "#F49AC2", // Pastel Magenta
-  //   "#99C5C4", // Pastel Teal
-  //   "#FFB3AB", // Pastel Coral
-  //   "#D4A4E0", // Pastel Lilac
-];
+  async function addTier(e) {
+    try {
+      const usedColors = tiers.map((tier) => tier.color);
 
-const TierCard = () => {
-  const [tiers, setTiers] = React.useState(tierItems);
- function addTier(e) {
-   const usedColors = tiers.map((tier) => tier.color);
+      const availableColors = colors.filter(
+        (color) => !usedColors.includes(color)
+      );
 
-   const availableColors = colors.filter(
-     (color) => !usedColors.includes(color)
-   );
+      const randomColor =
+        availableColors[Math.floor(Math.random() * availableColors.length)];
 
-   const randomColor =
-     availableColors[Math.floor(Math.random() * availableColors.length)];
+      const newTier = {
+        name: "Tier " + (tiers.length + 1).toString(),
+        seats: 30,
+        //  id: Math.random().toString(36).substr(2, 9),
+        color: randomColor,
+      };
 
-   const newTier = {
-     name: "Tier 3",
-     seats: 30,
-     id: Math.random().toString(36).substr(2, 9),
-     color: randomColor,
-   };
+      const response = await axiosPrivate.post(
+        UrlConfig.tier.createTier,
+        newTier
+      );
 
-   setTiers([...tiers, newTier]);
+      if (response.data.status === "success") {
+        setTiers([...tiers, newTier]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
+
+  const getALlTiers = async () => {
+    try {
+      const response = await axiosPrivate.get(
+        UrlConfig.event.getTiersByEventId(eventId)
+      );
+
+      if (response.data.status === "success") {
+        setTiers(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await axiosPrivate.delete(UrlConfig.tier.deleteTier(id));
+
+      // if (response.data.status === "success") {
+      const updatedTiers = tiers.filter((tier) => tier._id !== id);
+      setTiers(updatedTiers);
+      // }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  
+
+  useEffect(() => {
+    getALlTiers();
+  }, []);
+
   return (
     <Box sx={{ color: "white" }}>
       <Box sx={{ paddingBottom: "10px" }}>
@@ -67,13 +100,20 @@ const TierCard = () => {
       <Divider />
       <Box sx={{ marginTop: "20px" }}>
         <Stack direction="row" spacing={2} justifyContent={"space-between"}>
-          <Typography>Tier 1</Typography>
+          <Typography>Seat assigned</Typography>
           <Typography>10/50</Typography>
         </Stack>
       </Box>
       <Stack spacing={2} sx={{ marginTop: "20px" }}>
-        {tiers.map((tier) => (
-          <TierItem key={tier.id} data={tier} setTiers={setTiers} />
+        {tiers?.map((tier) => (
+          <TierItem
+            key={tier._id}
+            data={tier}
+            setTiers={setTiers}
+            tiers={tiers}
+            handleDelete={(e) => handleDelete(tier._id)}
+            handleUpdate={(id,updatedTier) => handleUpdate(tier._id, updatedTier)}
+          />
         ))}
       </Stack>
       <Box sx={{ marginTop: "20px" }}>

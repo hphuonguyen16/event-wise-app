@@ -17,6 +17,7 @@ import {
   Slider,
 } from "@mui/material";
 import { useMapObjectContext } from "@/context/MapObjectContext";
+import { generateObjectId } from "@/utils/mongooseObjectId";
 
 function TextCard({ editData }) {
   const [text, setText] = React.useState(editData?.text || "");
@@ -28,7 +29,7 @@ function TextCard({ editData }) {
   const addText = () => {
     if (editData) {
       const updatedTexts = mapData.texts.map((item) => {
-        if (item?.id === editData?.id) {
+        if (item?._id === editData?._id) {
           return {
             ...item,
             text: text,
@@ -47,7 +48,7 @@ function TextCard({ editData }) {
       return "Text and size must not be empty.";
     }
     const newText = {
-      id: Math.random().toString(36).substr(2, 9),
+      _id: generateObjectId(),
       text,
       size,
     };
@@ -60,7 +61,7 @@ function TextCard({ editData }) {
   const handleSliderChange = (event, newValue, name) => {
     const selectedSection = mapData.selectedObject?.text;
     const updatedSections = mapData.texts.map((section) => {
-      if (section?.id === selectedSection?.id) {
+      if (section?._id === selectedSection?._id) {
         return {
           ...section,
           [name]: newValue,
@@ -77,7 +78,7 @@ function TextCard({ editData }) {
 
   const handleDelete = () => {
     const updatedSections = mapData.texts.filter(
-      (section) => section?.id !== editData?.id
+      (section) => section?._id !== editData?._id
     );
     setMapData({
       ...mapData,

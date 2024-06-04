@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Text, Group } from "./react-konva";
 import { useMapObjectContext } from "@/context/MapObjectContext";
 
-const TextCanvas = ({ textInfo, isSelected}) => {
+const TextCanvas = ({ textInfo, isSelected }) => {
   const [position, setPosition] = useState({
     x: 50,
     y: 50,
@@ -26,20 +26,37 @@ const TextCanvas = ({ textInfo, isSelected}) => {
     setChosenOption(null);
   }
 
+  //handleDragMove
+  const handleDragMove = (e) => {
+    setMapData((prev) => {
+      //find the section and update its position
+      const updatedTexts = prev.texts.map((text) => {
+        if (textInfo._id === text._id) {
+          return {
+            ...text,
+            position: {
+              x: e.target.x(),
+              y: e.target.y(),
+            },
+          };
+        }
+        return text;
+      });
+      return {
+        ...prev,
+        texts: updatedTexts,
+      };
+    });
+  };
+
   return (
     <Group
-      x={position.x}
-      y={position.y}
+      x={textInfo.position?.x || position.x}
+      y={textInfo.position?.y || position.y}
       draggable
       onClick={handleClick}
       rotation={textInfo.rotation}
-      onDragEnd={(e) => {
-        setPosition({
-          x: e.target.x(),
-          y: e.target.y(),
-          isDragging: false,
-        });
-      }}
+      onDragEnd={handleDragMove}
     >
       <Text
         text={textInfo.text}

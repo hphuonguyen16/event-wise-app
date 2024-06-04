@@ -88,7 +88,7 @@ const MainStage = () => {
   const handleSelect = (seat) => {
     console.log("selected", seat);
     setSelectedSeats((prev) => {
-      if (!prev.find((item) => item.id === seat.id)) {
+      if (!prev.find((item) => item._id === seat._id)) {
         return [...prev, seat];
       } else {
         return prev; // Return previous state if seat already exists
@@ -99,7 +99,7 @@ const MainStage = () => {
   console.log(selectedSeats);
 
   const handleDeselect = (seat) => {
-    setSelectedSeats((prev) => prev.filter((item) => item.id !== seat.id));
+    setSelectedSeats((prev) => prev.filter((item) => item._id !== seat._id));
   };
 
   if (jsonData === null) {
@@ -107,7 +107,7 @@ const MainStage = () => {
   }
 
   const maxSectionWidth = layout.getMaximimSectionWidth(mapData.sections);
-  const totalSectionsHeight = mapData.sections.reduce(
+  const totalSectionsHeight = mapData.sections?.reduce(
     (sum, section) =>
       sum + layout.getSectionHeight(section) + layout.SECTIONS_MARGIN,
     0
@@ -137,7 +137,7 @@ const MainStage = () => {
         scaleY={scale}
         draggable
       >
-        {mapData.sections.map((section, index) => {
+        {mapData.sections?.map((section, index) => {
           const height = layout.getSectionHeight(section);
           const position = lastSectionPosition + layout.SECTIONS_MARGIN;
           lastSectionPosition = position + height;
@@ -145,7 +145,7 @@ const MainStage = () => {
           const offsetX = (maxSectionWidth - width) / 2;
 
           return (
-            <Layer key={section.id}>
+            <Layer key={section._id}>
               <Section
                 x={centerX + offsetX}
                 y={centerY + position}
@@ -156,16 +156,16 @@ const MainStage = () => {
                 onSelectSeat={handleSelect}
                 onDeselectSeat={handleDeselect}
                 isSelected={
-                  mapData.selectedObject.section &&
-                  mapData.selectedObject.section.id === section.id
+                  mapData.selectedObject?.section &&
+                  mapData.selectedObject.section._id === section._id
                 }
               />
             </Layer>
           );
         })}
-        {mapData.tables.map((table, index) =>
+        {mapData.tables?.map((table, index) =>
           table.style === "circle" ? (
-            <Layer key={table.id}>
+            <Layer key={table._id}>
               <TableWithChairs
                 x={size.width / 2 - virtualWidth / 2}
                 y={size.height / 2 - 100}
@@ -177,14 +177,14 @@ const MainStage = () => {
                 onDeselectSeat={handleDeselect}
                 seatsInfo={table.seatsInfo}
                 isSelected={
-                  mapData.selectedObject.table &&
+                  mapData.selectedObject?.table &&
                   mapData.selectedObject.table.style === "circle" &&
-                  mapData.selectedObject.table.id === table.id
+                  mapData.selectedObject.table._id === table._id
                 }
               />
             </Layer>
           ) : (
-            <Layer key={table.id}>
+            <Layer key={table._id}>
               <RectTableWithChairs
                 width={40} // Specify the width of the table
                 height={150} // Specify the height of the table
@@ -197,35 +197,35 @@ const MainStage = () => {
                 onDeselectSeat={handleDeselect}
                 seatsInfo={table.seatsInfo}
                 isSelected={
-                  mapData.selectedObject.table &&
+                  mapData.selectedObject?.table &&
                   mapData.selectedObject.table.style === "square" &&
-                  mapData.selectedObject.table.id === table.id
+                  mapData.selectedObject.table._id === table._id
                 }
               />
             </Layer>
           )
         )}
-        {mapData.texts.map((item, index) => (
-          <Layer key={item.id}>
+        {mapData.texts?.map((item, index) => (
+          <Layer key={item._id}>
             <Text
               textInfo={item}
               isSelected={
-                mapData.selectedObject.text &&
-                mapData.selectedObject.text.id === item.id
+                mapData.selectedObject?.text &&
+                mapData.selectedObject.text._id === item._id
               }
             />
           </Layer>
         ))}
-        {mapData.objects.map((item, index) => (
-          <Layer key={item.id}>
+        {mapData.objects?.map((item, index) => (
+          <Layer key={item._id}>
             <Object
               label={item.label}
               shape={item.style}
               icon={item.icon}
               objectInfo={item}
               isSelected={
-                mapData.selectedObject.object &&
-                mapData.selectedObject.object.id === item.id
+                mapData.selectedObject?.object &&
+                mapData.selectedObject.object._id === item._id
               }
             />
           </Layer>

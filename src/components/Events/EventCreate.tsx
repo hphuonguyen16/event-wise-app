@@ -10,6 +10,8 @@ import {
   TextField,
   TextareaAutosize,
   Button,
+  Stack,
+  Switch,
 } from "@mui/material";
 import styled from "styled-components";
 import Image from "next/image";
@@ -364,6 +366,39 @@ export default function EventCreate({
                   }}
                 />
               </Box>
+              <Card sx={{ marginTop: "35px", border: "1px solid #ccc" }}>
+                <CardContent>
+                  <Stack
+                    spacing={2}
+                    direction="row"
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                  >
+                    <Stack spacing={2}>
+                      <Typography variant="h5" sx={{ marginBottom: "25px" }}>
+                        Reserved Seatings
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ marginBottom: "25px" }}
+                      >
+                        Use your venue map to set price tiers for each section
+                        and choose whether attendees can pick their seat.
+                      </Typography>
+                    </Stack>
+                    <Switch onChange={
+                      (e) => {
+                        setEventForm({
+                          ...eventForm,
+                          reservedSeating: e.target.checked,
+                        });
+                      }
+                    } 
+                      defaultChecked={eventForm.reservedSeating}
+                    />
+                  </Stack>
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
           <Card sx={{ marginTop: "20px", border: "1px solid #ccc" }}>

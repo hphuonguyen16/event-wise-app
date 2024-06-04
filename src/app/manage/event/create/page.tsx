@@ -72,6 +72,7 @@ export default function Page() {
         type: "text",
       },
     ],
+    reservedSeating: false,
   });
   const router = useRouter();
   const { setSnack } = useSnackbar();
@@ -94,7 +95,7 @@ export default function Page() {
     //check date greater or equal to today
 
     //@ts-ignore
-    if (eventForm.date.get("date") < dayjs().get("date")) { 
+    if (eventForm.date.get("date") < dayjs().get("date")) {
       setSnack({
         open: true,
         message: "Please select a date that is greater or today!",
@@ -142,15 +143,15 @@ export default function Page() {
       endTime: eventForm.endTime,
       detailLocation: eventForm.detailLocation,
       about: aboutAfterUpload,
+      reservedSeating: eventForm.reservedSeating,
     });
     if (response.data.status === "success") {
-     
       setSnack({
         open: true,
         message: "Event created successfully!",
         type: "success",
       });
-       router.push(`/manage/event/${response.data.data.data._id}/ticket`);
+      router.push(`/manage/event/${response.data.data.data._id}/ticket`);
     } else {
       setSnack({
         open: true,

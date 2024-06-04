@@ -21,6 +21,7 @@ const MapObjectProvider = ({ children }) => {
 
   const [chosenOption, setChosenOption] = React.useState();
   const [selectedSeats, setSelectedSeats] = React.useState([]);
+  const [tiers, setTiers] = React.useState([]);
 
   return (
     <MapObjectContext.Provider
@@ -31,6 +32,8 @@ const MapObjectProvider = ({ children }) => {
         setChosenOption,
         selectedSeats,
         setSelectedSeats,
+        tiers,
+        setTiers,
       }}
     >
       {children}

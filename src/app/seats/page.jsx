@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -18,6 +19,9 @@ import ObjectCard from "./components/ObjectCard";
 import TextCard from "./components/TextCard";
 import TierCard from "./components/TierCard";
 import { useMapObjectContext } from "@/context/MapObjectContext";
+import UrlConfig from "@/config/urlConfig";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -56,6 +60,10 @@ export default function BasicTabs() {
   const [value, setValue] = React.useState(0);
   const { mapData, setMapData, chosenOption, setChosenOption } =
     useMapObjectContext();
+  const axiosPrivate = useAxiosPrivate();
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get("eventId");
+  const router = useRouter();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -74,8 +82,78 @@ export default function BasicTabs() {
     });
   };
 
+  async function getMapData() {
+    try {
+      const res = await axiosPrivate.get(
+        UrlConfig.event.getCanvasByEventId(eventId)
+      );
+      if (res.data.data) {
+        setMapData(res.data.data);
+      } else {
+        setMapData({
+          selectedObject: {
+            section: null,
+            object: null,
+            text: null,
+            table: null,
+          },
+          sections: [],
+          objects: [],
+          tables: [],
+          texts: [],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  console.log(mapData);
+
+  async function handleSave() {
+    const res = await axiosPrivate.put(
+      UrlConfig.event.updateCanvasByEventId(eventId),
+      {
+        ...mapData,
+       event: eventId
+      }
+    );
+    
+    if (res.data.status === 'success') {
+      alert('Saved successfully');
+      router.push(`/manage/event/${eventId}/ticket`);
+    }
+  }
+
+  useEffect(() => {
+    getMapData();
+  }, []);
+
   return (
     <Stack direction="row">
+      <Stack
+        direction={"row"}
+        justifyContent={"flex-end"}
+        alignItems={"center"}
+        spacing={3}
+        sx={{
+          position: "fixed",
+          top: 0,
+          width: "72%",
+          zIndex: 1000,
+          backgroundColor: "white",
+          padding: "20px 0",
+        }}
+      >
+        <Button sx={{ width: "100px", height: "43px" }}>Cancel</Button>
+        <Button
+          variant="contained"
+          onClick={(e) => handleSave()}
+          sx={{ width: "100px", height: "43px" }}
+        >
+          Save
+        </Button>
+      </Stack>
       <Box sx={{ width: "70%" }}>
         <MainStage
           onSelectSeat={(seatId) => {
@@ -105,9 +183,9 @@ export default function BasicTabs() {
             <Tab
               label="Tiers"
               {...a11yProps(1)}
-              onClick={() => {
-                handleChosenOption(4);
-              }}
+              // onClick={() => {
+              //   handleChosenOption(4);
+              // }}
             />
             <Tab label="Item Three" {...a11yProps(2)} />
           </Tabs>
@@ -179,33 +257,33 @@ export default function BasicTabs() {
             </Tooltip>
           </Stack>
           {chosenOption === 0 && (
-            <SectionCard editData={mapData.selectedObject.section} />
+            <SectionCard editData={mapData.selectedObject?.section} />
           )}
           {chosenOption === 1 && (
-            <TableCard editData={mapData.selectedObject.table} />
+            <TableCard editData={mapData.selectedObject?.table} />
           )}
           {chosenOption === 2 && (
-            <ObjectCard editData={mapData.selectedObject.object} />
+            <ObjectCard editData={mapData.selectedObject?.object} />
           )}
           {chosenOption === 3 && (
-            <TextCard editData={mapData.selectedObject.text} />
+            <TextCard editData={mapData.selectedObject?.text} />
           )}
           {chosenOption === 4 && <TierCard />}
-          {mapData.selectedObject.section && (
-            <SectionCard editData={mapData.selectedObject.section} />
+          {mapData.selectedObject?.section && (
+            <SectionCard editData={mapData.selectedObject?.section} />
           )}
-          {mapData.selectedObject.table && (
-            <TableCard editData={mapData.selectedObject.table} />
+          {mapData.selectedObject?.table && (
+            <TableCard editData={mapData.selectedObject?.table} />
           )}
-          {mapData.selectedObject.object && (
-            <ObjectCard editData={mapData.selectedObject.object} />
+          {mapData.selectedObject?.object && (
+            <ObjectCard editData={mapData.selectedObject?.object} />
           )}
-          {mapData.selectedObject.text && (
-            <TextCard editData={mapData.selectedObject.text} />
+          {mapData.selectedObject?.text && (
+            <TextCard editData={mapData.selectedObject?.text} />
           )}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          <TierCard />
+          <TierCard eventId={eventId} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
           Item Three

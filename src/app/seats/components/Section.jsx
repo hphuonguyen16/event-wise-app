@@ -1,7 +1,7 @@
 import React from "react";
 import { Rect, Group, Text } from "./react-konva";
 import SubSection from "./SubSection";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   SECTION_TOP_PADDING,
   getSectionWidth,
@@ -23,9 +23,15 @@ const Section = ({
   rotation = 0.2,
 }) => {
   const containerRef = React.useRef();
-  const { mapData, setMapData, chosenOption, setChosenOption, selectedSeats, setSelectedSeats } =
-    useMapObjectContext();
-  console.log("rendering section", isSelected, section);
+  const {
+    mapData,
+    setMapData,
+    chosenOption,
+    setChosenOption,
+    selectedSeats,
+    setSelectedSeats,
+  } = useMapObjectContext();
+  const [position, setPosition] = useState({ x: 320, y: 150 });
 
   // caching will boost rendering
   // we just need to recache on some changes
@@ -35,8 +41,27 @@ const Section = ({
 
   const width = getSectionWidth(section);
 
-  function handleSelectAllSeats() {
-  }
+  const handleDragMove = (e) => {
+    setMapData((prev) => {
+      //find the section and update its position
+      const updatedSections = prev.sections.map((sec) => {
+        if (sec._id === section._id) {
+          return {
+            ...sec,
+            position: {
+              x: e.target.x(),
+              y: e.target.y(),
+            },
+          };
+        }
+        return sec;
+      });
+      return {
+        ...prev,
+        sections: updatedSections,
+      };
+    });
+  };
 
   const handleClick = () => {
     setMapData({
@@ -56,9 +81,8 @@ const Section = ({
 
   return (
     <Group
-      y={y}
-      x={x}
-      ref={containerRef}
+      x={section.position?.x || position.x}
+      y={section.position?.y || position.y}
       draggable
       rotation={section.rotation || rotation}
       offsetX={width / 2}
@@ -66,6 +90,7 @@ const Section = ({
       onClick={handleClick}
       skewX={section.skewX || skewX}
       skewY={section.skewY || skewY}
+      onDragEnd={handleDragMove}
     >
       <Rect
         width={width}

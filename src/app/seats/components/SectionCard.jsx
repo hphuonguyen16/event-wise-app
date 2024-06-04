@@ -17,6 +17,7 @@ import {
   Slider,
 } from "@mui/material";
 import { useMapObjectContext } from "@/context/MapObjectContext";
+import { generateObjectId } from "@/utils/mongooseObjectId";
 
 function SectionCard({ editData }) {
   const [row, setRow] = React.useState(editData?.row || "");
@@ -28,11 +29,11 @@ function SectionCard({ editData }) {
     return Array.from({ length: row }, (_, rowIndex) => ({
       [rowIndex + 1]: Array.from({ length: column }, (_, colIndex) => ({
         name: `Seat ${rowIndex + 1}-${colIndex + 1}`,
-        status: "free",
+        // status: "free",
         type: "section",
         sectionId: sectionId,
         sectionName: sectionName,
-        id : Math.random().toString(36).substr(2, 9),
+        _id : generateObjectId(),
       })),
     })).reduce((acc, curr) => ({ ...acc, ...curr }), {});
   };
@@ -40,7 +41,7 @@ function SectionCard({ editData }) {
   const addSectionSeat = () => {
     if (editData) {
       const updatedSections = mapData.sections.map((section) => {
-        if (section?.id === editData?.id) {
+        if (section?._id === editData?._id) {
           return {
             ...section,
             name: sectionName,
@@ -49,7 +50,7 @@ function SectionCard({ editData }) {
             subsections: [
               {
                 ...section.subsections[0], // Assuming only one subsection per section
-                seats_by_rows: generateSeatsByRows(row, column, section.id, section.name),
+                seats_by_rows: generateSeatsByRows(row, column, section._id, section.name),
               },
             ],
           };
@@ -61,9 +62,9 @@ function SectionCard({ editData }) {
         sections: updatedSections,
       });
     } else if (row && column) {
-      const sectionId = Math.random().toString(36).substr(2, 9);
+      const sectionId = generateObjectId();
       const newSection = {
-        id: sectionId,
+        _id: sectionId,
         name: sectionName,
         rotation: 0,
         skewX: 0,
@@ -72,7 +73,7 @@ function SectionCard({ editData }) {
         column: column,
         subsections: [
           {
-            id: 1,
+            // id: generateObjectId(),
             section_id: sectionId,
             seats_by_rows: generateSeatsByRows(row, column, sectionId),
           },
@@ -88,7 +89,7 @@ function SectionCard({ editData }) {
   const handleSliderChange = (event, newValue, name) => {
     const selectedSection = mapData.selectedObject?.section;
     const updatedSections = mapData.sections.map((section) => {
-      if (section?.id === selectedSection?.id) {
+      if (section?._id === selectedSection?._id) {
         return {
           ...section,
           [name]: newValue,
@@ -104,7 +105,7 @@ function SectionCard({ editData }) {
 
   const handleDelete = () => {
     const updatedSections = mapData.sections.filter(
-      (section) => section?.id !== editData?.id
+      (section) => section?._id !== editData?._id
     );
     setMapData({
       ...mapData,

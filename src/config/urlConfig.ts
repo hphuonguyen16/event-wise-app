@@ -39,6 +39,12 @@ const UrlConfig: any = {
     publishEvent: `${domain}/api/v1/events/publish`,
     changeTicketStatusEvent: (id: string) =>
       `${domain}/api/v1/events/${id}/ticket-status`,
+    getTiersByEventId: (eventId: string) =>
+      `${domain}/api/v1/events/${eventId}/tiers`,
+    getCanvasByEventId: (eventId: string) =>
+      `${domain}/api/v1/events/${eventId}/canvas`,
+    updateCanvasByEventId: (eventId: string) =>
+      `${domain}/api/v1/events/${eventId}/canvas`,
   },
   ticketType: {
     getTicketTypesByEventId: (eventId: string) =>
@@ -84,6 +90,18 @@ const UrlConfig: any = {
       `${domain}/api/v1/withdrawal-requests/${id}/fulfill`,
     cancelWithdrawalRequest: (id: string) =>
       `${domain}/api/v1/withdrawal-requests/${id}/cancel`,
+  },
+  canvas: {
+    createCanvas: `${domain}/api/v1/canvas`,
+    getCanvas: (id: string) => `${domain}/api/v1/canvas/${id}`,
+    updateCanvas: (id: string) => `${domain}/api/v1/canvas/${id}`,
+    deleteCanvas: `${domain}/api/v1/canvas`,
+  },
+  tier: {
+    createTier: `${domain}/api/v1/tiers`,
+    getTier: `${domain}/api/v1/tiers`,
+    updateTier: (id: string) => `${domain}/api/v1/tiers/${id}`,
+    deleteTier: (id: string) => `${domain}/api/v1/tiers/${id}`,
   },
 };
 

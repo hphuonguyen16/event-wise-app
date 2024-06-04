@@ -15,7 +15,7 @@ const Seat = (props) => {
   const isBooked = props.data?.status === "booked";
   const { mapData, setMapData, chosenOption, setChosenOption, selectedSeats } =
     useMapObjectContext();
-  const isSelected = selectedSeats.find((seat) => seat.name === props.data.name)
+  const isSelected = selectedSeats.find((seat) => seat._id === props.data._id)
     ? true
     : false;
   const colorAssigned = props.data?.tier?.color;
