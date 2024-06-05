@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import { Stage, Layer } from "./react-konva";
 import Section from "./Section";
@@ -18,7 +19,7 @@ import { useMapObjectContext } from "@/context/MapObjectContext";
 const MainStage = () => {
   const containerRef = React.useRef(null);
   const stageRef = React.useRef(null);
-  const { mapData, setMapData, selectedSeats, setSelectedSeats } =
+  const { mapData, setMapData, selectedSeats, setSelectedSeats, selectedTier, setSelectedTier } =
     useMapObjectContext();
   const [scale, setScale] = React.useState(1.7);
   const [scaleToFit, setScaleToFit] = React.useState(1);
@@ -78,12 +79,13 @@ const MainStage = () => {
     setScale(scale - 0.1);
   };
 
-  // const handleHover = React.useCallback((seat, pos) => {
-  //   setPopup({
-  //     seat: seat,
-  //     position: pos,
-  //   });
-  // }, []);
+  const handleHover = React.useCallback((seat, pos) => {
+    setSelectedTier(seat.tier);
+    setPopup({
+      seat: seat,
+      position: pos,
+    });
+  }, []);
 
   const handleSelect = (seat) => {
     console.log("selected", seat);
@@ -122,8 +124,8 @@ const MainStage = () => {
       style={{
         position: "relative",
         backgroundColor: "w",
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        height: "100%",
       }}
       ref={containerRef}
     >
@@ -152,7 +154,7 @@ const MainStage = () => {
                 height={height}
                 key={index}
                 section={section}
-                // onHoverSeat={handleHover}
+                onHoverSeat={handleHover}
                 onSelectSeat={handleSelect}
                 onDeselectSeat={handleDeselect}
                 isSelected={
@@ -172,7 +174,7 @@ const MainStage = () => {
                 width={virtualWidth}
                 numChairs={table.seats}
                 tableInfo={table}
-                // onHoverSeat={handleHover}
+                 onHoverSeat={handleHover}
                 onSelectSeat={handleSelect}
                 onDeselectSeat={handleDeselect}
                 seatsInfo={table.seatsInfo}

@@ -2,6 +2,8 @@ import React from "react";
 import { Circle } from "./react-konva";
 import { SEAT_SIZE } from "./helper";
 import { useMapObjectContext } from "@/context/MapObjectContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import UrlConfig from "@/config/urlConfig";
 
 function getColor(isSelected, isAssigned) {
   if (isSelected) {
@@ -19,6 +21,7 @@ const Seat = (props) => {
     ? true
     : false;
   const colorAssigned = props.data?.tier?.color;
+  const axiosPrivate = useAxiosPrivate();
   function handleClick(e) {
     if (props.isSelected) {
       props.onDeselect(props.data);
@@ -31,6 +34,8 @@ const Seat = (props) => {
     // });
   }
 
+  //fetch tickets by tier id
+  
 
   return (
     <Circle
@@ -39,31 +44,16 @@ const Seat = (props) => {
       radius={SEAT_SIZE / 2}
       fill={colorAssigned ? colorAssigned : getColor(isSelected)} 
       strokeWidth={1}
-      // onMouseEnter={(e) => {
-      //   e.target._clearCache();
-      //   props.onHover(props.data?.name, e.target.getAbsolutePosition());
-      //   const container = e.target.getStage().container();
-      //   if (isBooked) {
-      //     container.style.cursor = "not-allowed";
-      //   } else {
-      //     container.style.cursor = "pointer";
-      //   }
-      // }}
-      // onMouseLeave={(e) => {
-      //   props.onHover(null);
-      //   const container = e.target.getStage().container();
-      //   container.style.cursor = "";
-      // }}
-      // onClick={(e) => {
-      //   if (isBooked) {
-      //     return;
-      //   }
-      //   if (props.isSelected) {
-      //     props.onDeselect(props.data.name);
-      //   } else {
-      //     props.onSelect(props.data.name);
-      //   }
-      // }}
+      onMouseEnter={(e) => {
+        e.target._clearCache();
+        props.onHover(props.data, e.target.getAbsolutePosition());
+        const container = e.target.getStage().container();
+        if (isBooked) {
+          container.style.cursor = "not-allowed";
+        } else {
+          container.style.cursor = "pointer";
+        }
+      }}
       onClick={(e) => {
         handleClick();
       }}

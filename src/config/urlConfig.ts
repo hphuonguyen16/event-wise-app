@@ -102,6 +102,7 @@ const UrlConfig: any = {
     getTier: `${domain}/api/v1/tiers`,
     updateTier: (id: string) => `${domain}/api/v1/tiers/${id}`,
     deleteTier: (id: string) => `${domain}/api/v1/tiers/${id}`,
+    getTicketsByTierId: (id: string) => `${domain}/api/v1/tiers/${id}/ticketTypes`,
   },
 };
 

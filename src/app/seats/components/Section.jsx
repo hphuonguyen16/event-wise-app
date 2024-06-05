@@ -83,7 +83,7 @@ const Section = ({
     <Group
       x={section.position?.x || position.x}
       y={section.position?.y || position.y}
-      draggable
+      draggable 
       rotation={section.rotation || rotation}
       offsetX={width / 2}
       offsetY={height / 2}

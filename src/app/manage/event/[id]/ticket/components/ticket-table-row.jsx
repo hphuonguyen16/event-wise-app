@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 import Stack from "@mui/material/Stack";
@@ -38,6 +38,9 @@ export default function EventTableRow({
   handleDeleteEvent,
   eventId,
   reloadWhenUpdated,
+  tiers,
+  setTiers,
+  isReservedSeating,
 }) {
   const [open, setOpen] = useState(null);
   const axiosPrivate = useAxiosPrivate();
@@ -45,16 +48,9 @@ export default function EventTableRow({
   const [openEdit, setOpenEdit] = useState(null);
   const isMobile = useResponsive("down", "sm");
   const [dataForm, setDataForm] = useState({
-    name: ticket?.name,
-    price: ticket?.price,
-    quantity: ticket?.quantity,
-    event: eventId,
+    ...ticket,
     startDate: dayjs(ticket?.startDate),
     endDate: dayjs(ticket?.endDate),
-    minQuantity: ticket?.minQuantity,
-    maxQuantity: ticket?.maxQuantity,
-    salesChannel: ticket?.salesChannel, // Default value
-    ticketType: ticket?.ticketType, // Default value
   });
 
   const handleOpenMenu = (event) => {
@@ -82,8 +78,7 @@ export default function EventTableRow({
 
     if (currentDate >= parsedendDate) {
       return TicketStatus.COMPLETED;
-    } 
-    else if (currentDate < parsedstartDate) {
+    } else if (currentDate < parsedstartDate) {
       return TicketStatus.UPCOMING;
     } else {
       return TicketStatus.ON_SALE;
@@ -151,6 +146,8 @@ export default function EventTableRow({
           event: dataForm.event,
           salesChannel: dataForm.salesChannel,
           ticketType: dataForm.ticketType,
+          tier: dataForm.tier,
+          event: eventId,
         }
       );
 
@@ -174,11 +171,24 @@ export default function EventTableRow({
       console.log(error);
       setSnack({
         open: true,
-        message: error.response.data.message ||"An error occurred while saving. Please try again later.",
+        message:
+          error.response.data.message ||
+          "An error occurred while saving. Please try again later.",
         type: "error",
       });
     }
   };
+
+  useEffect(() => {
+    setDataForm({
+      ...ticket,
+      startDate: dayjs(ticket?.startDate),
+      endDate: dayjs(ticket?.endDate),
+    });
+    return () => {
+      setDataForm({});
+    };
+  }, [ticket]);
 
   return (
     <>
@@ -188,13 +198,11 @@ export default function EventTableRow({
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
-
         <TableCell component="th" scope="row" padding="none">
           <Typography variant="subtitle" noWrap>
             {ticket?.name}
           </Typography>
         </TableCell>
-
         <TableCell>
           {" "}
           {"On sale on " + formatDate(ticket?.startDate)}
@@ -203,8 +211,24 @@ export default function EventTableRow({
           </Typography>
         </TableCell>
         <TableCell>{ticket?.price}</TableCell>
-        <TableCell>{"0/" + ticket?.quantity}</TableCell>
-
+        <TableCell>{ticket?.sold + "/" + ticket?.quantity}</TableCell>
+        {isReservedSeating && (
+          <TableCell>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Box
+                sx={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: "50%",
+                  bgcolor: ticket?.tier?.color,
+                }}
+              ></Box>
+              <Typography variant="subtitle2" noWrap>
+                {ticket?.tier?.name}
+              </Typography>
+            </Stack>
+          </TableCell>
+        )}
         <TableCell>
           <Chip
             variant="outlined"
@@ -218,7 +242,6 @@ export default function EventTableRow({
             label={getTicketStatus(ticket)}
           />
         </TableCell>
-
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -235,11 +258,13 @@ export default function EventTableRow({
             transform: "translate(-50%, -50%)",
             //   width: isMobile ? '80vw' : width ? width : '100vw',
             width: isMobile ? "80%" : "40%",
-            height: isMobile ? "80%" : "83%",
+            height: isMobile ? "80%" : "85%",
             bgcolor: "background.paper",
             boxShadow: 24,
             borderRadius: 2,
-            padding: isMobile ? 3 : "20px",
+            maxHeight: "100%",
+            overflow: "auto",
+            padding: "20px",
           }}
         >
           <CreateTicket
@@ -249,6 +274,8 @@ export default function EventTableRow({
             dataForm={dataForm}
             setDataForm={setDataForm}
             handleSave={handleSave}
+            tiers={tiers}
+            setTiers={setTiers}
           />
         </Box>
       </Modal>

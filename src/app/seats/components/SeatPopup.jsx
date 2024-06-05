@@ -1,4 +1,7 @@
 import React from "react";
+import { useMapObjectContext } from "@/context/MapObjectContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import UrlConfig from "@/config/urlConfig";
 
 const isClickedInside = (e, element) => {
   let node = e.target;
@@ -11,8 +14,11 @@ const isClickedInside = (e, element) => {
   return false;
 };
 
-const Popup = ({ position, seatId, onClose }) => {
+const Popup = ({ position, seat, onClose }) => {
   const containerRef = React.useRef(null);
+  const { selectedTier, setSelectedTier, ticketTypes, setTicketTypes } = useMapObjectContext();
+  const [tickets, setTickets] = React.useState([]);
+  const axiosPrivate = useAxiosPrivate();
 
   React.useEffect(() => {
     const onClick = (e) => {
@@ -25,6 +31,11 @@ const Popup = ({ position, seatId, onClose }) => {
       window.removeEventListener("click", onClick);
     };
   }, []);
+ 
+
+  React.useEffect(() => {
+    setTickets(ticketTypes[selectedTier?._id]);
+  }, [selectedTier]);
   return (
     <div
       ref={containerRef}
@@ -38,10 +49,31 @@ const Popup = ({ position, seatId, onClose }) => {
         zIndex: 10,
         backgroundColor: "white",
         color: "black",
+        width: "300px",
       }}
     >
-      <div>Seat {seatId}</div>
-      <div>Click on the seat to select</div>
+      {tickets?.map((ticket) => (
+        <div
+          className="flex justify-between items-center border-b py-2"
+          key={ticket._id}
+        >
+          <div className="flex-1">
+            <p className="text-lg font-bold">{ticket?.name}</p>
+            <p className="text-sm text-gray-500">
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "VND",
+              }).format(ticket?.price)}
+            </p>
+          </div>
+          <button
+            onClick={() => onSelect(ticket)}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Select
+          </button>
+        </div>
+      ))}
     </div>
   );
 };

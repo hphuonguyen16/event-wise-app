@@ -31,6 +31,7 @@ import useResponsive from "@/hooks/useResponsive";
 import dayjs from "dayjs";
 import moment, { min } from "moment";
 import { useRouter } from "next/navigation";
+import { set } from "lodash";
 
 // ----------------------------------------------------------------------
 export default function UserPage({ params }) {
@@ -56,6 +57,8 @@ export default function UserPage({ params }) {
   const [isUpdated, setIsUpdated] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const { setSnack } = useSnackbar();
+  const [tiers, setTiers] = useState([]);
+  const [eventDetail, setEventDetail] = useState({});
   const [dataFormAdd, setdataFormAdd] = useState({
     name: "",
     price: "",
@@ -67,6 +70,7 @@ export default function UserPage({ params }) {
     maxQuantity: 10,
     salesChannel: "both", // Default value
     ticketType: "free",
+    tier: "",
   });
 
   const handleSort = (event, id) => {
@@ -210,6 +214,7 @@ export default function UserPage({ params }) {
           event: dataFormAdd.event,
           salesChannel: dataFormAdd.salesChannel,
           ticketType: dataFormAdd.ticketType,
+          tier: dataFormAdd.tier,
         }
       );
 
@@ -236,6 +241,20 @@ export default function UserPage({ params }) {
         message: error.response.data.message || "Something went wrong!",
         type: "error",
       });
+    }
+  };
+
+  const getALlTiers = async () => {
+    try {
+      const response = await axiosPrivate.get(
+        UrlConfig.event.getTiersByEventId(eventId)
+      );
+
+      if (response.data.status === "success") {
+        setTiers(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -271,28 +290,30 @@ export default function UserPage({ params }) {
     }
   }
 
+  const fetchDetailEvent = async () => {
+    const response = await axiosPrivate.get(UrlConfig.event.getEvent(eventId));
+    if (response.data.status === "success") {
+      const event = response.data.data.data;
+      setEventDetail(event);
+    }
+  };
+
   useEffect(() => {
     axiosPrivate
       .get(UrlConfig?.ticketType.getTicketTypesByEventId(eventId))
       .then((res) => {
         const events = res.data.data.map((event) => {
           return {
+            ...event,
+
             id: event._id,
-            name: event.name,
-            price: event.price,
-            quantity: event.quantity,
-            status: event.status,
-            startTime: event.startTime,
-            endTime: event.endTime,
-            startDate: event.startDate,
-            endDate: event.endDate,
-            ticketType: event.ticketType,
-            minQuantity: event.minQuantity,
-            maxQuantity: event.maxQuantity,
           };
         });
         setEvents(events);
       });
+
+    getALlTiers();
+    fetchDetailEvent();
 
     return () => {
       setdataFormAdd({
@@ -306,6 +327,7 @@ export default function UserPage({ params }) {
         maxQuantity: 10,
         ticketType: "free",
         salesChannel: "both", // Default value
+        tier: null,
       });
     };
   }, [isUpdated]);
@@ -377,13 +399,24 @@ export default function UserPage({ params }) {
               numSelected={selected.length}
               onRequestSort={handleSort}
               onSelectAllClick={handleSelectAllClick}
-              headLabel={[
-                { id: "name", label: "Name" },
-                { id: "date", label: "Date" },
-                { id: "price", label: "Price" },
-                { id: "sold", label: "Sold" },
-                { id: "status", label: "Status" },
-              ]}
+              headLabel={
+                eventDetail?.reservedSeating
+                  ? [
+                      { id: "name", label: "Name" },
+                      { id: "date", label: "Date" },
+                      { id: "price", label: "Price" },
+                      { id: "sold", label: "Sold" },
+                      { id: "tier", label: "Tier" },
+                      { id: "status", label: "Status" },
+                    ]
+                  : [
+                      { id: "name", label: "Name" },
+                      { id: "date", label: "Date" },
+                      { id: "price", label: "Price" },
+                      { id: "sold", label: "Sold" },
+                      { id: "status", label: "Status" },
+                    ]
+              }
             />
             <TableBody>
               {dataFiltered
@@ -397,6 +430,9 @@ export default function UserPage({ params }) {
                     handleDeleteEvent={(event) => handleDeleteEvent(row.id)}
                     eventId={eventId}
                     reloadWhenUpdated={reloadWhenUpdated}
+                    tiers={tiers}
+                    setTiers={setTiers}
+                    isReservedSeating={eventDetail?.reservedSeating}
                   />
                 ))}
 
@@ -449,11 +485,13 @@ export default function UserPage({ params }) {
             transform: "translate(-50%, -50%)",
             //   width: isMobile ? '80vw' : width ? width : '100vw',
             width: isMobile ? "80%" : "40%",
-            height: isMobile ? "80%" : "83%",
+            height: isMobile ? "80%" : "85%",
             bgcolor: "background.paper",
             boxShadow: 24,
             borderRadius: 2,
-            padding: isMobile ? 3 : "20px",
+            maxHeight: "100%",
+            overflow: "auto",
+            padding: "20px",
           }}
         >
           <CreateTicket
@@ -463,6 +501,8 @@ export default function UserPage({ params }) {
             dataForm={dataFormAdd}
             setDataForm={setdataFormAdd}
             handleSave={handleSave}
+            tiers={tiers}
+            setTiers={setTiers}
           />
         </Box>
       </Modal>

@@ -14,11 +14,15 @@ import Modal from "@mui/material/Modal";
 import useResponsive from "@/hooks/useResponsive";
 import CustomSnackbar from "@/components/common/Snackbar";
 import useSnackbar from "@/context/snackbarContext";
+import { useMapObjectContext } from "@/context/MapObjectContext";
+import ReservedTicketCard from "@/components/Tickets/ReservedTicketCardList";
 
 const EventDetail = ({ params }) => {
   const axiosPrivate = useAxiosPrivate();
   const { setSnack } = useSnackbar();
   const [openTicket, setOpenTicket] = React.useState(false);
+  const { mapData, setMapData, ticketTypes, setTicketTypes } =
+    useMapObjectContext();
   const [tickets, setTickets] = React.useState([]);
   const [isUpdated, setIsUpdated] = React.useState(false);
   const images = [
@@ -72,6 +76,67 @@ const EventDetail = ({ params }) => {
     }
   };
 
+  async function getMapData() {
+    try {
+      const res = await axiosPrivate.get(
+        UrlConfig.event.getCanvasByEventId(params.id)
+      );
+      if (res.data.data) {
+        setMapData(res.data.data);
+      } else {
+        setMapData({
+          selectedObject: {
+            section: null,
+            object: null,
+            text: null,
+            table: null,
+          },
+          sections: [],
+          objects: [],
+          tables: [],
+          texts: [],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  console.log(mapData);
+ const fetchTicketsByTierId = async (tierId) => {
+   try {
+     if(!tierId) return;
+     const response = await axiosPrivate.get(
+       UrlConfig.tier.getTicketsByTierId(tierId)
+     );
+     if (response.data.status === "success") {
+       setTicketTypes((prevTicketTypes) => ({
+         ...prevTicketTypes,
+         [tierId]: response.data.data,
+       }));
+     }
+   } catch (error) {
+     console.log(error);
+   }
+ };
+
+ const fetchTicketsByEventId = async () => {
+   try {
+     const response = await axiosPrivate.get(
+       UrlConfig.ticketType.getTicketTypesByEventId(params.id)
+     );
+     if (response.data.status === "success") {
+       const ticketTypesData = response.data.data;
+       setTickets(ticketTypesData);
+       const promises = ticketTypesData.map((ticketType) =>
+         fetchTicketsByTierId(ticketType?.tier?._id)
+       );
+       await Promise.all(promises);
+     }
+   } catch (error) {
+     console.log(error);
+   }
+ };
   React.useEffect(() => {
     axiosPrivate.get(UrlConfig.event.getEvent(params.id)).then((res) => {
       setEventDetail(res.data.data.data);
@@ -81,15 +146,19 @@ const EventDetail = ({ params }) => {
     //   .then((res) => {
     //     setTickets(res.data.data);
     //   });
+    getMapData();
   }, []);
 
+  console.log(ticketTypes);
   React.useEffect(() => {
-    axiosPrivate
-      .get(UrlConfig?.ticketType.getTicketTypesByEventId(params.id))
-      .then((res) => {
-        setTickets(res.data.data);
-      });
+    // axiosPrivate
+    //   .get(UrlConfig?.ticketType.getTicketTypesByEventId(params.id))
+    //   .then((res) => {
+    //     setTickets(res.data.data);
+    //   });
+    fetchTicketsByEventId();
   }, [isUpdated]);
+
   return (
     <Box sx={{ width: "70%", margin: "auto", paddingBottom: "30px" }}>
       <CustomSnackbar />
@@ -147,7 +216,6 @@ const EventDetail = ({ params }) => {
                   )}
                 </Box>
               </Box>
-             
             </Box>
             <Box sx={{ marginTop: "40px" }}>
               <Typography variant="h4">About this event</Typography>
@@ -211,8 +279,8 @@ const EventDetail = ({ params }) => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             //   width: isMobile ? '80vw' : width ? width : '100vw',
-            width: isMobile ? "90%" : "80%",
-            height: isMobile ? "90%" : "83%",
+            width: eventDetail?.reservedSeating ? "90%" : "80%",
+            height: eventDetail?.reservedSeating ? "90%" : "83%",
             bgcolor: "background.paper",
             boxShadow: 24,
             borderRadius: 2,
@@ -220,7 +288,11 @@ const EventDetail = ({ params }) => {
             overflow: "auto",
           }}
         >
-          <TicketCard tickets={tickets} handleSave={handleSave} />
+          {eventDetail?.reservedSeating ? (
+            <ReservedTicketCard tickets={tickets} handleSave={handleSave} />
+          ) : (
+            <TicketCard tickets={tickets} handleSave={handleSave} />
+          )}
         </Box>
       </Modal>
     </Box>
