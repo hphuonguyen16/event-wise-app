@@ -4,8 +4,6 @@ const TicketToBuy = ({
   tickets,
   orders,
   setOrders,
-  handleAddQuantity,
-  handleSubtractQuantity,
   getTicketStatus,
 }) => {
   return (
@@ -72,7 +70,7 @@ const TicketToBuy = ({
               </div>
             </div>
             <div className="flex items-center max-[500px]:justify-center h-full max-md:mt-3">
-              <div className="flex items-center h-full">
+              {/* <div className="flex items-center h-full">
                 <button
                   onClick={() => handleSubtractQuantity(ticket._id)}
                   className="group rounded-l-xl px-5 py-[18px] border border-gray-200 flex items-center justify-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-gray-50 hover:border-gray-300 hover:shadow-gray-300 focus-within:outline-gray-300"
@@ -159,7 +157,7 @@ const TicketToBuy = ({
                     />
                   </svg>
                 </button>
-              </div>
+              </div> */}
             </div>
             <div className="flex items-center max-[500px]:justify-center md:justify-end max-md:mt-3 h-full">
               <p className="font-bold text-lg leading-8 text-gray-600 text-center transition-all duration-300 group-hover:text-indigo-600">

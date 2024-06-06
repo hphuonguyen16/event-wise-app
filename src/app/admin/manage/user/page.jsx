@@ -162,21 +162,9 @@ export default function UserPage() {
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        mb={5}
+        mb={3}
       >
         <Typography variant="h3">Users</Typography>
-
-        <Link href="/manage/user/create">
-          {" "}
-          {/* Replace "/new-user-page" with the actual link */}
-          <Button
-            variant="contained"
-            color="inherit"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
-            New User
-          </Button>
-        </Link>
       </Stack>
 
       <Card>

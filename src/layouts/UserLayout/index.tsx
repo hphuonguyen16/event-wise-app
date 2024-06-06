@@ -7,7 +7,7 @@ import React, { PropsWithChildren, ReactNode } from "react";
 import useResponsive from "@/hooks/useResponsive";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import { Avatar, Button, IconButton, Stack } from "@mui/material";
+import { Avatar, Box, Button, IconButton, Stack } from "@mui/material";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import SearchTextbox from "../SearchTextbox/SearchTextbox";
 import ProfilePopover from "../ProfilePopover";
@@ -18,7 +18,6 @@ import Recharge from "../Recharge/Recharge";
 import { useState } from "react";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { Fab, Tooltip } from "@mui/material";
-
 
 // ----------------------------------------------------------------------
 
@@ -67,6 +66,7 @@ const HeaderBar = styled("div")(({ theme }) => ({
   marginRight: "25px",
   alignItems: "center",
   padding: theme.spacing(3),
+  height: "80px",
 
   [theme.breakpoints.down("sm")]: {
     // Media query for screens with a width of 600px or less (mobile)
@@ -88,7 +88,6 @@ const Layout = ({ children }: LayoutProps) => {
   const isMobile = useResponsive("down", "sm");
   const { user } = useAuth();
   const [openRecharge, setOpenRecharge] = useState(false);
-
 
   return (
     <StyledRoot>
@@ -117,7 +116,13 @@ const Layout = ({ children }: LayoutProps) => {
             <ProfilePopover />
           </Stack>
         </HeaderBar>
-        {children}
+        <Box
+          sx={{
+            height: "calc(100vh - 80px)",
+          }}
+        >
+          {children}
+        </Box>
       </Main>
     </StyledRoot>
   );

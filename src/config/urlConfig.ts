@@ -11,6 +11,7 @@ const UrlConfig: any = {
     signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/signup`,
     refresh: `${domain}/api/v1/users/refresh`,
     forgotPassword: "/api/v1/users/forgotPassword",
+    getAllUsers: `${domain}/api/v1/users`,
   },
   me: {
     getMe: `${domain}/api/v1/users/me`,
@@ -59,6 +60,7 @@ const UrlConfig: any = {
     getOrdersByEventId: (eventId: string) =>
       `${domain}/api/v1/events/${eventId}/registrations`,
     createOrder: `${domain}/api/v1/registrations`,
+    createSeatingOrder: `${domain}/api/v1/registrations/seating`,
     getAllOrders: `${domain}/api/v1/registrations`,
     deleteOrder: (orderId: string) =>
       `${domain}/api/v1/registrations/${orderId}`,
@@ -70,6 +72,9 @@ const UrlConfig: any = {
   category: {
     getAllCategories: `${domain}/api/v1/categories`,
     getPopularCategories: `${domain}/api/v1/categories/popular`,
+    createCategory: `${domain}/api/v1/categories`,
+    editCategory: (id: string) => `${domain}/api/v1/categories/${id}`,
+    deleteCategory: (id: string) => `${domain}/api/v1/categories/${id}`,
   },
   search: {
     searchEvents: `${domain}/api/v1/events/search`,
@@ -102,7 +107,8 @@ const UrlConfig: any = {
     getTier: `${domain}/api/v1/tiers`,
     updateTier: (id: string) => `${domain}/api/v1/tiers/${id}`,
     deleteTier: (id: string) => `${domain}/api/v1/tiers/${id}`,
-    getTicketsByTierId: (id: string) => `${domain}/api/v1/tiers/${id}/ticketTypes`,
+    getTicketsByTierId: (id: string) =>
+      `${domain}/api/v1/tiers/${id}/ticketTypes`,
   },
 };
 

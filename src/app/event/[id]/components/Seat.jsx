@@ -12,9 +12,10 @@ const getColor = (isSelected, seatStatus, tierColor) => {
     case SeatStatetus.BOOKED:
       return "red";
     case SeatStatetus.AVAILABLE:
-      return tierColor || "green";
+      if (!tierColor) return "gray";
+      return tierColor;
     default:
-      return tierColor || "#1b728d";
+      return "#1b728d";
   }
 };
 
@@ -46,7 +47,8 @@ const Seat = (props) => {
         e.target._clearCache();
         props.onHover(props.data, e.target.getAbsolutePosition());
         const container = e.target.getStage().container();
-        container.style.cursor = isBooked ? "not-allowed" : "pointer";
+        container.style.cursor =
+          isBooked || !props.data.tier ? "not-allowed" : "pointer";
       }}
       onClick={handleClick}
       onTap={handleClick}

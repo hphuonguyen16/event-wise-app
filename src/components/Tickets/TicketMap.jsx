@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect } from "react";
 import moment from "moment";
-import MainStage from "../../app/seats/components/MainStage";
+import MainStage from "../../app/event/[id]/components/MainStage";
 import { useMapObjectContext } from "../../context/MapObjectContext";
 
 const TicketStatus = {

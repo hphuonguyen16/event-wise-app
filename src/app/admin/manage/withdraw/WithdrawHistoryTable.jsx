@@ -83,8 +83,6 @@ const WithdrawHistoryTable = ({ request, fetchTransactionData }) => {
         {open && item && (
           <WithdrawDetail open={open} setOpen={setOpen} withdraw={item} />
         )}
-        <CardHeader title="Yeu cau" />
-        <Divider />
         <TableContainer>
           <Table>
             <TableHead>
@@ -102,7 +100,7 @@ const WithdrawHistoryTable = ({ request, fetchTransactionData }) => {
                   <TableRow hover key={cryptoOrder.id}>
                     <TableCell>
                       <Stack direction="row" spacing={2} alignItems="center">
-                        <Avatar src={cryptoOrder.user.avatar} />
+                        <Avatar src={cryptoOrder.user.profile.avatar} />
                         <Typography
                           variant="body1"
                           fontWeight="bold"
@@ -110,7 +108,7 @@ const WithdrawHistoryTable = ({ request, fetchTransactionData }) => {
                           gutterBottom
                           noWrap
                         >
-                          {request.user?.profile.name}{" "}
+                          {cryptoOrder.user?.profile.name}{" "}
                         </Typography>
                       </Stack>
                     </TableCell>

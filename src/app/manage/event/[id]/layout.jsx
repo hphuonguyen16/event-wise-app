@@ -13,7 +13,7 @@ import {
   InputLabel,
   Select,
 } from "@mui/material";
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -97,20 +97,17 @@ const Layout = ({ children }) => {
   };
 
   const fetchDetailEvent = async () => {
-    const response = await axiosPrivate.get(
-      UrlConfig.event.getEvent(id)
-    );
+    const response = await axiosPrivate.get(UrlConfig.event.getEvent(id));
     const event = response.data.data.data;
     setEvent(event);
   };
-
 
   useEffect(() => {
     fetchDetailEvent();
   }, [id]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100%" }}>
       <Box sx={{ width: "20%", maxHeight: "100vh", overflowY: "auto" }}>
         <Box sx={{ marginBottom: "40px" }}>
           <FormControl sx={{ width: "60%" }}>
@@ -190,7 +187,12 @@ const Layout = ({ children }) => {
 
         <Paper sx={{ marginTop: "10px" }}>
           <MenuList>
-            <MenuItem sx={{ marginTop: "20px" }}>Dashboard</MenuItem>
+            <MenuItem
+              sx={{ marginTop: "20px" }}
+              onClick={() => router.push(`/manage/event/${id}`)}
+            >
+              Dashboard
+            </MenuItem>
             <MenuItem sx={{ padding: 0, marginTop: "20px" }}>
               <Accordion sx={{ width: "100%" }}>
                 <AccordionSummary

@@ -7,6 +7,9 @@ import moment from "moment";
 import MainStage from "../../app/seats/components/MainStage";
 import { useMapObjectContext } from "../../context/MapObjectContext";
 import TicketToBuy from "./TicketToBuy";
+import ClearIcon from "@mui/icons-material/Clear";
+import IconButton from "@mui/material/IconButton";
+import {SeatStatetus} from "@/constants/seatStatus";
 
 const TicketStatus = {
   ON_SALE: "On Sale",
@@ -24,69 +27,30 @@ function getTicketStatus(ticket) {
   } else if (currentDate < parsedstartDate) {
     return "Upcoming at " + parsedstartDate.format("DD/MM/YYYY");
   } else {
-    return ticket.quantity - ticket.sold > 0
-      ? ticket.quantity - ticket.sold + " Tickets Available"
+    return ticket?.quantity - ticket?.sold > 0
+      ? ticket?.quantity - ticket?.sold + " Tickets Available"
       : "Sold Out";
   }
 }
 
 function ReservedTicketCardList({ tickets, handleSave }) {
-  const [orders, setOrders] = useState([]);
-  const { mapData, setMapData, selectedTier, setSelectedTier } = useMapObjectContext();
+  const {
+    mapData,
+    setMapData,
+    selectedTier,
+    setSelectedTier,
+    orders,
+    setOrders,
+    updateSeatStatus,
+    getMapData,
+  } = useMapObjectContext();
   const [buyOnMap, setBuyOnMap] = useState(false);
 
-  console.log(buyOnMap);
-
-  function handleAddQuantity(id) {
-    const ticket = tickets.find((ticket) => ticket._id === id);
-    // check if ticket on sale
-    const parsedstartDate = moment(ticket?.startDate);
-    const parsedendDate = moment(ticket?.endDate);
-    const currentDate = new Date();
-    if (currentDate >= parsedendDate) {
-      return;
-    } else if (currentDate < parsedstartDate) {
-      return;
-    }
-    const remaining = ticket.quantity - ticket.sold;
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === id
-          ? {
-              ...order,
-              quantity: Math.min(order.quantity + 1, remaining),
-            }
-          : order
-      )
-    );
+  function handleDeleteOrder(index) {
+    const order = orders[index];
+    setOrders(orders.filter((_, i) => i !== index));
+    updateSeatStatus(order.seat, SeatStatetus.AVAILABLE);
   }
-
-  function handleSubtractQuantity(id) {
-    // check if ticket on sale
-    const ticket = tickets.find((ticket) => ticket._id === id);
-    const parsedstartDate = moment(ticket?.startDate);
-    const parsedendDate = moment(ticket?.endDate);
-    const currentDate = new Date();
-    if (currentDate >= parsedendDate) {
-      return;
-    } else if (currentDate < parsedstartDate) {
-      return;
-    }
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === id
-          ? { ...order, quantity: Math.max(0, order.quantity - 1) }
-          : order
-      )
-    );
-  }
-
-  
-
-
-  useEffect(() => {
-    setOrders(tickets.map((ticket) => ({ id: ticket._id, quantity: 0 })));
-  }, [tickets]);
 
   return (
     <section className=" relative z-10 after:contents-[''] after:absolute after:z-0 after:h-full xl:after:w-1/3 after:top-0 after:right-0 after:bg-gray-50">
@@ -105,8 +69,6 @@ function ReservedTicketCardList({ tickets, handleSave }) {
               tickets={tickets}
               orders={orders}
               setOrders={setOrders}
-              handleAddQuantity={handleAddQuantity}
-              handleSubtractQuantity={handleSubtractQuantity}
               getTicketStatus={getTicketStatus}
             />
           )}
@@ -116,29 +78,64 @@ function ReservedTicketCardList({ tickets, handleSave }) {
             </h2>
             <div className="mt-8">
               {buyOnMap && (
-                <div className="flex items-center justify-between py-8">
-                  <p className="font-medium text-xl leading-8 text-black">
-                    {orders.reduce((acc, order) => acc + order.quantity, 0) +
-                      " Items"}
-                  </p>
-                  <p className="font-semibold text-xl leading-8 text-indigo-600">
-                    {orders.reduce(
-                      (acc, order) =>
-                        acc +
-                        order.quantity *
-                          tickets.find((ticket) => ticket._id === order.id)
-                            .price,
-                      0
-                    ) + "d"}
-                  </p>
+                <div>
+                  {orders?.map((order, index) => {
+                    const ticket = order.ticketType;
+                    return (
+                      <div
+                        key={order.id}
+                        className="flex flex-col min-[500px]:flex-row min-[500px]:items-center gap-5 py-6 border-b border-gray-200 group"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-4 w-full">
+                          <div className="md:col-span-2">
+                            <div className="flex flex-col max-[500px]:items-center gap-3">
+                              <h6 className="font-semibold text-base leading-7 text-black">
+                                1 x {ticket?.name}
+                              </h6>
+                            </div>
+                            <div className="flex flex-col max-[500px]:items-center gap-3">
+                              <h6 className="font-medium text-base leading-7 text-black">
+                                {order.seat.name}
+                              </h6>
+                            </div>
+                            <div className="flex max-[500px]:items-center gap-1">
+                              <div
+                                class="w-6 h-6 rounded-full flex items-center justify-center mr-2"
+                                style={{ backgroundColor: ticket.tier.color }}
+                              ></div>
+                              <span>{ticket.tier.name}</span>
+                            </div>
+                          </div>
+                          <div className="md:col-span-2">
+                            <div className="flex items-center justify-evenly h-full">
+                              <p className="font-semibold text-lg text-black">
+                                {order.quantity > 0
+                                  ? (
+                                      order.quantity * ticket?.price
+                                    ).toLocaleString("vi", {
+                                      style: "currency",
+                                      currency: "VND",
+                                    })
+                                  : "Free"}
+                              </p>
+                              <IconButton onClick={() => handleDeleteOrder(index)}>
+                                <ClearIcon />
+                              </IconButton>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
+
               {buyOnMap ? (
                 <button
-                  onClick={handleSave}
+                  onClick={(event) => handleSave(event, orders)}
                   className="w-full text-center bg-indigo-600 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-indigo-700"
                 >
-                  Save
+                  Checkout
                 </button>
               ) : (
                 <button

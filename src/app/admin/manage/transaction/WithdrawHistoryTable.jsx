@@ -38,8 +38,6 @@ const WithdrawHistoryTable = ({ request }) => {
         {open && (
           <DetailTransaction open={open} setOpen={setOpen} transaction={item} />
         )}
-        <CardHeader title="Yeu cau" />
-        <Divider />
         <TableContainer>
           <Table>
             <TableHead>
@@ -59,20 +57,6 @@ const WithdrawHistoryTable = ({ request }) => {
                   <TableRow hover key={cryptoOrder.id}>
                     <TableCell>
                       <Stack direction="row" spacing={2} alignItems="center">
-                        <Avatar src={cryptoOrder.user.avatar} />
-                        <Typography
-                          variant="body1"
-                          fontWeight="bold"
-                          color="text.primary"
-                          gutterBottom
-                          noWrap
-                        >
-                          {request.user?.profile.name}{" "}
-                        </Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={2} alignItems="center">
                         <Avatar src={cryptoOrder.user?.profile.avatar} />
                         <Typography
                           variant="body1"
@@ -81,8 +65,22 @@ const WithdrawHistoryTable = ({ request }) => {
                           gutterBottom
                           noWrap
                         >
-                          {request.organizer
-                            ? request.organizer?.profile.name
+                          {cryptoOrder.user?.profile.name}{" "}
+                        </Typography>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Avatar src="" alt="Server" />
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {cryptoOrder.organizer
+                            ? cryptoOrder.organizer?.profile.name
                             : "Me"}
                         </Typography>
                       </Stack>

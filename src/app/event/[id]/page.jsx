@@ -16,12 +16,13 @@ import CustomSnackbar from "@/components/common/Snackbar";
 import useSnackbar from "@/context/snackbarContext";
 import { useMapObjectContext } from "@/context/MapObjectContext";
 import ReservedTicketCard from "@/components/Tickets/ReservedTicketCardList";
+import { SeatStatetus } from "@/constants/seatStatus";
 
 const EventDetail = ({ params }) => {
   const axiosPrivate = useAxiosPrivate();
   const { setSnack } = useSnackbar();
   const [openTicket, setOpenTicket] = React.useState(false);
-  const { mapData, setMapData, ticketTypes, setTicketTypes } =
+  const { mapData, setMapData, ticketTypes, setTicketTypes, orders, setOrders } =
     useMapObjectContext();
   const [tickets, setTickets] = React.useState([]);
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -76,6 +77,60 @@ const EventDetail = ({ params }) => {
     }
   };
 
+  const handleSaveSeatReserved = async (event, orders) => {
+    event.preventDefault();
+    try {
+      const registration = {
+        event: params.id,
+        orders: orders.map((order) => ({
+          ticketType: order.ticketType._id,
+          quantity: order.quantity,
+          seat: {
+            ...order.seat,
+            status: SeatStatetus.BOOKED,
+          },
+        })),
+        orderType: "online",
+        status: "completed",
+      };
+
+      const seats = orders.map((order) => order.seat);
+
+      const response = await axiosPrivate.post(
+        UrlConfig.order.createSeatingOrder,
+        {
+          seats: seats,
+          registration: registration,
+        }
+      );
+
+      if (response.data.status === "success") {
+        setSnack({
+          open: true,
+          message: "Order created successfully!",
+          type: "success",
+        });
+        setIsUpdated(!isUpdated);
+        setOpenTicket(false);
+        setOrders([]);
+      } else {
+        setSnack({
+          open: true,
+          message: "Something went wrong! Please try again!",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message:
+          error.response?.data?.message ||
+          "Something went wrong! Please try again!",
+        type: "error",
+      });
+    }
+  };
+
   async function getMapData() {
     try {
       const res = await axiosPrivate.get(
@@ -102,41 +157,40 @@ const EventDetail = ({ params }) => {
     }
   }
 
-  console.log(mapData);
- const fetchTicketsByTierId = async (tierId) => {
-   try {
-     if(!tierId) return;
-     const response = await axiosPrivate.get(
-       UrlConfig.tier.getTicketsByTierId(tierId)
-     );
-     if (response.data.status === "success") {
-       setTicketTypes((prevTicketTypes) => ({
-         ...prevTicketTypes,
-         [tierId]: response.data.data,
-       }));
-     }
-   } catch (error) {
-     console.log(error);
-   }
- };
+  const fetchTicketsByTierId = async (tierId) => {
+    try {
+      if (!tierId) return;
+      const response = await axiosPrivate.get(
+        UrlConfig.tier.getTicketsByTierId(tierId)
+      );
+      if (response.data.status === "success") {
+        setTicketTypes((prevTicketTypes) => ({
+          ...prevTicketTypes,
+          [tierId]: response.data.data,
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
- const fetchTicketsByEventId = async () => {
-   try {
-     const response = await axiosPrivate.get(
-       UrlConfig.ticketType.getTicketTypesByEventId(params.id)
-     );
-     if (response.data.status === "success") {
-       const ticketTypesData = response.data.data;
-       setTickets(ticketTypesData);
-       const promises = ticketTypesData.map((ticketType) =>
-         fetchTicketsByTierId(ticketType?.tier?._id)
-       );
-       await Promise.all(promises);
-     }
-   } catch (error) {
-     console.log(error);
-   }
- };
+  const fetchTicketsByEventId = async () => {
+    try {
+      const response = await axiosPrivate.get(
+        UrlConfig.ticketType.getTicketTypesByEventId(params.id)
+      );
+      if (response.data.status === "success") {
+        const ticketTypesData = response.data.data;
+        setTickets(ticketTypesData);
+        const promises = ticketTypesData.map((ticketType) =>
+          fetchTicketsByTierId(ticketType?.tier?._id)
+        );
+        await Promise.all(promises);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   React.useEffect(() => {
     axiosPrivate.get(UrlConfig.event.getEvent(params.id)).then((res) => {
       setEventDetail(res.data.data.data);
@@ -146,7 +200,9 @@ const EventDetail = ({ params }) => {
     //   .then((res) => {
     //     setTickets(res.data.data);
     //   });
-    getMapData();
+    return () => {
+      setOrders([]);
+    };
   }, []);
 
   console.log(ticketTypes);
@@ -157,6 +213,7 @@ const EventDetail = ({ params }) => {
     //     setTickets(res.data.data);
     //   });
     fetchTicketsByEventId();
+    getMapData();
   }, [isUpdated]);
 
   return (
@@ -289,7 +346,11 @@ const EventDetail = ({ params }) => {
           }}
         >
           {eventDetail?.reservedSeating ? (
-            <ReservedTicketCard tickets={tickets} handleSave={handleSave} />
+            <ReservedTicketCard
+              tickets={tickets}
+              handleSave={handleSaveSeatReserved}
+              getMapData={()=> getMapData()}
+            />
           ) : (
             <TicketCard tickets={tickets} handleSave={handleSave} />
           )}

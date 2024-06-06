@@ -11,9 +11,7 @@ import TableBody from "@mui/material/TableBody";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
-
 import Iconify from "@/components/iconify";
-
 import TableNoData from "./components/table-no-data";
 import CategorieTableRow from "./components/categories-table-row";
 import CategorieTableHead from "./components/categories-table-head";
@@ -27,6 +25,8 @@ import CustomSnackbar from "@/components/common/Snackbar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatOnlyDate, formatTime } from "@/utils/DateConvert";
+import AddNew from "./components/add-new";
+import EditCategory from "./components/edit-category";
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +44,9 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState("");
 
   const [filterStatus, setFilterStatus] = useState("all");
-
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [item, setItem] = useState({});
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const axiosPrivate = useAxiosPrivate();
   const router = useRouter();
@@ -112,11 +114,9 @@ export default function UserPage() {
   });
   const handleDeleteCategorie = (id) => {
     axiosPrivate
-      .delete(UrlConfig?.categorie.deleteCategorie(id))
+      .delete(UrlConfig?.category.deleteCategory(id))
       .then((res) => {
-        setCategories((prev) =>
-          prev.filter((categorie) => categorie.id !== id)
-        );
+        fetchData();
         setSnack({
           open: true,
           message: "Categorie deleted successfully!",
@@ -136,10 +136,14 @@ export default function UserPage() {
     router.push(`/manage/categorie/${id}`);
   }
 
+  const handleEditCategory = (categorie) => {
+    setItem(categorie);
+    setOpenEdit(true);
+  };
   const notFound = !dataFiltered.length && !!filterName;
 
-  useEffect(() => {
-    axiosPrivate.get(UrlConfig?.category.getAllCategories).then((res) => {
+  const fetchData = async () => {
+    await axiosPrivate.get(UrlConfig?.category.getAllCategories).then((res) => {
       const categories = res.data.data.data.map((categorie) => {
         return {
           id: categorie._id,
@@ -149,30 +153,41 @@ export default function UserPage() {
       });
       setCategories(categories);
     });
+  };
+  useEffect(() => {
+    fetchData();
   }, []);
 
   return (
     <Box sx={{ px: 5 }}>
       <CustomSnackbar />
+      {openAdd && (
+        <AddNew open={openAdd} setOpen={setOpenAdd} fetchData={fetchData} />
+      )}
+      {openEdit && (
+        <EditCategory
+          open={openEdit}
+          setOpen={setOpenEdit}
+          fetchData={fetchData}
+          category={item}
+        />
+      )}
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
         mb={5}
       >
-        <Typography variant="h3">Categories</Typography>
-
-        <Link href="/manage/categorie/create">
-          {" "}
-          {/* Replace "/new-categorie-page" with the actual link */}
-          <Button
-            variant="contained"
-            color="inherit"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
-            New Categorie
-          </Button>
-        </Link>
+        <Typography variant="h3">Categories</Typography>{" "}
+        {/* Replace "/new-categorie-page" with the actual link */}
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+          onClick={() => setOpenAdd(true)}
+        >
+          New Categorie
+        </Button>
       </Stack>
 
       <Card>
@@ -209,6 +224,7 @@ export default function UserPage() {
                     selected={selected.indexOf(row.id) !== -1}
                     handleClick={(categorie) => handleClick(categorie, row.id)}
                     handleClickRow={() => handleClickRow(row.id)}
+                    handleEditCategory={() => handleEditCategory(row)}
                     handleDeleteCategorie={(categorie) =>
                       handleDeleteCategorie(row.id)
                     }

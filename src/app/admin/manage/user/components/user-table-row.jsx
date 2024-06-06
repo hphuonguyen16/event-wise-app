@@ -56,7 +56,7 @@ export default function EventTableRow({
         >
           <Stack direction="row" alignItems="center" spacing={2}>
             <img
-              src=""
+              src={profile?.avatar}
               style={{ width: 50, height: 50, borderRadius: "2px" }}
             />
             <Typography variant="subtitle" noWrap>

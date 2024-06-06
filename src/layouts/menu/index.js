@@ -5,6 +5,8 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import BackupTableOutlinedIcon from "@mui/icons-material/BackupTableOutlined";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import CelebrationOutlinedIcon from "@mui/icons-material/CelebrationOutlined";
 
 export const menuOrganizer = [
   {
@@ -45,7 +47,6 @@ export const menuOrganizer = [
   },
 ];
 
-
 export const menuAdmin = [
   {
     link: "/admin/manage/category",
@@ -74,8 +75,25 @@ export const menuAdmin = [
       />
     ),
   },
+  {
+    link: "/admin/manage/user",
+    name: "User",
+    icon: (
+      <AccountCircleOutlinedIcon
+        sx={{ fontSize: "32px", stroke: "#ffffff", strokeWidth: 1 }}
+      />
+    ),
+  },
+  {
+    link: "/admin/manage/event",
+    name: "Event",
+    icon: (
+      <CelebrationOutlinedIcon
+        sx={{ fontSize: "32px", stroke: "#ffffff", strokeWidth: 1 }}
+      />
+    ),
+  },
 ];
-
 
 export const menuUser = [
   {

@@ -6,7 +6,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import CustomSnackbar from "@/components/common/Snackbar";
 import useSnackbar from "@/context/snackbarContext";
 import UrlConfig from "@/config/urlConfig";
-import { TablePagination } from "@mui/material";
+import { Stack, TablePagination, Typography } from "@mui/material";
 import TicketTableToolbar from "./order-table-toolbar";
 import { emptyRows, applyFilter, getComparator } from "./utils";
 
@@ -24,7 +24,7 @@ const TransactionManagement = () => {
     startDate: null,
     endDate: null,
     transaction_type: "",
-    name : "",
+    name: "",
   });
 
   const fetchTransactionData = async () => {
@@ -33,7 +33,6 @@ const TransactionManagement = () => {
     );
     setTransactionData(res.data.data);
   };
-
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -57,14 +56,19 @@ const TransactionManagement = () => {
     fetchData();
   }, []);
   return (
-    <div
-      style={{
-        width: "100%",
-        padding: "20px 100px",
-        maxHeight: "93vh",
-        overflow: "auto",
+    <Box
+      sx={{
+        px: 5,
       }}
     >
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={3}
+      >
+        <Typography variant="h3">Transaction</Typography>
+      </Stack>
       <TicketTableToolbar
         filterData={filterData}
         setFilterData={setFilterData}
@@ -75,9 +79,7 @@ const TransactionManagement = () => {
           page * rowsPerPage + rowsPerPage
         )}
       />
-      <Box
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-      >
+      <Box>
         <TablePagination
           page={page}
           component="div"
@@ -88,7 +90,7 @@ const TransactionManagement = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Box>
-    </div>
+    </Box>
   );
 };
 
