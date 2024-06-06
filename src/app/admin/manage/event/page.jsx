@@ -157,7 +157,6 @@ export default function UserPage() {
     });
   }, []);
 
-
   return (
     <Box sx={{ px: 5 }}>
       <CustomSnackbar />
@@ -168,18 +167,6 @@ export default function UserPage() {
         mb={5}
       >
         <Typography variant="h3">Events</Typography>
-
-        <Link href="/manage/event/create">
-          {" "}
-          {/* Replace "/new-event-page" with the actual link */}
-          <Button
-            variant="contained"
-            color="inherit"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
-            New Event
-          </Button>
-        </Link>
       </Stack>
 
       <Card>
