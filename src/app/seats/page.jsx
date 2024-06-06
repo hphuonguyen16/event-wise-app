@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -56,7 +56,7 @@ function a11yProps(index) {
   };
 }
 
-export default function BasicTabs() {
+function BasicTabs() {
   const [value, setValue] = React.useState(0);
   const { mapData, setMapData, chosenOption, setChosenOption } =
     useMapObjectContext();
@@ -115,12 +115,12 @@ export default function BasicTabs() {
       UrlConfig.event.updateCanvasByEventId(eventId),
       {
         ...mapData,
-       event: eventId
+        event: eventId,
       }
     );
-    
-    if (res.data.status === 'success') {
-      alert('Saved successfully');
+
+    if (res.data.status === "success") {
+      alert("Saved successfully");
       router.push(`/manage/event/${eventId}/ticket`);
     }
   }
@@ -180,13 +180,7 @@ export default function BasicTabs() {
             aria-label="basic tabs example"
           >
             <Tab label="Map" {...a11yProps(0)} />
-            <Tab
-              label="Tiers"
-              {...a11yProps(1)}
-              // onClick={() => {
-              //   handleChosenOption(4);
-              // }}
-            />
+            <Tab label="Tiers" {...a11yProps(1)} />
             <Tab label="Item Three" {...a11yProps(2)} />
           </Tabs>
         </Box>
@@ -205,11 +199,7 @@ export default function BasicTabs() {
                   handleChosenOption(0);
                 }}
               >
-                <SplitscreenIcon
-                  sx={{
-                    fontSize: "30px",
-                  }}
-                />
+                <SplitscreenIcon sx={{ fontSize: "30px" }} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Add Table" arrow>
@@ -219,11 +209,7 @@ export default function BasicTabs() {
                   handleChosenOption(1);
                 }}
               >
-                <TableRestaurantOutlinedIcon
-                  sx={{
-                    fontSize: "30px",
-                  }}
-                />
+                <TableRestaurantOutlinedIcon sx={{ fontSize: "30px" }} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Add Object" arrow>
@@ -233,11 +219,7 @@ export default function BasicTabs() {
                   handleChosenOption(2);
                 }}
               >
-                <AllInboxOutlinedIcon
-                  sx={{
-                    fontSize: "30px",
-                  }}
-                />
+                <AllInboxOutlinedIcon sx={{ fontSize: "30px" }} />
               </IconButton>
             </Tooltip>
 
@@ -248,11 +230,7 @@ export default function BasicTabs() {
                   handleChosenOption(3);
                 }}
               >
-                <FormatColorTextOutlinedIcon
-                  sx={{
-                    fontSize: "30px",
-                  }}
-                />
+                <FormatColorTextOutlinedIcon sx={{ fontSize: "30px" }} />
               </IconButton>
             </Tooltip>
           </Stack>
@@ -290,5 +268,13 @@ export default function BasicTabs() {
         </CustomTabPanel>
       </Box>
     </Stack>
+  );
+}
+
+export default function BasicTabsWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BasicTabs />
+    </Suspense>
   );
 }
