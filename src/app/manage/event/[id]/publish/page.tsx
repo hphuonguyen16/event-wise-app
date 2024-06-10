@@ -28,6 +28,7 @@ const PublishPage = ({ params }: { params: { id: string } }) => {
     category: "",
     status: "",
   });
+  const [event, setEvent] = React.useState({} as any); // [1
   const [isPublished, setIsPublished] = React.useState(false);
   const axiosPrivate = useAxiosPrivate();
   const { setSnack } = useSnackbar();
@@ -127,6 +128,7 @@ const PublishPage = ({ params }: { params: { id: string } }) => {
     );
     if (response.data.status === "success") {
       const event = response.data.data.data;
+      setEvent(event);
       setFormData({
         visibility: event.visibility,
         category: event.category,
@@ -154,7 +156,7 @@ const PublishPage = ({ params }: { params: { id: string } }) => {
         >
           Review your settings and let everyone find your event.
         </Typography>
-        <PreviewCard />
+        <PreviewCard event={event} />
       </Box>
       <Box>
         <Typography variant="h4" sx={{ marginTop: "50px" }}>

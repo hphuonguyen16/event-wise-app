@@ -4,17 +4,17 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect } from "react";
 import moment from "moment";
-import MainStage from "../../app/seats/components/MainStage";
+import MainStage from "../../app/event/[id]/components/MainStage";
 import { useMapObjectContext } from "../../context/MapObjectContext";
 import TicketToBuy from "./TicketToBuy";
 import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
-import {SeatStatetus} from "@/constants/seatStatus";
+import { SeatStatetus } from "@/constants/seatStatus";
 
 const TicketStatus = {
   ON_SALE: "On Sale",
   UPCOMING: "Upcoming",
-  COMPLETED: "Completed",
+  COMPLETED: "End Sale",
 };
 
 function getTicketStatus(ticket) {
@@ -53,7 +53,7 @@ function ReservedTicketCardList({ tickets, handleSave }) {
   }
 
   return (
-    <section className=" relative z-10 after:contents-[''] after:absolute after:z-0 after:h-full xl:after:w-1/3 after:top-0 after:right-0 after:bg-gray-50">
+    <section className=" relative z-10 after:contents-[''] after:absolute after:z-0 after:h-full xl:after:w-1/3 after:top-0 after:right-0 after:bg-gray-50 h-full">
       <div className="w-full px-4 lg-6 mx-auto relative z-10">
         <div className="grid grid-cols-12">
           {buyOnMap ? (
@@ -111,14 +111,16 @@ function ReservedTicketCardList({ tickets, handleSave }) {
                               <p className="font-semibold text-lg text-black">
                                 {order.quantity > 0
                                   ? (
-                                      order.quantity * ticket?.price
+                                      order.quantity * ticket.discountPrice
                                     ).toLocaleString("vi", {
                                       style: "currency",
                                       currency: "VND",
                                     })
                                   : "Free"}
                               </p>
-                              <IconButton onClick={() => handleDeleteOrder(index)}>
+                              <IconButton
+                                onClick={() => handleDeleteOrder(index)}
+                              >
                                 <ClearIcon />
                               </IconButton>
                             </div>

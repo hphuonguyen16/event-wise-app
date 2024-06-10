@@ -83,7 +83,6 @@ const Section = ({
     <Group
       x={section.position?.x || position.x}
       y={section.position?.y || position.y}
-      draggable 
       rotation={section.rotation || rotation}
       offsetX={width / 2}
       offsetY={height / 2}
@@ -95,9 +94,6 @@ const Section = ({
       <Rect
         width={width}
         height={height}
-        stroke={isSelected ? "blue" : ""}
-        strokeWidth={isSelected ? 2 : 0}
-        dash={isSelected ? [4, 4] : []}
       />
       {section.subsections.map((subsection) => {
         const subWidth = getSubsectionWidth(subsection);

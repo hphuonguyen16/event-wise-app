@@ -31,7 +31,7 @@ const MainStage = () => {
     orders,
     setOrders,
   } = useMapObjectContext();
-  const [scale, setScale] = React.useState(1.7);
+  const [scale, setScale] = React.useState(2.2);
   const [scaleToFit, setScaleToFit] = React.useState(1);
   const [size, setSize] = React.useState({
     width: 1000,

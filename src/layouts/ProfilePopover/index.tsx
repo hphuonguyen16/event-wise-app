@@ -36,6 +36,10 @@ import Person2RoundedIcon from "@mui/icons-material/Person2Rounded";
 // hooks
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import BackupTableOutlinedIcon from "@mui/icons-material/BackupTableOutlined";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 
 // utils
 // import ImageEncode from "@/common/utils/ImageEncode";
@@ -125,12 +129,10 @@ const ProfilePopover = () => {
   const handleLangClick = async (lang: any) => {
     // await setLanguage(lang)
   };
-
   return (
     <div>
       <Button
         sx={{
-          borderRadius: "50%",
           // ...(open && { backgroundColor: (theme) => `${alpha(theme.palette.primary.main, 0.8)} !important`, }),
           transition: "all 0.15s ease-in-out",
         }}
@@ -240,7 +242,7 @@ const ProfilePopover = () => {
                         color: "text.primary",
                         lineHeight: "1",
                         marginRight: "10px",
-                        marginTop:'10px'
+                        marginTop: "10px",
                       }}
                     >
                       {user?.balance.toLocaleString("vi", {
@@ -256,18 +258,18 @@ const ProfilePopover = () => {
 
               {user && user.role === "user" && (
                 <Stack sx={{ p: "8px" }}>
-                  <Link href="/profile">
+                  <Link href="/me/profile">
                     <StyledMenuItem onClick={() => handleClose()}>
                       <ListItemIcon sx={{ alignItems: "center" }}>
                         <AccountCircle fontSize="small" />
                       </ListItemIcon>
-                      <ListItemText>Manage Profile</ListItemText>
+                      <ListItemText>My Profile</ListItemText>
                     </StyledMenuItem>
                   </Link>
                   <Link href="/me/manage-order">
                     <StyledMenuItem onClick={() => handleClose()}>
                       <ListItemIcon sx={{ alignItems: "center" }}>
-                        <AccountCircle fontSize="small" />
+                        <AssignmentOutlinedIcon fontSize="small" />
                       </ListItemIcon>
                       <ListItemText>My Orders</ListItemText>
                     </StyledMenuItem>
@@ -278,6 +280,80 @@ const ProfilePopover = () => {
                         <Settings fontSize="small" />
                       </ListItemIcon>
                       <ListItemText>Settings</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                </Stack>
+              )}
+
+              {user && user.role === "organizer" && (
+                <Stack sx={{ p: "8px" }}>
+                  <Link href="/me/profile">
+                    <StyledMenuItem onClick={() => handleClose()}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <AccountCircle fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>My Profile</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                  <Link href="/manage/event">
+                    <StyledMenuItem onClick={() => handleClose()}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <DateRangeOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Manage Event</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                  <Link href="/manage/order">
+                    <StyledMenuItem onClick={handleClose}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <AssignmentOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Manage Order</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                  <Link href="/organization">
+                    <StyledMenuItem onClick={handleClose}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <Settings fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Organization Settings</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                </Stack>
+              )}
+
+              {user && user.role === "admin" && (
+                <Stack sx={{ p: "8px" }}>
+                  <Link href="/me/profile">
+                    <StyledMenuItem onClick={() => handleClose()}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <AccountCircle fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>My Profile</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                  <Link href="/admin/manage/event">
+                    <StyledMenuItem onClick={() => handleClose()}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <DateRangeOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Manage Event</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                  <Link href="/admin/manage/category">
+                    <StyledMenuItem onClick={handleClose}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <BackupTableOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Manage Category</ListItemText>
+                    </StyledMenuItem>
+                  </Link>
+                  <Link href="/admin/manage/user">
+                    <StyledMenuItem onClick={handleClose}>
+                      <ListItemIcon sx={{ alignItems: "center" }}>
+                        <AccountCircleOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Manage User</ListItemText>
                     </StyledMenuItem>
                   </Link>
                 </Stack>

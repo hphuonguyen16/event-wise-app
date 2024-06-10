@@ -12,14 +12,38 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Stack,
+  Box,
 } from "@mui/material";
 import { usePathname } from "next/navigation";
 import React from "react";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import UrlConfig from "@/config/urlConfig";
+import { useEffect } from "react";
+import moment from "moment";
+import Link from "next/link";
 
-const Page = () => {
+const Page = ({ params }) => {
   const link = usePathname();
   const [sales, setSales] = React.useState([]);
   const [recentOrder, setRecentOrder] = React.useState([]);
+  const [data, setData] = React.useState();
+  const axiosPrivate = useAxiosPrivate();
+
+  const fetchEventOverview = async () => {
+    try {
+      const response = await axiosPrivate.get(
+        UrlConfig.event.getEventOverview(params.id)
+      );
+      setData(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    fetchEventOverview();
+  }, []);
+
   return (
     <div
       style={{
@@ -34,15 +58,22 @@ const Page = () => {
           <Card>
             <CardHeader title="Tickets Sold" />
             <CardContent>
-              <Typography variant="h3">0</Typography>
+              <Typography variant="h3">
+                {data?.soldTickets}/{data?.totalTickets}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title="Page Views" />
+            <CardHeader title="Revenue" />
             <CardContent>
-              <Typography variant="h3">0</Typography>
+              <Typography variant="h3">
+                {data?.revenue.toLocaleString("vi", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -53,8 +84,10 @@ const Page = () => {
       <Typography variant="h6" gutterBottom my={2}>
         Event link
       </Typography>
-      <Typography variant="body1" gutterBottom my={2}>
-        {link}
+      <Typography variant="body1" gutterBottom my={2} sx={{ color: "blue" }}>
+        <Link href={link} target="_blank">
+          {window.location.href}
+        </Link>
       </Typography>
       <Divider />
       <Typography variant="h4" gutterBottom my={2}>
@@ -65,14 +98,14 @@ const Page = () => {
           <TableHead>
             <TableRow>
               <TableCell>Ticket type</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell align="right">Sold</TableCell>
+              <TableCell>Sold</TableCell>
+              <TableCell align="right">Revenue</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sales.map((cryptoOrder) => {
+            {data?.salesByTicketType.map((ticket) => {
               return (
-                <TableRow hover key={cryptoOrder.id}>
+                <TableRow hover key={ticket.name}>
                   <TableCell>
                     <Typography
                       variant="body1"
@@ -80,19 +113,59 @@ const Page = () => {
                       color="text.secondary"
                       noWrap
                     >
-                      {moment(cryptoOrder.transaction.updatedAt).format(
-                        "DD/MM/YYYY"
-                      )}
+                      {ticket.name}
                     </Typography>
                     <Typography
                       variant="subtitle1"
                       color="text.secondary"
                       noWrap
                     >
-                      {moment(cryptoOrder.transaction.updatedAt).format(
-                        "h:mm:ss A"
+                      {ticket.discountPrice &&
+                      ticket.discountPrice < ticket.price ? (
+                        <>
+                          <span style={{ textDecoration: "line-through" }}>
+                            {ticket.price.toLocaleString("vi", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                          </span>
+                          <span style={{ color: "red", marginLeft: "10px" }}>
+                            {ticket.discountPrice.toLocaleString("vi", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                          </span>
+                        </>
+                      ) : ticket?.price != null ? (
+                        ticket.price.toLocaleString("vi", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      ) : (
+                        "N/A"
                       )}
                     </Typography>
+
+                    {ticket?.tier && (
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={1}
+                        sx={{ marginTop: "5px" }}
+                      >
+                        <Box
+                          sx={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: "50%",
+                            bgcolor: ticket?.tier?.color,
+                          }}
+                        ></Box>
+                        <Typography variant="subtitle2" noWrap>
+                          {ticket?.tier?.name}
+                        </Typography>
+                      </Stack>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Typography
@@ -102,12 +175,12 @@ const Page = () => {
                       gutterBottom
                       noWrap
                     >
-                      {cryptoOrder.transaction.transaction_type}
+                      {ticket.sold}/{ticket.quantity}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
                     <Typography variant="body2" color="text.secondary" noWrap>
-                      {cryptoOrder.transaction.amount.toLocaleString("vi", {
+                      {ticket.revenue.toLocaleString("vi", {
                         style: "currency",
                         currency: "VND",
                       })}
@@ -135,9 +208,9 @@ const Page = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sales.map((cryptoOrder) => {
+            {data?.recentRegistrations?.map((cryptoOrder) => {
               return (
-                <TableRow hover key={cryptoOrder.id}>
+                <TableRow hover key={cryptoOrder._id}>
                   <TableCell>
                     <Typography
                       variant="body1"
@@ -145,18 +218,7 @@ const Page = () => {
                       color="text.secondary"
                       noWrap
                     >
-                      {moment(cryptoOrder.transaction.updatedAt).format(
-                        "DD/MM/YYYY"
-                      )}
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      color="text.secondary"
-                      noWrap
-                    >
-                      {moment(cryptoOrder.transaction.updatedAt).format(
-                        "h:mm:ss A"
-                      )}
+                      {cryptoOrder._id}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -167,15 +229,33 @@ const Page = () => {
                       gutterBottom
                       noWrap
                     >
-                      {cryptoOrder.transaction.transaction_type}
+                      {cryptoOrder.user
+                        ? cryptoOrder?.user?.profile?.name
+                        : cryptoOrder.contactInfo
+                        ? cryptoOrder.contactInfo.firstName +
+                          " " +
+                          cryptoOrder.contactInfo.lastName
+                        : ""}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
                     <Typography variant="body2" color="text.secondary" noWrap>
-                      {cryptoOrder.transaction.amount.toLocaleString("vi", {
+                      {cryptoOrder?.totalQuantity}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2" color="text.secondary" noWrap>
+                      {cryptoOrder?.totalAmount?.toLocaleString("vi", {
                         style: "currency",
                         currency: "VND",
                       })}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2" color="text.secondary" noWrap>
+                      {moment(cryptoOrder?.registrationDate).format(
+                        "DD/MM/YYYY"
+                      )}
                     </Typography>
                   </TableCell>
                 </TableRow>

@@ -24,7 +24,7 @@ const CustomSidebar = ({ menuItems }) => {
         <CelebrationIcon sx={{ fontSize: "40px" }} />
       </div>
       <div
-        className="flex flex-col items-center mt-3 border-t border-gray-300"
+        className="flex flex-col items-center border-t border-gray-300"
         style={{ margin: "auto 0" }}
       >
         {menuItems.map((menuItem, index) => (
@@ -40,16 +40,6 @@ const CustomSidebar = ({ menuItems }) => {
             </Tooltip>
           </Link>
         ))}
-      </div>
-      <div
-        className="flex items-center justify-center w-16 h-16 mt-auto bg-gray-200 rounded hover:bg-white cursor-pointer"
-        href="#"
-      >
-        <Tooltip title={"Logout"} placement="right-start" arrow>
-          <LogoutOutlinedIcon
-            sx={{ fontSize: "30px", stroke: "#ffffff", strokeWidth: 1 }}
-          />
-        </Tooltip>
       </div>
     </div>
   );

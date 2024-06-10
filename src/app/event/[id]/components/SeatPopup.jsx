@@ -5,6 +5,8 @@ import UrlConfig from "@/config/urlConfig";
 import { update } from "lodash";
 import { UpdateSharp } from "@mui/icons-material";
 import { SeatStatetus } from "@/constants/seatStatus";
+import { TicketStatus } from "@/constants/ticketStatus";
+import moment from "moment";
 
 const isClickedInside = (e, element) => {
   let node = e.target;
@@ -17,6 +19,29 @@ const isClickedInside = (e, element) => {
   return false;
 };
 
+function isTicketOnSale(ticket) {
+  //check if ticket is sold out
+  if (ticket?.sold >= ticket?.quantity) return false;
+  const parsedstartDate = moment(ticket?.startDate);
+  const parsedendDate = moment(ticket?.endDate);
+  const currentDate = new Date();
+  return currentDate >= parsedstartDate && currentDate < parsedendDate;
+}
+function getTicketStatus(ticket) {
+  const parsedstartDate = moment(ticket?.startDate);
+  const parsedendDate = moment(ticket?.endDate);
+  const currentDate = new Date();
+
+  if (currentDate >= parsedendDate) {
+    return 'End Sale';
+  } else if (currentDate < parsedstartDate) {
+    return "Upcoming at " + parsedstartDate.format("DD/MM/YYYY");
+  } else {
+    return ticket.quantity - ticket.sold > 0
+      ? ticket.quantity - ticket.sold + " Tickets Available"
+      : "Sold Out";
+  }
+}
 const Popup = ({ position, seat, onClose }) => {
   const containerRef = React.useRef(null);
   const {
@@ -46,7 +71,7 @@ const Popup = ({ position, seat, onClose }) => {
   }, []);
 
   const onSelect = async (ticket) => {
-    if(seat.status !== SeatStatetus.AVAILABLE) return;
+    if (seat.status !== SeatStatetus.AVAILABLE) return;
     setOrders((prev) => {
       return [
         ...prev,
@@ -60,7 +85,7 @@ const Popup = ({ position, seat, onClose }) => {
     updateSeatStatus(seat, SeatStatetus.BOOKING);
   };
 
-  console.log('orders', orders)
+  console.log("orders", orders);
 
   React.useEffect(() => {
     setTickets(ticketTypes[selectedTier?._id]);
@@ -92,15 +117,41 @@ const Popup = ({ position, seat, onClose }) => {
           <div className="flex-1">
             <p className="text-lg font-bold">{ticket?.name}</p>
             <p className="text-sm text-gray-500">
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "VND",
-              }).format(ticket?.price)}
+              {ticket.discountPrice && ticket.discountPrice < ticket.price ? (
+                <>
+                  <span style={{ textDecoration: "line-through" }}>
+                    {ticket.price.toLocaleString("vi", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </span>
+                  <br />
+                  <span style={{ color: "red" }}>
+                    {ticket.discountPrice.toLocaleString("vi", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </span>
+                </>
+              ) : ticket.price > 0 ? (
+                ticket.price.toLocaleString("vi", {
+                  style: "currency",
+                  currency: "VND",
+                })
+              ) : (
+                "Free"
+              )}
             </p>
+            <p className="text-sm text-gray-500">{getTicketStatus(ticket)} </p>
           </div>
           <button
             onClick={() => onSelect(ticket)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            className={`${
+              isTicketOnSale(ticket)
+                ? "bg-blue-500 hover:bg-blue-600"
+                : "bg-gray-500 cursor-not-allowed"
+            } text-white font-bold py-2 px-4 rounded`}
+            disabled={!isTicketOnSale(ticket)}
           >
             Select
           </button>

@@ -20,8 +20,6 @@ export default function UserTableToolbar({
   numSelected,
   filterName,
   onFilterName,
-  onFilterStatus,
-  filterStatus,
 }) {
   return (
     <Toolbar
@@ -45,7 +43,7 @@ export default function UserTableToolbar({
           <OutlinedInput
             value={filterName}
             onChange={onFilterName}
-            placeholder="Search event..."
+            placeholder="Search category..."
             startAdornment={
               <InputAdornment position="start">
                 <Iconify
@@ -56,20 +54,6 @@ export default function UserTableToolbar({
             }
             sx={{ width: "400px" }}
           />
-          <FormControl sx={{ width: "200px", marginLeft: "20px" }}>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={filterStatus}
-              defaultValue={"all"}
-              onChange={onFilterStatus}
-            >
-              <MenuItem value={"all"}>All Events</MenuItem>
-              <MenuItem value={"onsale"}>On Sale Events</MenuItem>
-              <MenuItem value={"upcoming"}>Upcoming Events</MenuItem>
-              <MenuItem value={"completed"}>Past Events</MenuItem>
-            </Select>
-          </FormControl>
         </Box>
       )}
 

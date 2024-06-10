@@ -145,7 +145,9 @@ function BasicTabs() {
           padding: "20px 0",
         }}
       >
-        <Button sx={{ width: "100px", height: "43px" }}>Cancel</Button>
+        <Button sx={{ width: "100px", height: "43px" }} onClick={() => {
+          router.push(`/manage/event/${eventId}/ticket`);
+        }}>Cancel</Button>
         <Button
           variant="contained"
           onClick={(e) => handleSave()}

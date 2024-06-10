@@ -22,8 +22,14 @@ const EventDetail = ({ params }) => {
   const axiosPrivate = useAxiosPrivate();
   const { setSnack } = useSnackbar();
   const [openTicket, setOpenTicket] = React.useState(false);
-  const { mapData, setMapData, ticketTypes, setTicketTypes, orders, setOrders } =
-    useMapObjectContext();
+  const {
+    mapData,
+    setMapData,
+    ticketTypes,
+    setTicketTypes,
+    orders,
+    setOrders,
+  } = useMapObjectContext();
   const [tickets, setTickets] = React.useState([]);
   const [isUpdated, setIsUpdated] = React.useState(false);
   const images = [
@@ -46,6 +52,7 @@ const EventDetail = ({ params }) => {
         orders: orders.map((order) => ({
           ticketType: order.id,
           quantity: order.quantity,
+          price: order.price,
         })),
         orderType: "online",
         status: "completed",
@@ -80,11 +87,13 @@ const EventDetail = ({ params }) => {
   const handleSaveSeatReserved = async (event, orders) => {
     event.preventDefault();
     try {
+      if (orders.length === 0) return;
       const registration = {
         event: params.id,
         orders: orders.map((order) => ({
           ticketType: order.ticketType._id,
           quantity: order.quantity,
+          price: order.ticketType.discountPrice,
           seat: {
             ...order.seat,
             status: SeatStatetus.BOOKED,
@@ -263,10 +272,10 @@ const EventDetail = ({ params }) => {
                   <Typography sx={{ fontWeight: "bold", marginTop: "15px" }}>
                     {formatOnlyDate(eventDetail.date)}
                   </Typography>
-                  {eventDetail.startDate && eventDetail.endDate ? (
+                  {eventDetail.startTime && eventDetail.endTime ? (
                     <Typography>
-                      {formatTime(eventDetail.startDate)} to{" "}
-                      {formatTime(eventDetail.endDate)}
+                      {formatTime(eventDetail.startTime)} to{" "}
+                      {formatTime(eventDetail.endTime)}
                     </Typography>
                   ) : (
                     <Typography>All day</Typography>
@@ -349,7 +358,7 @@ const EventDetail = ({ params }) => {
             <ReservedTicketCard
               tickets={tickets}
               handleSave={handleSaveSeatReserved}
-              getMapData={()=> getMapData()}
+              getMapData={() => getMapData()}
             />
           ) : (
             <TicketCard tickets={tickets} handleSave={handleSave} />

@@ -129,9 +129,9 @@ const TableWithChairs = ({
         y={-tableHeight / 2}
         width={tableWidth}
         height={tableHeight}
-        fill="brown"
-        stroke={isSelected ? "blue" : ""}
-        strokeWidth={isSelected ? 2 : 0}
+        fill="white"
+        stroke={isSelected ? "blue" : "#C2C7DF"}
+        strokeWidth={isSelected ? 1 : 2}
         dash={isSelected ? [4, 4] : []}
       />
       {/* Draw the circle chairs */}

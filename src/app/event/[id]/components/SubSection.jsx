@@ -24,7 +24,6 @@ const SubSection = ({
     <Group
       x={position.x}
       y={position.y}
-      draggable
       skewX={skewX}
       skewY={skewY}
       rotation={rotation}
@@ -61,20 +60,21 @@ const SubSection = ({
           </React.Fragment>
         );
       })}
-      {data.seats_by_rows[1]?.map((_, seatIndex) => (
-        <Text
-          text={(seatIndex + 1).toString()}
-          x={seatIndex * SEATS_DISTANCE + SUBSECTION_PADDING - 50}
-          width={100}
-          y={
-            Object.keys(data.seats_by_rows).length * SEATS_DISTANCE +
-            SUBSECTION_PADDING
-            
-          }
-          key={"label-bottom" + seatIndex}
-          align="center"
-        />
-      ))}
+      {data.seats_by_rows[Object.keys(data.seats_by_rows)[0]]?.map(
+        (_, seatIndex) => (
+          <Text
+            text={(seatIndex + 1).toString()}
+            x={seatIndex * SEATS_DISTANCE + SUBSECTION_PADDING - 50}
+            width={100}
+            y={
+              Object.keys(data.seats_by_rows).length * SEATS_DISTANCE +
+              SUBSECTION_PADDING
+            }
+            key={"label-bottom" + seatIndex}
+            align="center"
+          />
+        )
+      )}
       <Text text={data.name} width={width} align="center" y={-10} />
     </Group>
   );

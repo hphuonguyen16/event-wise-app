@@ -89,7 +89,7 @@ const CircleTable = ({
   return (
     <Group
       draggable
-      x={tableInfo.position?.x || tableX} // Apply position to the Group  
+      x={tableInfo.position?.x || tableX} // Apply position to the Group
       y={tableInfo.position?.y || tableY} // Apply position to the Group
       rotation={tableInfo.rotation} // Apply rotation to the Group
       onClick={handleClick}
@@ -100,9 +100,9 @@ const CircleTable = ({
         x={0} // Position relative to the group
         y={0} // Position relative to the group
         radius={tableRadius}
-        fill="brown"
-        stroke={isSelected ? "blue" : ""}
-        strokeWidth={isSelected ? 2 : 0}
+        fill="white"
+        stroke={isSelected ? "blue" : "#C2C7DF"}
+        strokeWidth={isSelected ? 1 : 2}
         dash={isSelected ? [4, 4] : []}
       />
       {/* Draw the chairs */}

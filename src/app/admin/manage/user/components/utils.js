@@ -67,21 +67,22 @@ export function applyFilter({
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    inputData = inputData.filter(
-      (event) =>
-        event.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter((event) => {
+      if (
+        event.profile?.name?.toLowerCase().indexOf(filterName.toLowerCase()) !==
+        -1
+      )
+        return true;
+    });
   }
   if (filterStatus) {
     inputData = inputData.filter((event) => {
       if (filterStatus === "all") {
         return true;
-      } else if (filterStatus === "onsale") {
-        return CheckStatus(event.date) === "On Sale";
-      } else if (filterStatus === "upcoming") {
-        return CheckStatus(event.date) === "Upcoming";
-      } else if (filterStatus === "completed") {
-        return CheckStatus(event.date) === "Completed";
+      } else if (filterStatus === "active") {
+        return event.isActived === true;
+      } else if (filterStatus === "deactived") {
+        return event.isActived === false;
       }
       return true;
     });
@@ -93,3 +94,4 @@ export function applyFilter({
 //validate date in dayjs 2 date
 
 //compare date in dayjs
+  

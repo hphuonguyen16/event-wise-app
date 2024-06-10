@@ -47,6 +47,7 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const axiosPrivate = useAxiosPrivate();
+  const [reload, setReload] = useState(false);
   const router = useRouter();
   const { setSnack } = useSnackbar();
 
@@ -136,7 +137,7 @@ export default function UserPage() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
-  useEffect(() => {
+  async function fetchEvents() {
     axiosPrivate.get(UrlConfig?.event.getAllEvents).then((res) => {
       const events = res.data.data.data.map((event) => {
         return {
@@ -151,11 +152,16 @@ export default function UserPage() {
           status: event.status,
           image: event.images ? event.images[0] : "",
           isPublished: event.isPublished,
+          ticketStatus: event.ticketStatus,
         };
       });
       setEvents(events);
     });
-  }, []);
+  }
+
+  useEffect(() => {
+    fetchEvents();
+  }, [reload]);
 
   return (
     <Box sx={{ px: 5 }}>
@@ -167,6 +173,18 @@ export default function UserPage() {
         mb={5}
       >
         <Typography variant="h3">Events</Typography>
+
+        <Link href="/manage/event/create">
+          {" "}
+          {/* Replace "/new-event-page" with the actual link */}
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+          >
+            New Event
+          </Button>
+        </Link>
       </Stack>
 
       <Card>
@@ -199,11 +217,12 @@ export default function UserPage() {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
                   <EventTableRow
+                    id={row.id}
                     key={row.id}
                     title={row.title}
                     location={row.location}
                     date={row.date}
-                    status={row.status}
+                    ticketStatus={row.ticketStatus}
                     detailLocation={row.detailLocation}
                     image={row.image}
                     isPublished={row.isPublished}
@@ -211,6 +230,7 @@ export default function UserPage() {
                     handleClick={(event) => handleClick(event, row.id)}
                     handleClickRow={() => handleClickRow(row.id)}
                     handleDeleteEvent={(event) => handleDeleteEvent(row.id)}
+                    reloadData={() => setReload(!reload)}
                   />
                 ))}
 

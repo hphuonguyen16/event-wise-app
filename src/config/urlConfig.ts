@@ -12,6 +12,7 @@ const UrlConfig: any = {
     refresh: `${domain}/api/v1/users/refresh`,
     forgotPassword: "/api/v1/users/forgotPassword",
     getAllUsers: `${domain}/api/v1/users`,
+    lockUser: (id: string) => `${domain}/api/v1/users/${id}/lock-unlock-account`,
   },
   me: {
     getMe: `${domain}/api/v1/users/me`,
@@ -32,7 +33,7 @@ const UrlConfig: any = {
   },
   event: {
     createEvent: `${domain}/api/v1/events`,
-    getAllEvents: `${domain}/api/v1/events`,
+    getAllEvents: `${domain}/api/v1/events?isPublished=true`,
     getEvent: (id: string) => `${domain}/api/v1/events/${id}`,
     getMyEvents: `${domain}/api/v1/events/my-events`,
     deleteEvent: (id: string) => `${domain}/api/v1/events/${id}`,
@@ -46,6 +47,10 @@ const UrlConfig: any = {
       `${domain}/api/v1/events/${eventId}/canvas`,
     updateCanvasByEventId: (eventId: string) =>
       `${domain}/api/v1/events/${eventId}/canvas`,
+    getEventOverview: (eventId: string) =>
+      `${domain}/api/v1/events/${eventId}/overview`,
+    getPromosByEventId: (eventId: string) =>
+      `${domain}/api/v1/events/${eventId}/promos`,
   },
   ticketType: {
     getTicketTypesByEventId: (eventId: string) =>
@@ -109,6 +114,12 @@ const UrlConfig: any = {
     deleteTier: (id: string) => `${domain}/api/v1/tiers/${id}`,
     getTicketsByTierId: (id: string) =>
       `${domain}/api/v1/tiers/${id}/ticketTypes`,
+  },
+  promo: {
+    createPromo: `${domain}/api/v1/promos`,
+    getPromos: `${domain}/api/v1/promos`,
+    deletePromo: (id: string) => `${domain}/api/v1/promos/${id}`,
+    updatePromo: (id: string) => `${domain}/api/v1/promos/${id}`,
   },
 };
 

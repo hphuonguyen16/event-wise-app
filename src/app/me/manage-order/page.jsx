@@ -105,7 +105,7 @@ function Row(props) {
                         {historyRow.ticketType.name}
                       </TableCell>
                       <TableCell component="th" scope="row" align="left">
-                        {historyRow.ticketType.price.toLocaleString("vi", {
+                        {historyRow.price.toLocaleString("vi", {
                           style: "currency",
                           currency: "VND",
                         })}
@@ -113,7 +113,7 @@ function Row(props) {
                       <TableCell>{historyRow.quantity}</TableCell>
                       <TableCell align="right">
                         {(
-                          historyRow.ticketType.price * historyRow.quantity
+                          historyRow.price * historyRow.quantity
                         ).toLocaleString("vi", {
                           style: "currency",
                           currency: "VND",

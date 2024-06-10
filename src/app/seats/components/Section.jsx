@@ -96,7 +96,7 @@ const Section = ({
         width={width}
         height={height}
         stroke={isSelected ? "blue" : ""}
-        strokeWidth={isSelected ? 2 : 0}
+        strokeWidth={isSelected ? 1 : 0}
         dash={isSelected ? [4, 4] : []}
       />
       {section.subsections.map((subsection) => {

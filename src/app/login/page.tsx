@@ -16,6 +16,9 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
+
+import LoadingButton from "@mui/lab/LoadingButton";
+
 import { LogoDev } from "@mui/icons-material";
 
 // hooks
@@ -140,7 +143,7 @@ export default function LoginPage() {
       localStorage.setItem("role", user.role);
       localStorage.setItem("accessToken", resJson.token);
       if (user.role === "admin") {
-        router.push("/admin/transaction");
+        router.push("/admin/manage/event");
       } else if (user.role === "organizer") {
         router.push("/manage/event");
       } else {
@@ -251,32 +254,16 @@ export default function LoginPage() {
                 Forgot password?
               </Link>
             </Stack>
-            <Button
-              size="large"
-              color="inherit"
-              variant="outlined"
-              disabled={isLoggingIn ? true : false}
-              sx={{
-                background: isLoggingIn
-                  ? //@ts-ignore
-                    (theme) => `${theme.palette.disabled}!important`
-                  : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
-                color: "white !important",
-                width: "100%",
-              }}
-              onClick={() => {
-                handleLogin();
-              }}
+            <LoadingButton
+              loading={isLoggingIn}
+              onClick={() => handleLogin()}
+              
+              variant="contained"
+              color="primary"
+              sx={{ width: "100%", mt: 3, mb: 2, height: 50}}
             >
-              {isLoggingIn ? (
-                <CircularProgress
-                  size={20}
-                  sx={{ color: (theme) => theme.palette.secondary.dark }}
-                />
-              ) : (
-                "Login"
-              )}
-            </Button>
+              Sign in
+            </LoadingButton>
             <Typography
               variant="body2"
               sx={{ mt: 1, mb: 8, width: "100%" }}

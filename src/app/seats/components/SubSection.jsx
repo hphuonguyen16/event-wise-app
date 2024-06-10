@@ -37,6 +37,7 @@ const SubSection = ({
     >
       {Object.keys(data?.seats_by_rows)?.map((rowKey, rowIndex) => {
         const row = data?.seats_by_rows[rowKey];
+        console.log(rowKey, rowIndex, row);
         return (
           <React.Fragment key={rowKey}>
             {row.map((seat, seatIndex) => (
@@ -61,20 +62,21 @@ const SubSection = ({
           </React.Fragment>
         );
       })}
-      {data.seats_by_rows[1]?.map((_, seatIndex) => (
-        <Text
-          text={(seatIndex + 1).toString()}
-          x={seatIndex * SEATS_DISTANCE + SUBSECTION_PADDING - 50}
-          width={100}
-          y={
-            Object.keys(data.seats_by_rows).length * SEATS_DISTANCE +
-            SUBSECTION_PADDING
-            
-          }
-          key={"label-bottom" + seatIndex}
-          align="center"
-        />
-      ))}
+      {data.seats_by_rows[Object.keys(data.seats_by_rows)[0]]?.map(
+        (_, seatIndex) => (
+          <Text
+            text={(seatIndex + 1).toString()}
+            x={seatIndex * SEATS_DISTANCE + SUBSECTION_PADDING - 50}
+            width={100}
+            y={
+              Object.keys(data.seats_by_rows).length * SEATS_DISTANCE +
+              SUBSECTION_PADDING
+            }
+            key={"label-bottom" + seatIndex}
+            align="center"
+          />
+        )
+      )}
       <Text text={data.name} width={width} align="center" y={-10} />
     </Group>
   );

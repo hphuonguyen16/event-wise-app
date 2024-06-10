@@ -67,10 +67,10 @@ export function applyFilter({
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    inputData = inputData.filter(
-      (event) =>
-        event.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter((event) => {
+      if (event.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1)
+        return true;
+    });
   }
   if (filterStatus) {
     inputData = inputData.filter((event) => {

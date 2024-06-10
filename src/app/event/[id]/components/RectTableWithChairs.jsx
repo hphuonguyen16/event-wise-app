@@ -114,7 +114,6 @@ const TableWithChairs = ({
 
   return (
     <Group
-      draggable
       x={tableInfo.position?.x || tableX + tableWidth / 2} // Apply position to the Group
       y={tableInfo.position?.y || tableY + tableHeight / 2} // Apply position to the Group
       rotation={tableInfo.rotation} // Apply rotation to the Group
@@ -129,10 +128,10 @@ const TableWithChairs = ({
         y={-tableHeight / 2}
         width={tableWidth}
         height={tableHeight}
-        fill="brown"
-        stroke={isSelected ? "blue" : ""}
-        strokeWidth={isSelected ? 2 : 0}
-        dash={isSelected ? [4, 4] : []}
+        fill="white"
+        strokeWidth={2}
+        //strokeColor
+        stroke="#C2C7DF"
       />
       {/* Draw the circle chairs */}
       {chairPositions.map((pos, index) => (

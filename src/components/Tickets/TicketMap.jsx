@@ -9,7 +9,7 @@ import { useMapObjectContext } from "../../context/MapObjectContext";
 const TicketStatus = {
   ON_SALE: "On Sale",
   UPCOMING: "Upcoming",
-  COMPLETED: "Completed",
+  COMPLETED: "End Sale",
 };
 
 function getTicketStatus(ticket) {

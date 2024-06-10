@@ -190,7 +190,6 @@ const AddAttendee = ({ params }) => {
     }
   };
 
-
   function validateForm() {
     if (
       dataFormAdd.contactInfo.firstName === "" ||
@@ -232,22 +231,14 @@ const AddAttendee = ({ params }) => {
           })
           .map((event) => {
             return {
+              ...event,
               id: event._id,
-              name: event.name,
-              price: event.price,
-              quantity: event.quantity,
-              status: event.status,
-              startTime: event.startTime,
-              endTime: event.endTime,
-              startDate: event.startDate,
-              endDate: event.endDate,
-              ticketType: event.ticketType,
-              sold: event.sold,
             };
           });
         const orders = events.map((event) => {
           return {
             ticketType: event.id,
+            price: null,
             quantity: null,
           };
         });
@@ -389,7 +380,7 @@ const AddAttendee = ({ params }) => {
               events.reduce((acc, event) => {
                 return (
                   acc +
-                  event.price *
+                  event.discountPrice *
                     dataFormAdd.orders.find(
                       (order) => order.ticketType === event.id
                     )?.quantity

@@ -63,7 +63,7 @@ export default function EventTableRow({
   const TicketStatus = {
     ON_SALE: "On Sale",
     UPCOMING: "Upcoming",
-    COMPLETED: "Completed",
+    COMPLETED: "End Sale",
   };
 
   function handleChangeQuantity(e) {
@@ -76,6 +76,7 @@ export default function EventTableRow({
           return {
             ticketType: ticket.id,
             quantity: e.target.value,
+            price: ticket.discountPrice
           };
         }
         return order;
@@ -121,10 +122,27 @@ export default function EventTableRow({
           {ticket.sold}/{ticket.quantity}
         </TableCell>
         <TableCell sx={{ width: "10%" }}>
-          {ticket.price.toLocaleString("vi", {
-            style: "currency",
-            currency: "VND",
-          })}
+          {ticket.discountPrice && ticket.discountPrice < ticket.price ? (
+            <>
+              <span style={{ textDecoration: "line-through" }}>
+                {ticket.price.toLocaleString("vi", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </span>
+              <span style={{ color: "red", marginLeft: "10px" }}>
+                {ticket.discountPrice.toLocaleString("vi", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </span>
+            </>
+          ) : (
+            ticket.price.toLocaleString("vi", {
+              style: "currency",
+              currency: "VND",
+            })
+          )}
         </TableCell>
         <TableCell sx={{ width: "15%" }}>
           <Chip
@@ -159,7 +177,7 @@ export default function EventTableRow({
             fullWidth
             disabled
             value={
-              ticket.price *
+              ticket.discountPrice *
                 dataFormAdd.orders.find(
                   (order) => order.ticketType === ticket.id
                 )?.quantity || 0

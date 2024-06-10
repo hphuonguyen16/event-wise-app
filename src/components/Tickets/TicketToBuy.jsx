@@ -25,13 +25,13 @@ const TicketToBuy = ({
         <div className="col-span-12 md:col-span-5">
           <div className="grid grid-cols-5">
             <div className="col-span-3">
-              <p className="font-normal text-lg leading-8 text-gray-400 text-center">
-                Quantity
+              <p className="font-normal text-lg leading-8 text-gray-400 text-left">
+                Available
               </p>
             </div>
             <div className="col-span-2">
-              <p className="font-normal text-lg leading-8 text-gray-400 text-center">
-                Total
+              <p className="font-normal text-lg leading-8 text-gray-400 text-right">
+                Price
               </p>
             </div>
           </div>
@@ -49,14 +49,6 @@ const TicketToBuy = ({
                   {ticket.name}
                 </h6>
 
-                <h6 className="font-medium text-base leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
-                  {ticket.price > 0
-                    ? ticket.price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : "Free"}
-                </h6>
                 <div class="flex items-center">
                   <div
                     class="w-6 h-6 rounded-full flex items-center justify-center mr-2"
@@ -64,9 +56,6 @@ const TicketToBuy = ({
                   ></div>
                   <span>{ticket.tier.name}</span>
                 </div>
-                <h6 className="font-medium text-sm leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
-                  {getTicketStatus(ticket)}
-                </h6>
               </div>
             </div>
             <div className="flex items-center max-[500px]:justify-center h-full max-md:mt-3">
@@ -158,12 +147,37 @@ const TicketToBuy = ({
                   </svg>
                 </button>
               </div> */}
+              <h6 className="font-medium text-sm leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
+                {getTicketStatus(ticket)}
+              </h6>
             </div>
             <div className="flex items-center max-[500px]:justify-center md:justify-end max-md:mt-3 h-full">
-              <p className="font-bold text-lg leading-8 text-gray-600 text-center transition-all duration-300 group-hover:text-indigo-600">
-                {orders.find((order) => order.id === ticket._id)?.quantity *
-                  ticket.price}
-              </p>
+              <h6 className="font-medium text-base leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
+                {ticket.discountPrice && ticket.discountPrice < ticket.price ? (
+                  <>
+                    <span style={{ textDecoration: "line-through" }}>
+                      {ticket.price.toLocaleString("vi", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
+                    <br />
+                    <span style={{ color: "red" }}>
+                      {ticket.discountPrice.toLocaleString("vi", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
+                  </>
+                ) : ticket.price > 0 ? (
+                  ticket.price.toLocaleString("vi", {
+                    style: "currency",
+                    currency: "VND",
+                  })
+                ) : (
+                  "Free"
+                )}
+              </h6>
             </div>
           </div>
         </div>

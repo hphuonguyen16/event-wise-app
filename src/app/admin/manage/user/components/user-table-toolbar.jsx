@@ -45,7 +45,7 @@ export default function UserTableToolbar({
           <OutlinedInput
             value={filterName}
             onChange={onFilterName}
-            placeholder="Search event..."
+            placeholder="Search user..."
             startAdornment={
               <InputAdornment position="start">
                 <Iconify
@@ -64,10 +64,9 @@ export default function UserTableToolbar({
               defaultValue={"all"}
               onChange={onFilterStatus}
             >
-              <MenuItem value={"all"}>All Events</MenuItem>
-              <MenuItem value={"onsale"}>On Sale Events</MenuItem>
-              <MenuItem value={"upcoming"}>Upcoming Events</MenuItem>
-              <MenuItem value={"completed"}>Past Events</MenuItem>
+              <MenuItem value={"all"}>All</MenuItem>
+              <MenuItem value={"active"}>Active</MenuItem>
+              <MenuItem value={"deactived"}>Deactived</MenuItem>
             </Select>
           </FormControl>
         </Box>

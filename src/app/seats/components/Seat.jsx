@@ -3,20 +3,9 @@ import { Circle } from "./react-konva";
 import { SEAT_SIZE } from "./helper";
 import { useMapObjectContext } from "@/context/MapObjectContext";
 import { SeatStatetus } from "@/constants/seatStatus";
+import { getColor } from "@/utils/canvas/getColor";
 
-const getColor = (isSelected, seatStatus, tierColor) => {
-  if (isSelected) return "black";
-  switch (seatStatus) {
-    case SeatStatetus.BOOKING:
-      return "yellow";
-    case SeatStatetus.BOOKED:
-      return "red";
-    case SeatStatetus.AVAILABLE:
-      return tierColor || "green";
-    default:
-      return tierColor || "#1b728d";
-  }
-};
+
 
 const Seat = (props) => {
   const { selectedSeats, onHover, onSelect, onDeselect } =

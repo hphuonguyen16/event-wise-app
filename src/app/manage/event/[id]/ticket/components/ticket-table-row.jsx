@@ -68,7 +68,7 @@ export default function EventTableRow({
   const TicketStatus = {
     ON_SALE: "On Sale",
     UPCOMING: "Upcoming",
-    COMPLETED: "Completed",
+    COMPLETED: "End Sale",
   };
 
   function getTicketStatus(ticket) {
@@ -210,7 +210,24 @@ export default function EventTableRow({
             {"Ends on " + formatDate(ticket?.endDate)}
           </Typography>
         </TableCell>
-        <TableCell>{ticket?.price}</TableCell>
+        <TableCell>
+          {ticket?.price != null
+            ? ticket.price.toLocaleString("vi", {
+                style: "currency",
+                currency: "VND",
+              })
+            : "N/A"}
+        </TableCell>
+
+        <TableCell>
+          {ticket?.discountPrice != null
+            ? ticket.discountPrice.toLocaleString("vi", {
+                style: "currency",
+                currency: "VND",
+              })
+            : "N/A"}
+        </TableCell>
+
         <TableCell>{ticket?.sold + "/" + ticket?.quantity}</TableCell>
         {isReservedSeating && (
           <TableCell>

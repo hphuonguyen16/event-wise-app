@@ -405,6 +405,8 @@ export default function UserPage({ params }) {
                       { id: "name", label: "Name" },
                       { id: "date", label: "Date" },
                       { id: "price", label: "Price" },
+                      { id: "sellingPrice", label: "Selling Price" },
+
                       { id: "sold", label: "Sold" },
                       { id: "tier", label: "Tier" },
                       { id: "status", label: "Status" },
@@ -413,6 +415,7 @@ export default function UserPage({ params }) {
                       { id: "name", label: "Name" },
                       { id: "date", label: "Date" },
                       { id: "price", label: "Price" },
+                      { id: "sellingPrice", label: "Selling Price" },
                       { id: "sold", label: "Sold" },
                       { id: "status", label: "Status" },
                     ]
@@ -459,14 +462,10 @@ export default function UserPage({ params }) {
       <Box sx={{ display: "flex", justifyContent: "end" }}>
         <Button
           variant="contained"
+          color="primary"
+          disable={events.length === 0}
           sx={{
             marginTop: "20px",
-            background:
-              events.length === 0
-                ? //@ts-ignore
-                  (theme) => `${theme.palette.disabled}!important`
-                : `linear-gradient(110deg, #f59df1 30%, #c474ed 60%, #c89df2 95%) !important`,
-            color: "white !important",
           }}
           onClick={() => {
             handleSaveTicketing("ticketing");

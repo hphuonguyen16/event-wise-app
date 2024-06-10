@@ -110,7 +110,7 @@ const Layout = ({ children }) => {
     <Box sx={{ display: "flex", height: "100%" }}>
       <Box sx={{ width: "20%", maxHeight: "100vh", overflowY: "auto" }}>
         <Box sx={{ marginBottom: "40px" }}>
-          <FormControl sx={{ width: "60%" }}>
+          {/* <FormControl sx={{ width: "60%" }}>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -127,7 +127,7 @@ const Layout = ({ children }) => {
               <MenuItem value={"On sale"}>On sale</MenuItem>
               <MenuItem value={20}>Change event status</MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
           <Typography variant="h4" sx={{ marginBottom: "10px" }}>
             {event?.title}
           </Typography>

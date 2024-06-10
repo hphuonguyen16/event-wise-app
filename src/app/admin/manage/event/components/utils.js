@@ -40,6 +40,7 @@ function CheckStatus(eventDate) {
   const currentDate = new Date();
   const dateObject = moment(eventDate, "ddd MMM DD YYYY").toDate();
   const parsedEventDate = new Date(dateObject);
+  console.log(parsedEventDate);
 
   if (parsedEventDate > currentDate) {
     return "On Sale";
@@ -50,12 +51,7 @@ function CheckStatus(eventDate) {
   }
 }
 
-export function applyFilter({
-  inputData,
-  comparator,
-  filterName,
-  filterStatus,
-}) {
+export function applyFilter({ inputData, comparator, filterName, filterStatus }) {
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -68,20 +64,20 @@ export function applyFilter({
 
   if (filterName) {
     inputData = inputData.filter(
-      (event) =>
-        event.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (event) => event.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
   if (filterStatus) {
     inputData = inputData.filter((event) => {
       if (filterStatus === "all") {
         return true;
-      } else if (filterStatus === "onsale") {
-        return CheckStatus(event.date) === "On Sale";
+      } 
+      else if (filterStatus === "onsale") {
+        return event.ticketStatus === "On Sale";
       } else if (filterStatus === "upcoming") {
-        return CheckStatus(event.date) === "Upcoming";
+        return event.ticketStatus === "Upcoming";
       } else if (filterStatus === "completed") {
-        return CheckStatus(event.date) === "Completed";
+        return event.ticketStatus === "Completed";
       }
       return true;
     });
@@ -91,5 +87,7 @@ export function applyFilter({
 }
 
 //validate date in dayjs 2 date
+
+
 
 //compare date in dayjs

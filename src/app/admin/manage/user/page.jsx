@@ -129,6 +129,29 @@ export default function UserPage() {
         });
       });
   };
+  const handleLockUser = async (id) => {
+    try {
+      const res = await axiosPrivate.put(UrlConfig?.user.lockUser(id));
+      if (res.status === 200) {
+        setSnack({
+          open: true,
+          message: "User locked successfully!",
+          type: "success",
+        });
+        setUsers((prev) =>
+          prev.map((user) =>
+            user.id === id ? { ...user, isActived: !user.isActived } : user
+          )
+        );
+      }
+    } catch (error) {
+      setSnack({
+        open: true,
+        message: "User locked failed!",
+        type: "error",
+      });
+    }
+  };
 
   function handleClickRow(id) {
     router.push(`/manage/user/${id}`);
@@ -214,6 +237,7 @@ export default function UserPage() {
                     handleClick={(user) => handleClick(user, row.id)}
                     handleClickRow={() => handleClickRow(row.id)}
                     handleDeleteUser={(user) => handleDeleteUser(row.id)}
+                    handleLockUser={(user) => handleLockUser(row.id)}
                   />
                 ))}
 

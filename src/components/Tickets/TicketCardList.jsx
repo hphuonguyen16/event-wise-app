@@ -3,12 +3,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect } from "react";
 import moment from "moment";
-
-const TicketStatus = {
-  ON_SALE: "On Sale",
-  UPCOMING: "Upcoming",
-  COMPLETED: "Completed",
-};
+import { TicketStatus } from "@/constants/ticketStatus";
 
 function getTicketStatus(ticket) {
   const parsedstartDate = moment(ticket?.startDate);
@@ -16,7 +11,7 @@ function getTicketStatus(ticket) {
   const currentDate = new Date();
 
   if (currentDate >= parsedendDate) {
-    return TicketStatus.COMPLETED;
+    return "End Sale";
   } else if (currentDate < parsedstartDate) {
     return "Upcoming at " + parsedstartDate.format("DD/MM/YYYY");
   } else {
@@ -47,6 +42,7 @@ function TicketCardList({ tickets, handleSave }) {
           ? {
               ...order,
               quantity: Math.min(order.quantity + 1, remaining),
+              price: ticket.discountPrice,
             }
           : order
       )
@@ -67,7 +63,11 @@ function TicketCardList({ tickets, handleSave }) {
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
         order.id === id
-          ? { ...order, quantity: Math.max(0, order.quantity - 1) }
+          ? {
+              ...order,
+              quantity: Math.max(0, order.quantity - 1),
+              price: ticket.discountPrice,
+            }
           : order
       )
     );
@@ -124,12 +124,31 @@ function TicketCardList({ tickets, handleSave }) {
                       </h6>
 
                       <h6 className="font-medium text-base leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
-                        {ticket.price > 0
-                          ? ticket.price.toLocaleString("vi", {
-                              style: "currency",
-                              currency: "VND",
-                            })
-                          : "Free"}
+                        {ticket.discountPrice &&
+                        ticket.discountPrice < ticket.price ? (
+                          <>
+                            <span style={{ textDecoration: "line-through" }}>
+                              {ticket.price.toLocaleString("vi", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </span>
+                            <br />
+                            <span style={{ color: "red" }}>
+                              {ticket.discountPrice.toLocaleString("vi", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </span>
+                          </>
+                        ) : ticket.price > 0 ? (
+                          ticket.price.toLocaleString("vi", {
+                            style: "currency",
+                            currency: "VND",
+                          })
+                        ) : (
+                          "Free"
+                        )}
                       </h6>
                       <h6 className="font-medium text-sm leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600">
                         {getTicketStatus(ticket)}
@@ -185,7 +204,7 @@ function TicketCardList({ tickets, handleSave }) {
                           setOrders(
                             orders.map((order) =>
                               order.id === ticket._id
-                                ? { ...order, quantity: e.target.value }
+                                ? { ...order, quantity: e.target.value, price: ticket.discountPrice}
                                 : order
                             )
                           );
@@ -230,7 +249,7 @@ function TicketCardList({ tickets, handleSave }) {
                   <div className="flex items-center max-[500px]:justify-center md:justify-end max-md:mt-3 h-full">
                     <p className="font-bold text-lg leading-8 text-gray-600 text-center transition-all duration-300 group-hover:text-indigo-600">
                       {orders.find((order) => order.id === ticket._id)
-                        ?.quantity * ticket.price}
+                        ?.quantity * ticket.discountPrice}
                     </p>
                   </div>
                 </div>
@@ -252,11 +271,13 @@ function TicketCardList({ tickets, handleSave }) {
                     {orders.reduce(
                       (acc, order) =>
                         acc +
-                        order.quantity *
-                          tickets.find((ticket) => ticket._id === order.id)
-                            .price,
+                        order.quantity * order.price,
                       0
-                    ) + "d"}
+                    ).toLocaleString("vi", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                    }
                   </p>
                 </div>
                 <button

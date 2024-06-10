@@ -27,14 +27,19 @@ function SectionCard({ editData }) {
   console.log(editData);
   const generateSeatsByRows = (row, column, sectionId, sectionName) => {
     return Array.from({ length: row }, (_, rowIndex) => ({
-      [rowIndex + 1]: Array.from({ length: column }, (_, colIndex) => ({
-        name: `Seat ${rowIndex + 1}-${colIndex + 1}`,
-        // status: "free",
-        type: "section",
-        sectionId: sectionId,
-        sectionName: sectionName,
-        _id : generateObjectId(),
-      })),
+      [String.fromCharCode(65 + rowIndex)]: Array.from(
+        { length: column },
+        (_, colIndex) => ({
+          name: `Seat ${sectionName} ${String.fromCharCode(65 + rowIndex)}-${
+            colIndex + 1
+          }`,
+          // status: "free",
+          type: "section",
+          sectionId: sectionId,
+          sectionName: sectionName,
+          _id: generateObjectId(),
+        })
+      ),
     })).reduce((acc, curr) => ({ ...acc, ...curr }), {});
   };
 
@@ -65,7 +70,7 @@ function SectionCard({ editData }) {
       const sectionId = generateObjectId();
       const newSection = {
         _id: sectionId,
-        name: sectionName,
+        name: sectionName ,
         rotation: 0,
         skewX: 0,
         skewY: 0,

@@ -31,6 +31,7 @@ export default function EventTableRow({
   handleClick,
   handleClickRow,
   handleDeleteEvent,
+  handleLockUser,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -112,6 +113,10 @@ export default function EventTableRow({
         <MenuItem onClick={handleCloseMenu}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
+        </MenuItem>
+        <MenuItem onClick={handleLockUser}>
+          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+          {isActived ? "Lock" : "Unlock"}
         </MenuItem>
 
         <MenuItem onClick={handleDeleteEvent} sx={{ color: "error.main" }}>

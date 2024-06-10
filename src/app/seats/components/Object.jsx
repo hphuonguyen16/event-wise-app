@@ -61,9 +61,9 @@ const Object = ({ label, shape, objectInfo, isSelected, x = 100, y = 100 }) => {
         <>
           <Circle
             radius={size / 2}
-            fill="lightgrey"
+            fill="#C2E3F2"
             stroke={isSelected ? "blue" : ""}
-            strokeWidth={isSelected ? 2 : 0}
+            strokeWidth={isSelected ? 1 : 0}
             dash={isSelected ? [4, 4] : []}
           />
           <Text
@@ -75,6 +75,7 @@ const Object = ({ label, shape, objectInfo, isSelected, x = 100, y = 100 }) => {
             height={size}
             align="center"
             verticalAlign="middle"
+            fill={"#3089AF"}
           />
         </>
       ) : (
@@ -82,9 +83,9 @@ const Object = ({ label, shape, objectInfo, isSelected, x = 100, y = 100 }) => {
           <Rect
             width={width}
             height={height}
-            fill="lightgrey"
+            fill="#C2E3F2"
             stroke={isSelected ? "blue" : ""}
-            strokeWidth={isSelected ? 2 : 0}
+            strokeWidth={isSelected ? 1 : 0}
             dash={isSelected ? [4, 4] : []}
           />
           <Text
@@ -96,6 +97,7 @@ const Object = ({ label, shape, objectInfo, isSelected, x = 100, y = 100 }) => {
             height={height}
             align="center"
             verticalAlign="middle"
+            fill={"#3089AF"}
           />
         </>
       )}

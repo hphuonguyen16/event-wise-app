@@ -43,6 +43,7 @@ const useAxiosPrivate = () => {
           error?.response?.status === 403 ||
           error?.response?.status === 401
         ) {
+          console.log('11111')
           localStorage.removeItem("persist");
           router.push("/login");
           return axiosPrivate(prevRequest);

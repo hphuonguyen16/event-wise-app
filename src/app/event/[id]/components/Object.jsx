@@ -50,7 +50,6 @@ const Object = ({ label, shape, objectInfo, isSelected, x = 100, y = 100 }) => {
     <Group
       x={objectInfo.position?.x || position.x}
       y={objectInfo.position?.y || position.y}
-      draggable
       onClick={handleClick}
       rotation={objectInfo.rotation}
       offsetX={width / 2}
@@ -59,13 +58,7 @@ const Object = ({ label, shape, objectInfo, isSelected, x = 100, y = 100 }) => {
     >
       {objectInfo.shape === "circle" ? (
         <>
-          <Circle
-            radius={size / 2}
-            fill="lightgrey"
-            stroke={isSelected ? "blue" : ""}
-            strokeWidth={isSelected ? 2 : 0}
-            dash={isSelected ? [4, 4] : []}
-          />
+          <Circle radius={size / 2} fill="#C2E3F2" />
           <Text
             text={label}
             fontSize={fontSize}
@@ -75,18 +68,12 @@ const Object = ({ label, shape, objectInfo, isSelected, x = 100, y = 100 }) => {
             height={size}
             align="center"
             verticalAlign="middle"
+            fill={"#3089AF"}
           />
         </>
       ) : (
         <>
-          <Rect
-            width={width}
-            height={height}
-            fill="lightgrey"
-            stroke={isSelected ? "blue" : ""}
-            strokeWidth={isSelected ? 2 : 0}
-            dash={isSelected ? [4, 4] : []}
-          />
+          <Rect width={width} height={height} fill="#C2E3F2" />
           <Text
             text={label}
             fontSize={fontSize}
@@ -96,6 +83,7 @@ const Object = ({ label, shape, objectInfo, isSelected, x = 100, y = 100 }) => {
             height={height}
             align="center"
             verticalAlign="middle"
+            fill={"#3089AF"}
           />
         </>
       )}

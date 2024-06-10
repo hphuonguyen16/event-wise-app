@@ -104,7 +104,7 @@ const WithdrawHistoryTable = ({ request }) => {
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="body2" color="text.secondary" noWrap>
-                        {cryptoOrder.amount.toLocaleString("vi", {
+                        {cryptoOrder.amount?.toLocaleString("vi", {
                           style: "currency",
                           currency: "VND",
                         })}

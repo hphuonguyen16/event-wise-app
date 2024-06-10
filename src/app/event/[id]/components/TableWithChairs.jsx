@@ -88,7 +88,6 @@ const CircleTable = ({
 
   return (
     <Group
-      draggable
       x={tableInfo.position?.x || tableX} // Apply position to the Group  
       y={tableInfo.position?.y || tableY} // Apply position to the Group
       rotation={tableInfo.rotation} // Apply rotation to the Group
@@ -100,10 +99,10 @@ const CircleTable = ({
         x={0} // Position relative to the group
         y={0} // Position relative to the group
         radius={tableRadius}
-        fill="brown"
-        stroke={isSelected ? "blue" : ""}
-        strokeWidth={isSelected ? 2 : 0}
-        dash={isSelected ? [4, 4] : []}
+        fill="white"
+        strokeWidth={2}
+        //strokeColor
+        stroke="#C2C7DF"
       />
       {/* Draw the chairs */}
       {chairPositions.map((pos, index) => (
@@ -119,6 +118,6 @@ const CircleTable = ({
       ))}
     </Group>
   );
-};
+};  
 
 export default CircleTable;

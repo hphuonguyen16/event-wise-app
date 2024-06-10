@@ -53,7 +53,6 @@ const TextCanvas = ({ textInfo, isSelected }) => {
     <Group
       x={textInfo.position?.x || position.x}
       y={textInfo.position?.y || position.y}
-      draggable
       onClick={handleClick}
       rotation={textInfo.rotation}
       onDragEnd={handleDragMove}
