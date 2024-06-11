@@ -41,6 +41,7 @@ const TierCard = ({ eventId }) => {
         seats: 30,
         //  id: Math.random().toString(36).substr(2, 9),
         color: randomColor,
+        event: eventId,
       };
 
       const response = await axiosPrivate.post(
