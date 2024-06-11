@@ -92,7 +92,7 @@ function Row(props) {
         <TableCell align="left">
           {/* {row.user.firstname + " " + row.user.lastname} */}
           {row.user
-            ? row.user.firstname + " " + row.user.lastname
+            ? row?.user?.profile?.name
             : row.contactInfo
             ? row.contactInfo.firstName + " " + row.contactInfo.lastName
             : ""}
