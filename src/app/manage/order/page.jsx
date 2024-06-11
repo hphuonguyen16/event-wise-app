@@ -132,19 +132,23 @@ function Row(props) {
                         {historyRow.ticketType.name}
                       </TableCell>
                       <TableCell component="th" scope="row" align="left">
-                        {historyRow.price.toLocaleString("vi", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
+                        {historyRow.price
+                          ? historyRow.price.toLocaleString("vi", {
+                              style: "currency",
+                              currency: "VND",
+                            })
+                          : "N/A"}
                       </TableCell>
                       <TableCell>{historyRow.quantity}</TableCell>
                       <TableCell align="right">
-                        {(
-                          historyRow.price * historyRow.quantity
-                        ).toLocaleString("vi", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
+                        {historyRow.price
+                          ? (
+                              historyRow.price * historyRow.quantity
+                            ).toLocaleString("vi", {
+                              style: "currency",
+                              currency: "VND",
+                            })
+                          : "N/A"}
                       </TableCell>
                     </TableRow>
                   ))}

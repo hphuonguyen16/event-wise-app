@@ -33,7 +33,6 @@ import Checkbox from "@mui/material/Checkbox";
 import { useAuth } from "@/context/AuthContext";
 import Rootmodal from "@/components/common/modals/RootModal";
 
-
 function Row(props) {
   const { row, handleDeleteOrder, selected, handleClick, reloadDataFn } = props;
   const [open, setOpen] = React.useState(false);
@@ -146,19 +145,23 @@ function Row(props) {
                         {historyRow.ticketType.name}
                       </TableCell>
                       <TableCell component="th" scope="row" align="left">
-                        {historyRow.price.toLocaleString("vi", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
+                        {historyRow.price
+                          ? historyRow.price.toLocaleString("vi", {
+                              style: "currency",
+                              currency: "VND",
+                            })
+                          : "N/A"}
                       </TableCell>
                       <TableCell>{historyRow.quantity}</TableCell>
                       <TableCell align="right">
-                        {(
-                          historyRow.price * historyRow.quantity
-                        ).toLocaleString("vi", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
+                        {historyRow.price
+                          ? (
+                              historyRow.price * historyRow.quantity
+                            ).toLocaleString("vi", {
+                              style: "currency",
+                              currency: "VND",
+                            })
+                          : "N/A"}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -236,7 +239,7 @@ export default function CollapsibleTable({ params }) {
   const [orderBy, setOrderBy] = useState("name");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const[openRefund, setOpenRefund] = useState(false);
+  const [openRefund, setOpenRefund] = useState(false);
   const [reloadData, setReloadData] = useState(false);
 
   const [filterName, setFilterName] = useState("");
@@ -252,7 +255,6 @@ export default function CollapsibleTable({ params }) {
   });
   const { setSnack } = useSnackbar();
 
-
   function handleDeleteOrder(_id) {
     axiosPrivate
       .delete(UrlConfig?.order?.deleteOrder(_id))
@@ -265,7 +267,6 @@ export default function CollapsibleTable({ params }) {
         });
       })
       .catch((err) => {
-        
         setSnack({
           open: true,
           message:
@@ -322,9 +323,9 @@ export default function CollapsibleTable({ params }) {
     setFilterStatus(event.target.value);
   };
 
-   function reloadDataFn() {
-     setReloadData(!reloadData);
-   }
+  function reloadDataFn() {
+    setReloadData(!reloadData);
+  }
 
   async function handleBulkRefund() {
     try {
@@ -333,14 +334,13 @@ export default function CollapsibleTable({ params }) {
         organizerId: user._id,
       });
       if (res?.data?.status === "success") {
-         setReloadData(!reloadData);
-         setOpenRefund(false);
+        setReloadData(!reloadData);
+        setOpenRefund(false);
         setSnack({
           open: true,
           message: "All orders have been refunded successfully",
           type: "success",
         });
-       
       }
     } catch (error) {
       setOpenRefund(false);

@@ -145,9 +145,14 @@ function BasicTabs() {
           padding: "20px 0",
         }}
       >
-        <Button sx={{ width: "100px", height: "43px" }} onClick={() => {
-          router.push(`/manage/event/${eventId}/ticket`);
-        }}>Cancel</Button>
+        <Button
+          sx={{ width: "100px", height: "43px" }}
+          onClick={() => {
+            router.push(`/manage/event/${eventId}/ticket`);
+          }}
+        >
+          Cancel
+        </Button>
         <Button
           variant="contained"
           onClick={(e) => handleSave()}
@@ -248,7 +253,7 @@ function BasicTabs() {
           {chosenOption === 3 && (
             <TextCard editData={mapData.selectedObject?.text} />
           )}
-          {chosenOption === 4 && <TierCard />}
+          {chosenOption === 4 && <TierCard eventId={eventId} />}
           {mapData.selectedObject?.section && (
             <SectionCard editData={mapData.selectedObject?.section} />
           )}
