@@ -15,11 +15,14 @@ import {
   FormControlLabel,
   Box,
   CircularProgress,
+  Grid,
 } from "@mui/material";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 
 import { LogoDev } from "@mui/icons-material";
+import { GiTreeBeehive } from "react-icons/gi";
+import { GiBeehive } from "react-icons/gi";
 
 // hooks
 import useResponsive from "@/hooks/useResponsive";
@@ -73,13 +76,11 @@ const StyledBanner = styled("div")(({ theme }) => ({
 
 const StyledContent = styled("div")(({ theme }) => ({
   [theme.breakpoints.up("md")]: {
-    width: "80%",
-    maxWidth: 420,
+    width: "90%",
     margin: "auto",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    padding: theme.spacing(10, 0),
   },
   [theme.breakpoints.down("md")]: {
     width: "85%",
@@ -101,12 +102,18 @@ export default function LoginPage() {
   const pathname = usePathname();
   const isMobile = useResponsive("down", "md");
   const router = useRouter();
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { setSnack } = useSnackbar();
   const mdUp = useResponsive("up", "md");
+  const [isPersonal, setIsPersonal] = useState(true);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+    role: "user",
+  });
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -118,17 +125,14 @@ export default function LoginPage() {
     return <Loader />;
   }
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
     setIsLoggingIn(true);
-    const res = await fetch(urlConfig.user.login, {
+    const res = await fetch(urlConfig.user.signup, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email: username,
-        password: password,
-      }),
+      body: JSON.stringify({ ...formData }),
       // // credentials: "include", // Add this option
     });
     const resJson = await res.json();
@@ -139,17 +143,11 @@ export default function LoginPage() {
       setAccessToken(resJson.token);
       setUser(user);
       //set local storage
-      console.log(resJson.token);
-      localStorage.setItem("persist", "persist");
-      localStorage.setItem("role", user.role);
-      localStorage.setItem("accessToken", resJson.token);
-      if (user.role === "admin") {
-        router.push("/admin/manage/event");
-      } else if (user.role === "organizer") {
-        router.push("/manage/event");
-      } else {
-        router.push("/home");
-      }
+      // localStorage.setItem("persist", "persist");
+      // localStorage.setItem("role", user.role);
+      // localStorage.setItem("accessToken", resJson.token);
+      setSnack({ open: true, type: "success", message: "" });
+      router.push("/login");
     } else {
       setIsLoggingIn(false);
       setSnack({ open: true, type: "error", message: resJson.message });
@@ -209,70 +207,197 @@ export default function LoginPage() {
             <Typography variant="h4" gutterBottom className="mt-8 mb-6">
               Sign up to EventWise
             </Typography>
-            <Stack spacing={3} className="w-full">
-              <TextField
-                name="email"
-                label="Email"
-                className="mt-6"
-                onChange={(e) => {
-                  setUsername(e.target.value);
+            <Grid container spacing={1} className="w-full">
+              <Grid item xs={12} md={6}>
+                <TextField
+                  name="name"
+                  label="Name"
+                  fullWidth
+                  className="mt-6"
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  name="email"
+                  label="Email"
+                  fullWidth
+                  className="mt-6"
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={12}>
+                <TextField
+                  name="password"
+                  label="Password"
+                  type="password"
+                  fullWidth
+                  className="mt-3"
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={12}>
+                <TextField
+                  name="confirm-password"
+                  label="Confirm Password"
+                  type="password"
+                  fullWidth
+                  className="mt-3"
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      passwordConfirm: e.target.value,
+                    });
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Box sx={{ marginY: "20px" }}>
+              <Button
+                variant={formData.role === "user" ? "contained" : "outlined"}
+                // disabled={formData.role === "organizer"}
+                onClick={() => setFormData({ ...formData, role: "user" })}
+                sx={{
+                  width: "100%",
+                  margin: "10px 0",
+                  borderRadius: "12px",
+                  "&:disabled": {
+                    // border: '2px solid rgb(155 99 191 / 63%)', background: '#e7afe01f',
+                    "& .MuiTypography-h5": {
+                      color: (theme) => theme.palette.common.white,
+                    },
+                    "& .MuiTypography-subtitle2": {
+                      color: (theme) => theme.palette.grey[100],
+                    },
+                  },
                 }}
-              />
-
-              <TextField
-                name="password"
-                label="Password"
-                type="password"
-                className="mt-3"
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleLogin();
-                  }
-                }}
-              />
-            </Stack>
-
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ my: 2, width: "100%" }}
-            >
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="Remember me"
-              />
-              <Link
-                variant="subtitle2"
-                underline="hover"
-                style={{ cursor: "pointer" }}
-                onClick={() => router.push("/forgot-password")}
               >
-                Forgot password?
-              </Link>
-            </Stack>
+                <Stack
+                  direction={"row"}
+                  alignItems="center"
+                  justifyContent="start"
+                  sx={{ width: "100%" }}
+                >
+                  <Box
+                    sx={{
+                      fontSize: "28px",
+                      background: (theme) =>
+                        isPersonal
+                          ? theme.palette.common.white
+                          : theme.palette.secondary.main,
+                      color: (theme) =>
+                        isPersonal
+                          ? theme.palette.secondary.main
+                          : theme.palette.common.white,
+                      padding: "10px 10px",
+                      margin: "10px 5px",
+                      borderRadius: "12px",
+                    }}
+                  >
+                    <GiTreeBeehive />
+                  </Box>
+                  <Box sx={{ marginLeft: "15px" }}>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        textAlign: "left",
+                        lineHeight: 1.25,
+                        marginBottom: "5px",
+                      }}
+                    >
+                      Personal
+                    </Typography>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ textTransform: "initial" }}
+                    >
+                      Find and join events
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Button>
+              <Button
+                variant={
+                  formData.role === "organizer" ? "contained" : "outlined"
+                }
+                // disabled={formData.role === "user"}
+                onClick={() => setFormData({ ...formData, role: "organizer" })}
+                sx={{
+                  width: "100%",
+                  margin: "10px 0",
+                  borderRadius: "12px",
+                  "&:disabled": {
+                    // border: '2px solid rgb(155 99 191 / 63%)', background: '#e7afe01f',
+                    "& .MuiTypography-h5": {
+                      color: (theme) => theme.palette.common.white,
+                    },
+                    "& .MuiTypography-subtitle2": {
+                      color: (theme) => theme.palette.grey[100],
+                    },
+                  },
+                }}
+              >
+                <Stack
+                  direction={"row"}
+                  alignItems="center"
+                  justifyContent="start"
+                  sx={{ width: "100%" }}
+                >
+                  <Box
+                    sx={{
+                      fontSize: "28px",
+                      background: (theme) =>
+                        !isPersonal
+                          ? theme.palette.common.white
+                          : theme.palette.secondary.main,
+                      color: (theme) =>
+                        !isPersonal
+                          ? theme.palette.secondary.main
+                          : theme.palette.common.white,
+                      padding: "10px 10px",
+                      margin: "10px 5px",
+                      borderRadius: "12px",
+                    }}
+                  >
+                    <GiBeehive />
+                  </Box>
+                  <Box sx={{ marginLeft: "15px" }}>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        textAlign: "left",
+                        lineHeight: 1.25,
+                        marginBottom: "5px",
+                      }}
+                    >
+                      Organizer
+                    </Typography>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ textTransform: "initial" }}
+                    >
+                      Start creating your own events
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Button>
+            </Box>
+
             <LoadingButton
               loading={isLoggingIn}
-              onClick={() => handleLogin()}
+              onClick={() => handleSignup()}
               variant="contained"
               color="primary"
-              sx={{ width: "100%", mt: 3, mb: 2, height: 50 }}
+              sx={{ width: "100%", mt: 1, mb: 2, height: 50 }}
             >
               Sign in
             </LoadingButton>
-            <Typography
-              variant="body2"
-              sx={{ mt: 1, mb: 8, width: "100%" }}
-              textAlign={"right"}
-            >
-              Don’t have an account yet?{" "}
-              <Link variant="body2" href="/register">
-                Get started
-              </Link>
-            </Typography>
           </StyledContent>
         </Container>
       </StyledRoot>

@@ -8,11 +8,12 @@ console.log("domain", domain);
 const UrlConfig: any = {
   user: {
     login: `${domain}/api/v1/users/login`,
-    signup: `${process.env.NEXT_APP_BEEGIN_DOMAIN}/api/v1/users/signup`,
+    signup: `${domain}/api/v1/users/signup`,
     refresh: `${domain}/api/v1/users/refresh`,
     forgotPassword: "/api/v1/users/forgotPassword",
     getAllUsers: `${domain}/api/v1/users`,
-    lockUser: (id: string) => `${domain}/api/v1/users/${id}/lock-unlock-account`,
+    lockUser: (id: string) =>
+      `${domain}/api/v1/users/${id}/lock-unlock-account`,
   },
   me: {
     getMe: `${domain}/api/v1/users/me`,
