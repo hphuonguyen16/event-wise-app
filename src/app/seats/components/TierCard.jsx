@@ -25,6 +25,20 @@ const TierCard = ({ eventId }) => {
   const [tiers, setTiers] = React.useState([]);
   const axiosPrivate = useAxiosPrivate();
 
+   const getALlTiers = async () => {
+     try {
+       const response = await axiosPrivate.get(
+         UrlConfig.event.getTiersByEventId(eventId)
+       );
+
+       if (response.data.status === "success") {
+         setTiers(response.data.data);
+       }
+     } catch (error) {
+       console.log(error);
+     }
+   };
+
   async function addTier(e) {
     try {
       const usedColors = tiers.map((tier) => tier.color);
@@ -50,26 +64,14 @@ const TierCard = ({ eventId }) => {
       );
 
       if (response.data.status === "success") {
-        setTiers([...tiers, newTier]);
+        await getALlTiers()
       }
     } catch (error) {
       console.log(error);
     }
   }
 
-  const getALlTiers = async () => {
-    try {
-      const response = await axiosPrivate.get(
-        UrlConfig.event.getTiersByEventId(eventId)
-      );
-
-      if (response.data.status === "success") {
-        setTiers(response.data.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+ 
 
   const handleDelete = async (id) => {
     try {
