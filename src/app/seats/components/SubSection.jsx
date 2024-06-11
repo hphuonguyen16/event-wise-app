@@ -24,7 +24,6 @@ const SubSection = ({
     <Group
       x={position.x}
       y={position.y}
-      draggable
       skewX={skewX}
       skewY={skewY}
       rotation={rotation}

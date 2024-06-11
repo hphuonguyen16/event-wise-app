@@ -396,7 +396,7 @@ export default function LoginPage() {
               color="primary"
               sx={{ width: "100%", mt: 1, mb: 2, height: 50 }}
             >
-              Sign in
+              Sign up
             </LoadingButton>
           </StyledContent>
         </Container>
