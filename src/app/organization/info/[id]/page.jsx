@@ -47,7 +47,7 @@ function Page({ params }) {
   async function fetchEvents() {
     try {
       const res = await axiosPrivate.get(
-        `${UrlConfig?.event.getAllEvents}?user=${id}`
+        `${UrlConfig?.event.getAllEvents}&user=${id}`
       );
       const dataRes = res.data.data.data.map((event) => {
         return (

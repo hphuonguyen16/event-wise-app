@@ -26,7 +26,7 @@ function HomePage() {
       await Promise.all(
         categoryIds.map(async (categoryId: string) => {
           const res = await axiosPrivate.get(
-            `${UrlConfig?.event.getAllEvents}?category=${categoryId}&limit=4`
+            `${UrlConfig?.event.getAllEvents}&category=${categoryId}&limit=4`
           );
           const dataRes = res.data.data.data.map((event: any) => ({
             _id: event._id,
