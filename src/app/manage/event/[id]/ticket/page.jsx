@@ -363,6 +363,16 @@ export default function UserPage({ params }) {
         <Typography variant="h3">TICKETS</Typography>{" "}
         {/* Replace "/new-event-page" with the actual link */}
         <Stack direction="row" spacing={2}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() =>
+              router.push(`/manage/event/${eventId}/promo`)
+            }
+          >
+            Promo
+          </Button>
           {eventDetail?.reservedSeating && (
             <Button
               variant="outlined"

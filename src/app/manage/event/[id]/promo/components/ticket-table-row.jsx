@@ -305,10 +305,10 @@ export default function EventTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleOpenEdit}>
+        {/* <MenuItem onClick={handleOpenEdit}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
-        </MenuItem>
+        </MenuItem> */}
 
         <MenuItem onClick={handleDeleteEvent} sx={{ color: "error.main" }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
