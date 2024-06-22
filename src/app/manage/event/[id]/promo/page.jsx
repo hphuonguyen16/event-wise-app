@@ -330,9 +330,11 @@ export default function UserPage({ params }) {
                     handleDeleteEvent={(event) => handleDeleteEvent(row.id)}
                     eventId={eventId}
                     reloadWhenUpdated={reloadWhenUpdated}
-                    tiers={tiers}
-                    setTiers={setTiers}
                     isReservedSeating={eventDetail?.reservedSeating}
+                    ticketTypes={ticketTypes}
+                    setTicketTypes={setTicketTypes}
+                    selectedTicketType={selectedTicketType}
+                    setSelectedTicketType={setSelectedTicketType}
                   />
                 ))}
 

@@ -21,7 +21,7 @@ function getTicketStatus(ticket) {
   }
 }
 
-function TicketCardList({ tickets, handleSave }) {
+function TicketCardList({ tickets, handleSave, isLoading }) {
   const [orders, setOrders] = useState([]);
 
   function handleAddQuantity(id) {
@@ -204,7 +204,11 @@ function TicketCardList({ tickets, handleSave }) {
                           setOrders(
                             orders.map((order) =>
                               order.id === ticket._id
-                                ? { ...order, quantity: e.target.value, price: ticket.discountPrice}
+                                ? {
+                                    ...order,
+                                    quantity: e.target.value,
+                                    price: ticket.discountPrice,
+                                  }
                                 : order
                             )
                           );
@@ -268,23 +272,25 @@ function TicketCardList({ tickets, handleSave }) {
                       " Items"}
                   </p>
                   <p className="font-semibold text-xl leading-8 text-indigo-600">
-                    {orders.reduce(
-                      (acc, order) =>
-                        acc +
-                        order.quantity * order.price,
-                      0
-                    ).toLocaleString("vi", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                    }
+                    {orders
+                      .reduce(
+                        (acc, order) => acc + order.quantity * order.price,
+                        0
+                      )
+                      .toLocaleString("vi", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
                   </p>
                 </div>
                 <button
-                  onClick={(event) => handleSave(event, orders)}
+                  onClick={(event) => {
+                    handleSave(event, orders);
+                  }}
+                  disabled={isLoading}
                   className="w-full text-center bg-indigo-600 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-indigo-700"
                 >
-                  Checkout
+                  {isLoading ? "Processing..." : "Checkout"}
                 </button>
               </form>
             </div>

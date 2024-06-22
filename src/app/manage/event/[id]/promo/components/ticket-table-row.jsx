@@ -23,7 +23,7 @@ import {
   convertStringToDateJS,
   convertStringTimeToDateJS,
 } from "@/utils/DateConvert";
-import urlConfig from "@/config/urlConfig";
+import UrlConfig from "@/config/urlConfig";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import useSnackbar from "@/context/snackbarContext";
 import CustomSnackbar from "@/components/common/Snackbar";
@@ -37,21 +37,24 @@ export default function EventTableRow({
   handleClick,
   handleDeleteEvent,
   eventId,
+  ticketTypes,
+  setTicketTypes,
   reloadWhenUpdated,
-  tiers,
-  setTiers,
   isReservedSeating,
 }) {
   const [open, setOpen] = useState(null);
   const axiosPrivate = useAxiosPrivate();
   const { setSnack } = useSnackbar();
   const [openEdit, setOpenEdit] = useState(null);
+  const [selectedTicketType, setSelectedTicketType] = useState(ticket?.applyTo);
   const isMobile = useResponsive("down", "sm");
   const [dataForm, setDataForm] = useState({
     ...ticket,
     startDate: dayjs(ticket?.startDate),
     endDate: dayjs(ticket?.endDate),
   });
+
+  console.log(ticket);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -86,99 +89,76 @@ export default function EventTableRow({
   }
 
   const handleSave = async () => {
-    if (
-      dataForm.name === "" ||
-      dataForm.quantity === null ||
-      dataForm.startDate === "" ||
-      dataForm.endDate === "" ||
-      dataForm.minQuantity === null ||
-      dataForm.maxQuantity === null
-    ) {
-      setSnack({
-        open: true,
-        message: "Please fill in all the required fields!",
-        type: "error",
-      });
-      return;
-    }
-
-    //validate start date and end date use isBefore
-    //compare with now
-    // if (dataForm.startDate.get("date") < dayjs(new Date()).get("date")) {
-    //   setSnack({
-    //     open: true,
-    //     message: "Start date must be greater than today!",
-    //     type: "error",
-    //   });
-    //   return;
-    // }
-    // if (dataForm.endDate.get("date") < dayjs(new Date()).get("date")){
-    //   setSnack({
-    //     open: true,
-    //     message: "End date cannot be past!",
-    //     type: "error",
-    //   });
-    //   return;
-    // }
-    if (dataForm.startDate.isAfter(dataForm.endDate)) {
-      setSnack({
-        open: true,
-        message: "End date must be greater than start date!",
-        type: "error",
-      });
-      return;
-    }
-
     try {
+      if (
+        !dataForm.name ||
+        !dataForm.discount ||
+        !dataForm.startDate ||
+        !dataForm.endDate ||
+        !dataForm.discountType
+      ) {
+        setSnack({
+          open: true,
+          message: "Please fill in all the required fields!",
+          type: "error",
+        });
+        return;
+      }
+
+      //validate start date and end date use isBefore
+      //compare with now
+      if (moment(dataForm.startDate).isBefore(moment(new Date()), "day")) {
+        setSnack({
+          open: true,
+          message: "Start date must be greater or today!",
+          type: "error",
+        });
+        return;
+      }
+      if (moment(dataForm.endDate).isBefore(moment(new Date()), "day")) {
+        setSnack({
+          open: true,
+          message: "End date must be greater than today!",
+          type: "error",
+        });
+        return;
+      }
+      if (dataForm.startDate.isAfter(dataForm.endDate)) {
+        setSnack({
+          open: true,
+          message: "End date must be greater than start date!",
+          type: "error",
+        });
+        return;
+      }
+
       const response = await axiosPrivate.put(
-        urlConfig.ticketType.updateTicketType(ticket.id),
+        UrlConfig.promo.updatePromo(ticket._id),
         {
-          name: dataForm.name,
-          price: dataForm.price,
-          quantity: dataForm.quantity,
-          //@ts-ignore
-          startDate: dataForm.startDate,
-          //@ts-ignore
-          endDate: dataForm.endDate,
-          //@ts-ignore
-          minQuantity: dataForm.minQuantity,
-          maxQuantity: dataForm.maxQuantity,
-          event: dataForm.event,
-          salesChannel: dataForm.salesChannel,
-          ticketType: dataForm.ticketType,
-          tier: dataForm.tier,
-          event: eventId,
+          ...dataForm,
+          applyTo: selectedTicketType.map((ticketType) => ticketType._id),
         }
       );
 
       if (response.data.status === "success") {
         setSnack({
           open: true,
-          message: "Ticket updated successfully!",
+          message: "Promo updated successfully!",
           type: "success",
         });
-        setOpenEdit(false);
         reloadWhenUpdated();
+        setOpenEdit(false);
         //after success, render the updated data
-      } else {
-        setSnack({
-          open: true,
-          message: "Something went wrong! Please try again!",
-          type: "error",
-        });
       }
     } catch (error) {
-      console.log(error);
+      //catch error
       setSnack({
         open: true,
-        message:
-          error.response.data.message ||
-          "An error occurred while saving. Please try again later.",
+        message: error.response?.data?.message || "Something went wrong!",
         type: "error",
       });
     }
   };
-
   const formatDiscount = (ticket) => {
     if (ticket.discountType === "percentage") {
       return `${ticket.discount}%`;
@@ -224,7 +204,13 @@ export default function EventTableRow({
         <TableCell>{formatDiscount(ticket)}</TableCell>
         <TableCell>
           {ticket.applyTo?.map((item) => {
-            return <Chip key={item._id} label={item.name} sx={{marginRight:'3px'}} />;
+            return (
+              <Chip
+                key={item._id}
+                label={item.name}
+                sx={{ marginRight: "3px" }}
+              />
+            );
           })}
         </TableCell>
         {isReservedSeating && (
@@ -273,7 +259,7 @@ export default function EventTableRow({
             transform: "translate(-50%, -50%)",
             //   width: isMobile ? '80vw' : width ? width : '100vw',
             width: isMobile ? "80%" : "40%",
-            height: isMobile ? "80%" : "85%",
+            height: isMobile ? "80%" : "auto",
             bgcolor: "background.paper",
             boxShadow: 24,
             borderRadius: 2,
@@ -289,8 +275,10 @@ export default function EventTableRow({
             dataForm={dataForm}
             setDataForm={setDataForm}
             handleSave={handleSave}
-            tiers={tiers}
-            setTiers={setTiers}
+            ticketTypes={ticketTypes}
+            setTicketTypes={setTicketTypes}
+            selectedTicketType={selectedTicketType}
+            setSelectedTicketType={setSelectedTicketType}
           />
         </Box>
       </Modal>
@@ -305,10 +293,10 @@ export default function EventTableRow({
           sx: { width: 140 },
         }}
       >
-        {/* <MenuItem onClick={handleOpenEdit}>
+        <MenuItem onClick={handleOpenEdit}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
-        </MenuItem> */}
+        </MenuItem>
 
         <MenuItem onClick={handleDeleteEvent} sx={{ color: "error.main" }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />

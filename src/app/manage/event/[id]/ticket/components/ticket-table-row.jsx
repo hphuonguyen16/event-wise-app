@@ -275,7 +275,7 @@ export default function EventTableRow({
             transform: "translate(-50%, -50%)",
             //   width: isMobile ? '80vw' : width ? width : '100vw',
             width: isMobile ? "80%" : "40%",
-            height: isMobile ? "80%" : "85%",
+            height: isMobile ? "80%" : "auto",
             bgcolor: "background.paper",
             boxShadow: 24,
             borderRadius: 2,

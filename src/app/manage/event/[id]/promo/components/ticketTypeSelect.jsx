@@ -43,10 +43,16 @@ function getStyles(name, personName, theme) {
   };
 }
 
-export default function TicketTypeSelectChip({ data, setData, selectedTicketType, setSelectedTicketType }) {
+export default function TicketTypeSelectChip({
+  data,
+  setData,
+  selectedTicketType,
+  setSelectedTicketType,
+}) {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
   const axiosPrivate = useAxiosPrivate();
+  console.log(selectedTicketType);
 
   const handleChange = (event) => {
     const {
@@ -58,6 +64,15 @@ export default function TicketTypeSelectChip({ data, setData, selectedTicketType
       typeof value === "string" ? value.split(",") : value
     );
   };
+
+  const handleDelete = (event, itemToDelete) => {
+    event.stopPropagation();
+    console.log("11111");
+    setSelectedTicketType(
+      selectedTicketType.filter((item) => item._id !== itemToDelete._id)
+    );
+  };
+
 
   return (
     <div>
@@ -72,8 +87,12 @@ export default function TicketTypeSelectChip({ data, setData, selectedTicketType
           input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-              {selected.map((item) => (
-                <Chip key={item._id} label={item.name} />
+              {selectedTicketType.map((item) => (
+                <Chip
+                  key={item._id}
+                  label={item.name}
+                  onDelete={(event) => handleDelete(event, item)}
+                />
               ))}
             </Box>
           )}

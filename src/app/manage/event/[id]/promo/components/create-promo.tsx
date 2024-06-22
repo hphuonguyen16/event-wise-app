@@ -65,8 +65,6 @@ const CreateTicket = ({
     }));
   };
 
-  console.log("dataForm", dataForm);
-
   //handle change select
 
   return (
@@ -75,7 +73,7 @@ const CreateTicket = ({
         <Grid item xs={12}>
           <Grid container spacing={3}>
             <Grid item>
-              <Typography variant="h4">Add Code</Typography>
+              <Typography variant="h4">Promo</Typography>
             </Grid>
           </Grid>
         </Grid>
@@ -111,6 +109,9 @@ const CreateTicket = ({
                   }
                   name="price"
                   type="number"
+                  defaultValue={
+                    dataForm.discountType === "amount" ? dataForm.discount : ""
+                  }
                   disabled={
                     dataForm.discountType === "percentage" &&
                     dataForm.discount !== ""
@@ -125,6 +126,11 @@ const CreateTicket = ({
                   id="filled-start-adornment"
                   fullWidth
                   type="number"
+                  defaultValue={
+                    dataForm.discountType === "percentage"
+                      ? dataForm.discount
+                      : ""
+                  }
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">%</InputAdornment>

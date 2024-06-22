@@ -37,10 +37,12 @@ const EventDetail = ({ params }) => {
   ];
   const [eventDetail, setEventDetail] = React.useState({});
   const isMobile = useResponsive("down", "sm");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleSave = async (event, dataFormAdd) => {
     event.preventDefault();
     try {
+      setIsLoading(true);
       const orders = dataFormAdd.filter(
         (order) =>
           order.quantity !== null &&
@@ -66,6 +68,7 @@ const EventDetail = ({ params }) => {
         });
         setIsUpdated(!isUpdated);
         setOpenTicket(false);
+        setIsLoading(false);
       } else {
         setSnack({
           open: true,
@@ -81,6 +84,7 @@ const EventDetail = ({ params }) => {
           "Something went wrong! Please try again!",
         type: "error",
       });
+      setIsLoading(false);
     }
   };
 
@@ -88,6 +92,7 @@ const EventDetail = ({ params }) => {
     event.preventDefault();
     try {
       if (orders.length === 0) return;
+      setIsLoading(true);
       const registration = {
         event: params.id,
         orders: orders.map((order) => ({
@@ -122,6 +127,7 @@ const EventDetail = ({ params }) => {
         setIsUpdated(!isUpdated);
         setOpenTicket(false);
         setOrders([]);
+        setIsLoading(false);
       } else {
         setSnack({
           open: true,
@@ -137,6 +143,7 @@ const EventDetail = ({ params }) => {
           "Something went wrong! Please try again!",
         type: "error",
       });
+      setIsLoading(false);
     }
   };
 
@@ -359,9 +366,14 @@ const EventDetail = ({ params }) => {
               tickets={tickets}
               handleSave={handleSaveSeatReserved}
               getMapData={() => getMapData()}
+              isLoading={isLoading}
             />
           ) : (
-            <TicketCard tickets={tickets} handleSave={handleSave} />
+            <TicketCard
+              tickets={tickets}
+              handleSave={handleSave}
+              isLoading={isLoading}
+            />
           )}
         </Box>
       </Modal>

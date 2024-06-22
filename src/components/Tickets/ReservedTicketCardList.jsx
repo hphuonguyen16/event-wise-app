@@ -33,7 +33,7 @@ function getTicketStatus(ticket) {
   }
 }
 
-function ReservedTicketCardList({ tickets, handleSave }) {
+function ReservedTicketCardList({ tickets, handleSave, isLoading }) {
   const {
     mapData,
     setMapData,
@@ -134,10 +134,13 @@ function ReservedTicketCardList({ tickets, handleSave }) {
 
               {buyOnMap ? (
                 <button
-                  onClick={(event) => handleSave(event, orders)}
+                  onClick={(event) => {
+                    handleSave(event, orders);
+                  }}
+                  disabled={isLoading}
                   className="w-full text-center bg-indigo-600 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-indigo-700"
                 >
-                  Checkout
+                  {isLoading ? "Processing..." : "Checkout"}
                 </button>
               ) : (
                 <button
