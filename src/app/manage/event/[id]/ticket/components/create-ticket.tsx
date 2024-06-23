@@ -37,6 +37,7 @@ interface CreateTicketProps {
   handleSave: () => void;
   tiers: any;
   setTiers: any;
+  isReservedSeating: any;
 }
 
 const CreateTicket = ({
@@ -46,6 +47,7 @@ const CreateTicket = ({
   handleSave,
   tiers,
   setTiers,
+  isReservedSeating,
 }: CreateTicketProps) => {
   const [open, setOpen] = React.useState(false);
   const isMobile = useResponsive("down", "sm");
@@ -107,29 +109,31 @@ const CreateTicket = ({
                 name="name"
               />
             </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Tier</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  // value={age}
-                  label="Tier"
-                  name="tier"
-                  defaultValue={dataForm.tier?._id}
-                  onChange={(e) => handleChange(e)}
-                >
-                  {
-                    //@ts-ignore
-                    tiers?.map((tier: any) => (
-                      <MenuItem value={tier._id} key={tier._id}>
-                        {tier.name}
-                      </MenuItem>
-                    ))
-                  }
-                </Select>
-              </FormControl>
-            </Grid>
+            {isReservedSeating && (
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Tier</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    // value={age}
+                    label="Tier"
+                    name="tier"
+                    defaultValue={dataForm.tier?._id}
+                    onChange={(e) => handleChange(e)}
+                  >
+                    {
+                      //@ts-ignore
+                      tiers?.map((tier: any) => (
+                        <MenuItem value={tier._id} key={tier._id}>
+                          {tier.name}
+                        </MenuItem>
+                      ))
+                    }
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
             <Grid item container spacing={3}>
               <Grid item xs={12} md={6}>
                 <TextField
@@ -233,7 +237,7 @@ const CreateTicket = ({
                 </Grid>
               </Box>
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
                   Sales channel
@@ -257,7 +261,7 @@ const CreateTicket = ({
                   <MenuItem value={"offline"}>At the door only</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
+            </Grid> */}
             <Grid item container justifyContent="flex-end" spacing={2}>
               <Grid item>
                 <Button variant="outlined">Cancel</Button>

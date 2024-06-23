@@ -214,7 +214,7 @@ export default function UserPage({ params }) {
           event: dataFormAdd.event,
           salesChannel: dataFormAdd.salesChannel,
           ticketType: dataFormAdd.ticketType,
-          tier: dataFormAdd.tier,
+          tier: eventDetail.reservedSeating ? dataFormAdd.tier : null,
         }
       );
 
@@ -367,9 +367,7 @@ export default function UserPage({ params }) {
             variant="outlined"
             color="inherit"
             startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() =>
-              router.push(`/manage/event/${eventId}/promo`)
-            }
+            onClick={() => router.push(`/manage/event/${eventId}/promo`)}
           >
             Promo
           </Button>
@@ -496,7 +494,7 @@ export default function UserPage({ params }) {
             transform: "translate(-50%, -50%)",
             //   width: isMobile ? '80vw' : width ? width : '100vw',
             width: isMobile ? "80%" : "40%",
-            height: isMobile ? "80%" : "85%",
+            height: isMobile ? "80%" : "auto",
             bgcolor: "background.paper",
             boxShadow: 24,
             borderRadius: 2,
@@ -514,6 +512,7 @@ export default function UserPage({ params }) {
             handleSave={handleSave}
             tiers={tiers}
             setTiers={setTiers}
+            isReservedSeating={eventDetail?.reservedSeating}
           />
         </Box>
       </Modal>
