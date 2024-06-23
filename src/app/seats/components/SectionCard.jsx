@@ -55,7 +55,12 @@ function SectionCard({ editData }) {
             subsections: [
               {
                 ...section.subsections[0], // Assuming only one subsection per section
-                seats_by_rows: generateSeatsByRows(row, column, section._id, section.name),
+                seats_by_rows: generateSeatsByRows(
+                  row,
+                  column,
+                  section._id,
+                  sectionName
+                ),
               },
             ],
           };

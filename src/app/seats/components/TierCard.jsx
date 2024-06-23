@@ -25,19 +25,19 @@ const TierCard = ({ eventId }) => {
   const [tiers, setTiers] = React.useState([]);
   const axiosPrivate = useAxiosPrivate();
 
-   const getALlTiers = async () => {
-     try {
-       const response = await axiosPrivate.get(
-         UrlConfig.event.getTiersByEventId(eventId)
-       );
+  const getALlTiers = async () => {
+    try {
+      const response = await axiosPrivate.get(
+        UrlConfig.event.getTiersByEventId(eventId)
+      );
 
-       if (response.data.status === "success") {
-         setTiers(response.data.data);
-       }
-     } catch (error) {
-       console.log(error);
-     }
-   };
+      if (response.data.status === "success") {
+        setTiers(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   async function addTier(e) {
     try {
@@ -64,14 +64,12 @@ const TierCard = ({ eventId }) => {
       );
 
       if (response.data.status === "success") {
-        await getALlTiers()
+        await getALlTiers();
       }
     } catch (error) {
       console.log(error);
     }
   }
-
- 
 
   const handleDelete = async (id) => {
     try {
@@ -86,8 +84,6 @@ const TierCard = ({ eventId }) => {
     }
   };
 
-  
-
   useEffect(() => {
     getALlTiers();
   }, []);
@@ -101,12 +97,6 @@ const TierCard = ({ eventId }) => {
         </Typography>
       </Box>
       <Divider />
-      <Box sx={{ marginTop: "20px" }}>
-        <Stack direction="row" spacing={2} justifyContent={"space-between"}>
-          <Typography>Seat assigned</Typography>
-          <Typography>10/50</Typography>
-        </Stack>
-      </Box>
       <Stack spacing={2} sx={{ marginTop: "20px" }}>
         {tiers?.map((tier) => (
           <TierItem
@@ -115,7 +105,9 @@ const TierCard = ({ eventId }) => {
             setTiers={setTiers}
             tiers={tiers}
             handleDelete={(e) => handleDelete(tier._id)}
-            handleUpdate={(id,updatedTier) => handleUpdate(tier._id, updatedTier)}
+            handleUpdate={(id, updatedTier) =>
+              handleUpdate(tier._id, updatedTier)
+            }
           />
         ))}
       </Stack>

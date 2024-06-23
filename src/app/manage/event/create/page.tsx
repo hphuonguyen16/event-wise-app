@@ -95,7 +95,7 @@ export default function Page() {
     //check date greater or equal to today
 
     //@ts-ignore
-    if (eventForm.date.get("date") < dayjs().get("date")) {
+    if (dayjs(eventForm.date).isBefore(dayjs(), "day")) {
       setSnack({
         open: true,
         message: "Please select a date that is greater or today!",

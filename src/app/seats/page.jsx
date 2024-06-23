@@ -188,7 +188,6 @@ function BasicTabs() {
           >
             <Tab label="Map" {...a11yProps(0)} />
             <Tab label="Tiers" {...a11yProps(1)} />
-            <Tab label="Item Three" {...a11yProps(2)} />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
@@ -270,9 +269,7 @@ function BasicTabs() {
         <CustomTabPanel value={value} index={1}>
           <TierCard eventId={eventId} />
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
-          Item Three
-        </CustomTabPanel>
+       
       </Box>
     </Stack>
   );
