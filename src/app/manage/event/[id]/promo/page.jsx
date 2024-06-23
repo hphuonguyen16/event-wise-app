@@ -260,9 +260,11 @@ export default function UserPage({ params }) {
         name: "",
         discount: "",
         discountType: "",
+        // applyTo: [],
         startDate: null,
         endDate: null,
       });
+      setSelectedTicketType([]);
     };
   }, [isUpdated]);
 

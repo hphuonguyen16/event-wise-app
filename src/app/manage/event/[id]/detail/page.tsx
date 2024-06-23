@@ -60,6 +60,7 @@ async function handleFileUpload(files: File[]) {
 
 export default function Page({ params }: { params: { id: string } }) {
   const [eventForm, setEventForm] = useState({
+    _id: "",
     images: [],
     title: "",
     summary: "",
@@ -93,8 +94,8 @@ export default function Page({ params }: { params: { id: string } }) {
       });
       return;
     }
-      //check date greater than today
-      //@ts-ignore
+    //check date greater than today
+    //@ts-ignore
     if (eventForm.date.isBefore(dayjs())) {
       setSnack({
         open: true,
@@ -130,20 +131,23 @@ export default function Page({ params }: { params: { id: string } }) {
         }
       })
     );
-    const response = await axiosPrivate.put(urlConfig.event.updateEvent(params.id), {
-      images: urlImages,
-      title: eventForm.title,
-      summary: eventForm.summary,
-      location: eventForm.location,
-      //@ts-ignore
-      date: eventForm.date,
-      //@ts-ignore
-      startTime: eventForm.startTime,
-      //@ts-ignore
-      endTime: eventForm.endTime,
-      detailLocation: eventForm.detailLocation,
-      about: aboutAfterUpload,
-    });
+    const response = await axiosPrivate.put(
+      urlConfig.event.updateEvent(params.id),
+      {
+        images: urlImages,
+        title: eventForm.title,
+        summary: eventForm.summary,
+        location: eventForm.location,
+        //@ts-ignore
+        date: eventForm.date,
+        //@ts-ignore
+        startTime: eventForm.startTime,
+        //@ts-ignore
+        endTime: eventForm.endTime,
+        detailLocation: eventForm.detailLocation,
+        about: aboutAfterUpload,
+      }
+    );
     if (response.data.status === "success") {
       setSnack({
         open: true,
@@ -166,6 +170,7 @@ export default function Page({ params }: { params: { id: string } }) {
     if (response.data.status === "success") {
       const event = response.data.data.data;
       setEventForm({
+        _id: event._id,
         images: event.images,
         title: event.title,
         summary: event.summary,
@@ -189,10 +194,9 @@ export default function Page({ params }: { params: { id: string } }) {
     fetchData();
   }, []);
 
-
   return (
     <>
-      {eventForm.title && (
+      {eventForm._id && (
         <Box>
           <EventCreate
             eventForm={eventForm}
